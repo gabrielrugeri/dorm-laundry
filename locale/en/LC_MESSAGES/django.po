@@ -279,3 +279,12 @@ msgstr ""
 
 msgid "Log out"
 msgstr ""
+
+msgid "Today's key schedule"
+msgstr ""
+
+msgid "The key schedule will appear here."
+msgstr ""
+
+msgid "Administration"
+msgstr ""

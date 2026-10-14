@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+  <h1 class="mb-2 text-xl font-semibold">{% translate "Today's key schedule" %}</h1>
+  <p>{% translate "The key schedule will appear here." %}</p>
+  {% if user.is_staff %}
+    <p class="mt-4"><a href="{% url 'admin:index' %}" class="text-blue-700 underline">{% translate "Administration" %}</a></p>
+  {% endif %}
+{% endblock %}

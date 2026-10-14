@@ -283,3 +283,12 @@ msgstr ""
 
 msgid "Log out"
 msgstr "Выйти"
+
+msgid "Today's key schedule"
+msgstr "Выдача ключей сегодня"
+
+msgid "The key schedule will appear here."
+msgstr "Здесь появится расписание выдачи ключей."
+
+msgid "Administration"
+msgstr "Администрирование"
