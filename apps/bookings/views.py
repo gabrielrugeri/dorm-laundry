@@ -1,8 +1,10 @@
+import uuid
 from datetime import date, timedelta
 
 from django.contrib import messages
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
@@ -29,18 +31,39 @@ def _chosen_day(request, days):
     return day if day in days else days[0]
 
 
+def _chosen_length(request, dormitory):
+    """The ?length=N parameter (slots in a row), between 1 and the longest
+    possible run; 1 if missing or invalid."""
+    longest = max(availability.max_length(dormitory), 1)
+    try:
+        length = int(request.GET.get("length", 1))
+    except ValueError:
+        return 1
+    return min(max(length, 1), longest)
+
+
 @resident_required
 def grid(request):
-    """Availability grid: free machines per slot, one day at a time."""
+    """Availability grid: for the chosen day and length (slots in a row), the
+    start times where at least one machine is free for the whole length."""
     dormitory = request.dormitory
+    resident = request.user.resident
     days = availability.booking_days(dormitory)
     day = _chosen_day(request, days)
+    length = _chosen_length(request, dormitory)
+    own = Booking.objects.filter(resident=resident, date=day).exclude(
+        status=Booking.Status.CANCELLED
+    )
     context = {
         "days": days,
         "day": day,
-        "rows": availability.day_availability(dormitory, request.user.resident, day),
+        "length": length,
+        "lengths": range(1, availability.max_length(dormitory) + 1),
+        "slot_hours": availability.slot_hours(dormitory),
+        "options": availability.start_options(dormitory, day, length),
+        "own_groups": resident_groups(resident, own),
     }
-    # htmx day tabs only need the grid itself, not the whole page.
+    # htmx tabs only need the grid itself, not the whole page.
     if request.headers.get("HX-Request"):
         return render(request, "bookings/_day_grid.html", context)
     return render(request, "bookings/grid.html", context)
@@ -48,38 +71,62 @@ def grid(request):
 
 @resident_required
 def book(request, day, slot_id):
-    """Choose a machine and how many slots, then book through the service."""
+    """Tick one or more machines for the chosen start and length, then book
+    them all through the service."""
     dormitory = request.dormitory
     resident = request.user.resident
     slot = get_object_or_404(TimeSlot, pk=slot_id, dormitory=dormitory, active=True)
-    context = {"day": day, "slot": slot, "price": dormitory.price_per_slot}
+    length = _chosen_length(request, dormitory)
+    run = availability.following_slots(dormitory, slot)[:length]
+    context = {
+        "day": day,
+        "slot": slot,
+        "run": run,
+        "length": length,
+        "price": dormitory.price_per_slot,
+        "price_per_machine": dormitory.price_per_slot * len(run),
+    }
 
     now = timezone.now()
     starts_at, _ends_at = slot.bounds(day)
     if day not in availability.booking_days(dormitory, now) or starts_at <= now:
         context["unavailable"] = services.OutsideBookingWindow.message
         return render(request, "bookings/book.html", context)
+    if len(run) < length:
+        context["unavailable"] = _("There are not enough time slots left in the day.")
+        return render(request, "bookings/book.html", context)
 
-    runs, slots = availability.free_runs(dormitory, day, slot)
-    form = BookingForm(runs, slots, data=request.POST or None)
+    choices = availability.machine_choices(dormitory, day, run)
+    # Bind on every POST, even an empty one (no machine ticked), so the error shows.
+    form = BookingForm(choices, data=request.POST if request.method == "POST" else None)
     if request.method == "POST" and form.is_valid():
-        count = form.cleaned_data["count"]
         try:
-            bookings = services.book_slots(
-                resident, form.cleaned_data["machine"], day, slots[:count]
-            )
+            groups = services.book_machines(resident, form.cleaned_data["machines"], day, run)
         except services.BookingError as error:
             form.add_error(None, error.message)
         else:
             messages.success(request, _("Your booking is confirmed."))
-            return redirect("bookings:detail", group_id=bookings[0].group_id)
+            ids = "&".join(f"g={group[0].group_id}" for group in groups)
+            return redirect(f"{reverse('bookings:confirmed')}?{ids}")
 
-    context.update(
-        form=form,
-        fully_booked=not runs,
-        balance=LedgerEntry.objects.balance(resident),
-    )
+    context.update(form=form, balance=LedgerEntry.objects.balance(resident))
     return render(request, "bookings/book.html", context)
+
+
+@resident_required
+def confirmed(request):
+    """What was just booked: one item per machine (?g=<group id>&g=...)."""
+    ids = []
+    for value in request.GET.getlist("g"):
+        try:
+            ids.append(uuid.UUID(value))
+        except ValueError:
+            continue
+    resident = request.user.resident
+    groups = resident_groups(resident, Booking.objects.filter(resident=resident, group_id__in=ids))
+    if not groups:
+        raise Http404
+    return render(request, "bookings/confirmed.html", {"groups": groups})
 
 
 @resident_required

@@ -2,14 +2,19 @@
 {% load i18n money %}
 {% block title %}{% translate "Book" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <p class="mb-2"><a href="{% url 'core:home' %}?day={{ day|date:'Y-m-d' }}" class="text-sm text-blue-700 underline">← {% translate "Back to the schedule" %}</a></p>
+  <p class="mb-2"><a href="{% url 'core:home' %}?day={{ day|date:'Y-m-d' }}&length={{ length }}" class="text-sm text-blue-700 underline">← {% translate "Back to the schedule" %}</a></p>
   <h1 class="mb-1 text-xl font-semibold">{{ day|date:"l, j E" }}</h1>
-  <p class="mb-4 text-slate-600">{% blocktranslate with slot=slot %}Starting at {{ slot }}{% endblocktranslate %}</p>
+  {% if run %}
+    {% with last=run|last %}
+      <p class="mb-4 text-slate-600">
+        {{ run.0.start_time|time:"H:i" }}–{{ last.end_time|time:"H:i" }} ·
+        {% blocktranslate count n=length %}{{ n }} slot{% plural %}{{ n }} slots{% endblocktranslate %}
+      </p>
+    {% endwith %}
+  {% endif %}
 
   {% if unavailable %}
     <p class="rounded border border-amber-300 bg-amber-50 p-3">{{ unavailable }}</p>
-  {% elif fully_booked %}
-    <p class="rounded border border-amber-300 bg-amber-50 p-3">{% translate "All machines are booked for this time slot." %}</p>
   {% else %}
     <form method="post" class="rounded-lg bg-white p-4 shadow-sm" novalidate>
       {% csrf_token %}
@@ -18,23 +23,59 @@
           {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
         </div>
       {% endif %}
-      {% for field in form %}
-        <fieldset class="mb-4">
-          <legend class="mb-2 font-medium">{{ field.label }}</legend>
+      <fieldset class="mb-4">
+        <legend class="mb-2 font-medium">{% translate "Machines" %}</legend>
+        {% with selected=form.selected %}
           <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {% for choice in field %}
-              <label class="flex cursor-pointer items-center gap-2 rounded border border-slate-300 px-3 py-2 has-[:checked]:border-blue-700 has-[:checked]:bg-blue-50">
-                {{ choice.tag }} <span>{{ choice.choice_label }}</span>
-              </label>
+            {% for choice in form.choices %}
+              {% if choice.available %}
+                <label class="flex cursor-pointer items-center gap-2 rounded border border-slate-300 px-3 py-2 has-[:checked]:border-blue-700 has-[:checked]:bg-blue-50">
+                  <input type="checkbox" name="machines" value="{{ choice.machine.pk }}" data-machine
+                         {% if choice.machine.pk|stringformat:"s" in selected %}checked{% endif %}>
+                  <span>{{ choice.machine.name }}</span>
+                </label>
+              {% else %}
+                <label class="flex items-start gap-2 rounded border border-dashed border-slate-300 bg-slate-100 px-3 py-2 text-slate-400">
+                  <input type="checkbox" disabled class="mt-1">
+                  <span>
+                    <span class="block line-through">{{ choice.machine.name }}</span>
+                    <span class="block text-xs">
+                      {% if choice.state == "booked" %}{% translate "Booked" context "machine state" %}
+                      {% elif choice.state == "free_until" %}{% blocktranslate with time=choice.free_until|time:"H:i" %}Free only until {{ time }}{% endblocktranslate %}
+                      {% else %}{% translate "Out of service" %}{% endif %}
+                    </span>
+                  </span>
+                </label>
+              {% endif %}
             {% endfor %}
           </div>
-          {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
-        </fieldset>
-      {% endfor %}
-      <p class="mb-4 text-sm text-slate-600">
-        {% blocktranslate with price=price|rub balance=balance|rub %}{{ price }} per slot. Your balance: {{ balance }}.{% endblocktranslate %}
+        {% endwith %}
+        {% for error in form.machines.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+      </fieldset>
+
+      <p class="mb-1 text-sm text-slate-600">
+        {% blocktranslate with price=price_per_machine|rub count n=length %}{{ price }} per machine for {{ n }} slot.{% plural %}{{ price }} per machine for {{ n }} slots.{% endblocktranslate %}
+        {% blocktranslate with balance=balance|rub %}Your balance: {{ balance }}.{% endblocktranslate %}
       </p>
+      {# Filled in by the script below; without JavaScript the total is checked on submit. #}
+      <p class="mb-4 font-medium" id="booking-total" hidden
+         data-price="{{ price_per_machine }}" data-template="{% translate 'Total: %(amount)s' %}" data-money="{{ 0|rub }}"></p>
       <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Book" %}</button>
     </form>
+    <script>
+      // Running total: price per machine × number of ticked machines.
+      (function () {
+        var total = document.getElementById("booking-total");
+        var boxes = document.querySelectorAll("input[data-machine]");
+        function update() {
+          var ticked = Array.prototype.filter.call(boxes, function (box) { return box.checked; }).length;
+          var amount = total.dataset.money.replace("0", String(ticked * Number(total.dataset.price)));
+          total.textContent = total.dataset.template.replace("%(amount)s", amount);
+          total.hidden = false;
+        }
+        boxes.forEach(function (box) { box.addEventListener("change", update); });
+        update();
+      })();
+    </script>
   {% endif %}
 {% endblock %}
