@@ -140,3 +140,60 @@ msgstr ""
 
 msgid "staff profiles"
 msgstr ""
+
+msgid "Bookings"
+msgstr ""
+
+msgctxt "booking status"
+msgid "active"
+msgstr ""
+
+msgctxt "booking status"
+msgid "cancelled"
+msgstr ""
+
+msgctxt "booking status"
+msgid "completed"
+msgstr ""
+
+msgid "date"
+msgstr ""
+
+msgid "Local date in the dormitory's timezone."
+msgstr ""
+
+msgid "status"
+msgstr ""
+
+msgid "group"
+msgstr ""
+
+msgid "Shared by consecutive slots booked together."
+msgstr ""
+
+msgid "price (RUB)"
+msgstr ""
+
+msgid "Price charged when booked; refunds use this amount."
+msgstr ""
+
+msgid "starts at"
+msgstr ""
+
+msgid "ends at"
+msgstr ""
+
+msgid "created at"
+msgstr ""
+
+msgid "cancelled at"
+msgstr ""
+
+msgid "booking"
+msgstr ""
+
+msgid "bookings"
+msgstr ""
+
+msgid "Machine, time slot and resident must belong to the same dormitory."
+msgstr ""

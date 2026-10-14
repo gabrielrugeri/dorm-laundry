@@ -1,6 +1,6 @@
 """Shared pytest fixtures. Every name and code here is fake."""
 
-from datetime import time
+from datetime import date, time
 
 import pytest
 from django.contrib.auth.models import Group
@@ -47,3 +47,34 @@ def resident(dormitory):
 @pytest.fixture
 def other_resident(dormitory):
     return make_resident(dormitory, "S0002", name="Anna Fakeova", room="202")
+
+
+@pytest.fixture
+def make_booking(machine, slot, resident):
+    """Factory: make_booking(**overrides) creates an active booking."""
+    from apps.bookings.models import Booking
+
+    def _make(**kwargs):
+        values = {
+            "machine": machine,
+            "slot": slot,
+            "resident": resident,
+            "date": date(2026, 10, 14),
+            "price_rub": 50,
+        }
+        values.update(kwargs)
+        return Booking.objects.create(**values)
+
+    return _make
+
+
+def pytest_collection_modifyitems(config, items):
+    """Skip tests marked `postgres` unless the test database is PostgreSQL."""
+    from django.conf import settings
+
+    if settings.DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
+        return
+    skip = pytest.mark.skip(reason="needs PostgreSQL (set DATABASE_URL)")
+    for item in items:
+        if "postgres" in item.keywords:
+            item.add_marker(skip)
