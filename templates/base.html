@@ -14,7 +14,15 @@
 <body class="min-h-screen bg-slate-50 text-slate-900 font-sans" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   <header class="flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-sm">
     <a href="{% url 'core:home' %}" class="font-semibold">{% translate "Dorm Laundry" %}</a>
-    {% include "core/_language_switch.html" %}
+    <div class="flex items-center gap-3">
+      {% include "core/_language_switch.html" %}
+      {% if user.is_authenticated %}
+        <form action="{% url 'accounts:logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="text-sm text-slate-600 underline hover:text-slate-900">{% translate "Log out" %}</button>
+        </form>
+      {% endif %}
+    </div>
   </header>
   <main class="mx-auto max-w-3xl p-4">
     {% block content %}{% endblock %}

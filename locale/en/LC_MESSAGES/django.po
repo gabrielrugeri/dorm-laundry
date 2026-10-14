@@ -252,6 +252,109 @@ msgstr ""
 msgid "key log"
 msgstr ""
 
+msgid "The PIN must be exactly 6 digits."
+msgstr ""
+
+msgid "This PIN is too easy to guess. Avoid repeated or consecutive digits."
+msgstr ""
+
+msgid "Student code"
+msgstr ""
+
+msgid "PIN"
+msgstr ""
+
+msgid "Invalid student code or PIN."
+msgstr ""
+
+msgid "Too many failed attempts. Please try again later."
+msgstr ""
+
+msgid "Log in"
+msgstr ""
+
+msgid ""
+"First time here? Ask the dormitory administration for your activation link."
+msgstr ""
+
+msgid "Log out"
+msgstr ""
+
+msgid "Today's key schedule"
+msgstr ""
+
+msgid "The key schedule will appear here."
+msgstr ""
+
+msgid "Administration"
+msgstr ""
+
+msgid "PIN set"
+msgstr ""
+
+msgid "Create activation links"
+msgstr ""
+
+msgid "Activation links"
+msgstr ""
+
+msgid "Reset PIN and create activation links"
+msgstr ""
+
+msgid "PINs reset"
+msgstr ""
+
+msgid "New PIN"
+msgstr ""
+
+msgid "6 digits. Avoid repeated or consecutive digits."
+msgstr ""
+
+msgid "Repeat the PIN"
+msgstr ""
+
+msgid "The two PINs do not match."
+msgstr ""
+
+msgid "Choose your PIN"
+msgstr ""
+
+msgid "You will log in with your student code and this PIN. Do not share it."
+msgstr ""
+
+msgid "Save PIN and log in"
+msgstr ""
+
+msgid "Link not valid"
+msgstr ""
+
+msgid ""
+"This activation link is invalid, expired or already used. Ask the dormitory "
+"administration for a new one."
+msgstr ""
+
+msgid "Resident"
+msgstr ""
+
+msgid "Room"
+msgstr ""
+
+msgid "Activation link"
+msgstr ""
+
+msgid "Back to residents"
+msgstr ""
+
+#, python-format
+msgid ""
+"Give each resident their own link. Links work once and expire after %(days)s "
+"day."
+msgid_plural ""
+"Give each resident their own link. Links work once and expire after %(days)s "
+"days."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "This booking is not possible."
 msgstr ""
 

@@ -1,0 +1,61 @@
+from django.conf import settings
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+from .forms import LoginForm, SetPinForm
+
+
+def remember_language(response, user):
+    """Switch the interface to the resident's saved language (a cookie, like
+    the language switch uses)."""
+    resident = getattr(user, "resident", None)
+    if resident is not None:
+        response.set_cookie(
+            settings.LANGUAGE_COOKIE_NAME,
+            resident.language,
+            max_age=settings.LANGUAGE_COOKIE_AGE,
+            samesite=settings.LANGUAGE_COOKIE_SAMESITE,
+            secure=settings.LANGUAGE_COOKIE_SECURE,
+        )
+    return response
+
+
+class LoginView(auth_views.LoginView):
+    form_class = LoginForm
+    template_name = "accounts/login.html"
+    redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        return remember_language(super().form_valid(form), form.get_user())
+
+
+class ActivateView(auth_views.PasswordResetConfirmView):
+    """The page behind an activation link: the resident chooses a PIN and is
+    logged in. Django's view moves the token out of the URL into the session
+    before showing the form, so it does not leak through the Referer header."""
+
+    form_class = SetPinForm
+    template_name = "accounts/activate.html"
+    title = _("Choose your PIN")
+    reset_url_token = "set-pin"
+    post_reset_login = True
+    post_reset_login_backend = "apps.accounts.backends.ResidentBackend"
+    success_url = reverse_lazy("core:home")
+
+    def get_user(self, uidb64):
+        user = super().get_user(uidb64)
+        # Activation links are for residents only.
+        if user is not None and getattr(user, "resident", None) is None:
+            return None
+        return user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not context["validlink"]:
+            # Django's default title here talks about password resets.
+            context["title"] = _("Link not valid")
+        return context
+
+    def form_valid(self, form):
+        return remember_language(super().form_valid(form), self.user)

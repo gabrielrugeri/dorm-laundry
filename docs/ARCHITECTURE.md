@@ -120,10 +120,36 @@ an open question for the dormitory administration.
 The key log belongs to the group's first booking, and the key is due at the end
 of the group's last non-cancelled slot.
 
+## Login and activation
+
+- **Residents** log in with student code + 6-digit PIN
+  (`apps.accounts.backends.ResidentBackend`). The PIN is the user's password,
+  stored hashed. Until the pilot has more than one dormitory, the dormitory
+  comes from the `DEFAULT_DORMITORY_SLUG` setting.
+- **Staff** log in on the same form with username and password
+  (Django's `ModelBackend`).
+- **No hints:** every failed login shows the same message. Unknown codes cost
+  the same hashing time as wrong PINs, so the form cannot reveal which codes
+  exist.
+- **Lockout:** `LOGIN_MAX_FAILURES` failures for one code from one IP block
+  login for `LOGIN_LOCKOUT_SECONDS` (`apps/accounts/ratelimit.py`). The default
+  cache is per process; use a shared cache when running several workers.
+  Behind a proxy, the real client IP must reach `REMOTE_ADDR`.
+- **Activation links** are Django password-reset tokens (no extra table). They
+  are valid for `PASSWORD_RESET_TIMEOUT` (7 days) and stop working once the
+  PIN is set. Admins create them, or reset a PIN, with actions on the
+  Residents admin page.
+- **Language:** logging in, or activating, switches the interface to the
+  resident's saved language.
+
 ## Roles and privacy
 
 - Roles are the Django groups `resident`, `manager` and `admin`, created by a
   migration. Use `apps.accounts.roles.has_role()` to check them.
+- Protect views with `resident_required`, `staff_required` or
+  `role_required(...)` from `apps/accounts/decorators.py`. They require login,
+  check the role, and set `request.dormitory`; scope every query by it.
+- No URL outside the admin takes a student code. A test enforces this.
 - Residents' names and rooms are shown only to managers and admins. Pages that
   residents see show only free/occupied (and "yours").
 

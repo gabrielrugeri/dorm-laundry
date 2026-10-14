@@ -80,6 +80,25 @@ if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
+# Residents log in with student code + PIN; staff with username + password.
+AUTHENTICATION_BACKENDS = [
+    "apps.accounts.backends.ResidentBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+# The dormitory residents log in to, while the pilot has only one.
+DEFAULT_DORMITORY_SLUG = env("DEFAULT_DORMITORY_SLUG", default="demo")
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "core:home"
+LOGOUT_REDIRECT_URL = "accounts:login"
+# Activation links (Django's password-reset tokens) stay valid for 7 days.
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 7
+# After this many failed logins for one student code from one IP address,
+# login is blocked for LOGIN_LOCKOUT_SECONDS.
+LOGIN_MAX_FAILURES = 5
+LOGIN_LOCKOUT_SECONDS = 15 * 60
+
+# Staff passwords (residents use PINs, see apps/accounts/validators.py).
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
