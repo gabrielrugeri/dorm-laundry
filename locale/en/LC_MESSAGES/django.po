@@ -1,0 +1,40 @@
+# Dorm Laundry translations (en).
+# This file is distributed under the same license as the project (see LICENSE).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dorm-laundry\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Core"
+msgstr ""
+
+msgid "Accounts"
+msgstr ""
+
+msgid "Russian"
+msgstr ""
+
+msgid "English"
+msgstr ""
+
+msgid "Dorm Laundry"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Book a washing machine"
+msgstr ""
+
+msgid "The availability grid will appear here."
+msgstr ""
+

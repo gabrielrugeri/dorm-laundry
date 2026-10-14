@@ -9,5 +9,5 @@ os.environ.setdefault("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]")
 
 from .base import *  # noqa: E402, F403
 
-# Same as above for dev: no collectstatic needed.
+# Serve static files from the app directories without needing collectstatic.
 WHITENOISE_AUTOREFRESH = True

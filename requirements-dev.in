@@ -6,3 +6,4 @@ pytest
 pytest-django
 ruff
 pip-tools
+polib              # used by scripts/check_translations.py

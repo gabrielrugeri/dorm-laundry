@@ -39,6 +39,8 @@ pip-tools==7.6.2
     # via -r requirements-dev.in
 pluggy==1.6.0
     # via pytest
+polib==1.2.0
+    # via -r requirements-dev.in
 psycopg==3.3.6
     # via
     #   -c requirements.txt
