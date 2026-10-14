@@ -234,3 +234,21 @@ msgstr "операция"
 
 msgid "ledger entries"
 msgstr "операции"
+
+msgid "Key log"
+msgstr "Журнал ключей"
+
+msgid "key taken at"
+msgstr "ключ выдан"
+
+msgid "key returned at"
+msgstr "ключ возвращён"
+
+msgid "recorded by"
+msgstr "кем записано"
+
+msgid "key log entry"
+msgstr "запись о ключе"
+
+msgid "key log"
+msgstr "журнал ключей"

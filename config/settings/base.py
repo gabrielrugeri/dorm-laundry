@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "apps.dorms",
     "apps.bookings",
     "apps.ledger",
+    "apps.keylog",
 ]
 
 MIDDLEWARE = [

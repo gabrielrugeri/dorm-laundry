@@ -233,3 +233,21 @@ msgstr ""
 
 msgid "ledger entries"
 msgstr ""
+
+msgid "Key log"
+msgstr ""
+
+msgid "key taken at"
+msgstr ""
+
+msgid "key returned at"
+msgstr ""
+
+msgid "recorded by"
+msgstr ""
+
+msgid "key log entry"
+msgstr ""
+
+msgid "key log"
+msgstr ""
