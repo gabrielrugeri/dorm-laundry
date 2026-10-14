@@ -25,6 +25,9 @@
     </div>
   </header>
   <main class="mx-auto max-w-3xl p-4">
+    {% for message in messages %}
+      <div class="mb-4 rounded border p-3 {% if message.level_tag == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-green-300 bg-green-50 text-green-800{% endif %}" role="status">{{ message }}</div>
+    {% endfor %}
     {% block content %}{% endblock %}
   </main>
 </body>

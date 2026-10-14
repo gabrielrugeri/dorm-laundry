@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{% translate "Booking" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="rounded-lg bg-white p-4 shadow-sm">
+    <h1 class="mb-3 text-xl font-semibold">{{ group.machine.label }}</h1>
+    <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+      <dt class="text-slate-600">{% translate "Date" %}</dt><dd>{{ group.day|date:"l, j F Y" }}</dd>
+      <dt class="text-slate-600">{% translate "Time" %}</dt><dd>{{ group.starts_at|time:"H:i" }}–{{ group.ends_at|time:"H:i" }}</dd>
+      <dt class="text-slate-600">{% translate "Status" %}</dt><dd>{% if group.is_cancelled %}{% translate "Cancelled" %}{% else %}{% translate "Booked" %}{% endif %}</dd>
+    </dl>
+    {% block actions %}{% endblock %}
+  </div>
+{% endblock %}

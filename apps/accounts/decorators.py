@@ -8,13 +8,15 @@
     def key_schedule(request): ...
 
 Anonymous users are sent to the login page. Logged-in users without one of the
-roles (or without a dormitory) get 403 Forbidden.
+roles (or without a dormitory) get 403 Forbidden. Pages render in the
+dormitory's timezone.
 """
 
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.utils import timezone
 
 from . import roles
 
@@ -42,7 +44,9 @@ def role_required(*allowed_roles):
             if dormitory is None:
                 raise PermissionDenied
             request.dormitory = dormitory
-            return view(request, *args, **kwargs)
+            # Show every date and time on the page in the dormitory's timezone.
+            with timezone.override(dormitory.tzinfo):
+                return view(request, *args, **kwargs)
 
         return login_required(wrapper)
 

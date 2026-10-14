@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+  <h1 class="mb-3 text-xl font-semibold">{% translate "Book a washing machine" %}</h1>
+  <div id="day-grid">
+    {% include "bookings/_day_grid.html" %}
+  </div>
+{% endblock %}

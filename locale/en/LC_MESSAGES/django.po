@@ -35,9 +35,6 @@ msgstr ""
 msgid "Book a washing machine"
 msgstr ""
 
-msgid "The availability grid will appear here."
-msgstr ""
-
 msgid "Dormitories"
 msgstr ""
 
@@ -384,3 +381,87 @@ msgstr ""
 
 msgid "You are not allowed to change this booking."
 msgstr ""
+
+msgid "Machine"
+msgstr ""
+
+msgid "How long"
+msgstr ""
+
+msgid "Your booking is confirmed."
+msgstr ""
+
+#, python-format
+msgid "%(amount)s RUB"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Yours"
+msgstr ""
+
+msgid "Started"
+msgstr ""
+
+msgid "Fully booked"
+msgstr ""
+
+msgid "No time slots are set up yet."
+msgstr ""
+
+msgid "Book"
+msgstr ""
+
+msgid "Back to the schedule"
+msgstr ""
+
+msgid "All machines are booked for this time slot."
+msgstr ""
+
+msgid "Booking"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Cancelled"
+msgstr ""
+
+msgid "Booked"
+msgstr ""
+
+msgid "Days"
+msgstr ""
+
+#, python-format
+msgid "Starting at %(slot)s"
+msgstr ""
+
+#, python-format
+msgid "%(price)s per slot. Your balance: %(balance)s."
+msgstr ""
+
+#, python-format
+msgid "%(free)s of %(total)s free"
+msgid_plural "%(free)s of %(total)s free"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(n)s slot (%(span)s)"
+msgid_plural "%(n)s slots (%(span)s)"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(machine)s is free for only %(free)s slot from this time."
+msgid_plural "%(machine)s is free for only %(free)s slots from this time."
+msgstr[0] ""
+msgstr[1] ""

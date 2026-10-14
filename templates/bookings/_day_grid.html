@@ -1,0 +1,40 @@
+{% load i18n %}
+{# Day tabs. Plain links; with htmx only the grid is swapped. #}
+<nav class="mb-3 flex gap-2 overflow-x-auto pb-1" aria-label="{% translate 'Days' %}">
+  {% for d in days %}
+    <a href="?day={{ d|date:'Y-m-d' }}"
+       hx-get="?day={{ d|date:'Y-m-d' }}" hx-target="#day-grid" hx-push-url="true"
+       class="shrink-0 rounded px-3 py-2 text-sm {% if d == day %}bg-blue-700 text-white{% else %}bg-white text-slate-700 shadow-sm{% endif %}"
+       {% if d == day %}aria-current="date"{% endif %}>
+      {% if forloop.first %}{% translate "Today" %}{% else %}{{ d|date:"D j M" }}{% endif %}
+    </a>
+  {% endfor %}
+</nav>
+
+<h2 class="mb-2 font-medium">{{ day|date:"l, j F" }}</h2>
+<ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+  {% for row in rows %}
+    <li>
+      {% if row.bookable %}
+        <a href="{% url 'bookings:book' day=day|date:'Y-m-d' slot_id=row.slot.pk %}"
+           class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-blue-50">
+      {% else %}
+        <div class="flex items-center justify-between gap-3 px-4 py-3 text-slate-400">
+      {% endif %}
+          <span class="font-medium">{{ row.slot }}</span>
+          <span class="flex items-center gap-2 text-sm">
+            {% if row.mine %}<span class="rounded bg-green-100 px-2 py-0.5 text-green-800">{% translate "Yours" %}</span>{% endif %}
+            {% if row.started %}
+              {% translate "Started" %}
+            {% elif row.free %}
+              {% blocktranslate with total=row.total count free=row.free %}{{ free }} of {{ total }} free{% plural %}{{ free }} of {{ total }} free{% endblocktranslate %}
+            {% else %}
+              {% translate "Fully booked" %}
+            {% endif %}
+          </span>
+      {% if row.bookable %}</a>{% else %}</div>{% endif %}
+    </li>
+  {% empty %}
+    <li class="px-4 py-3 text-slate-600">{% translate "No time slots are set up yet." %}</li>
+  {% endfor %}
+</ul>
