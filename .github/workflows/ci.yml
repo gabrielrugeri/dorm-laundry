@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint, translations, migrations, CSS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - run: sudo apt-get update && sudo apt-get install -y gettext
+
+      - name: Ruff
+        run: |
+          ruff check .
+          ruff format --check .
+
+      - name: No missing migrations
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Every Russian string is translated
+        run: |
+          python manage.py makemessages -l ru -l en
+          python scripts/check_translations.py
+          python manage.py compilemessages
+
+      - name: Tailwind builds
+        run: python scripts/tailwind.py build
+
+  tests:
+    name: Tests (${{ matrix.database }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database: [sqlite, postgres]
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: laundry
+          POSTGRES_PASSWORD: laundry
+          POSTGRES_DB: laundry
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: ${{ matrix.database == 'postgres' && 'postgres://laundry:laundry@localhost:5432/laundry' || '' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: pip install -r requirements-dev.txt
+      - run: sudo apt-get update && sudo apt-get install -y gettext
+      - run: python manage.py compilemessages
+      - run: pytest

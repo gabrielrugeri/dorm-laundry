@@ -1,0 +1,253 @@
+# Dorm Laundry translations (en).
+# This file is distributed under the same license as the project (see LICENSE).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dorm-laundry\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Core"
+msgstr ""
+
+msgid "Accounts"
+msgstr ""
+
+msgid "Russian"
+msgstr ""
+
+msgid "English"
+msgstr ""
+
+msgid "Dorm Laundry"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Book a washing machine"
+msgstr ""
+
+msgid "The availability grid will appear here."
+msgstr ""
+
+msgid "Dormitories"
+msgstr ""
+
+#, python-format
+msgid "Unknown timezone: %(value)s"
+msgstr ""
+
+msgid "name"
+msgstr ""
+
+msgid "slug"
+msgstr ""
+
+msgid "timezone"
+msgstr ""
+
+msgid "price per slot (RUB)"
+msgstr ""
+
+msgid "Whole rubles per machine per slot."
+msgstr ""
+
+msgid "cancellation cutoff (hours)"
+msgstr ""
+
+msgid "Cancelling at least this many hours before the start gives a refund."
+msgstr ""
+
+msgid "booking horizon (days)"
+msgstr ""
+
+msgid "How many days ahead residents can book."
+msgstr ""
+
+msgid "dormitory"
+msgstr ""
+
+msgid "dormitories"
+msgstr ""
+
+msgid "start time"
+msgstr ""
+
+msgid "Local time of the dormitory."
+msgstr ""
+
+msgid "duration (minutes)"
+msgstr ""
+
+msgid "active"
+msgstr ""
+
+msgid "time slot"
+msgstr ""
+
+msgid "time slots"
+msgstr ""
+
+msgid "A slot must end on the same day it starts."
+msgstr ""
+
+msgid "label"
+msgstr ""
+
+msgid "E.g. “Machine 1”."
+msgstr ""
+
+msgid "Inactive machines cannot be booked."
+msgstr ""
+
+msgid "machine"
+msgstr ""
+
+msgid "machines"
+msgstr ""
+
+msgid "user"
+msgstr ""
+
+msgid "student code"
+msgstr ""
+
+msgid "full name"
+msgstr ""
+
+msgid "room"
+msgstr ""
+
+msgid "language"
+msgstr ""
+
+msgid "resident"
+msgstr ""
+
+msgid "residents"
+msgstr ""
+
+msgid "staff profile"
+msgstr ""
+
+msgid "staff profiles"
+msgstr ""
+
+msgid "Bookings"
+msgstr ""
+
+msgctxt "booking status"
+msgid "active"
+msgstr ""
+
+msgctxt "booking status"
+msgid "cancelled"
+msgstr ""
+
+msgctxt "booking status"
+msgid "completed"
+msgstr ""
+
+msgid "date"
+msgstr ""
+
+msgid "Local date in the dormitory's timezone."
+msgstr ""
+
+msgid "status"
+msgstr ""
+
+msgid "group"
+msgstr ""
+
+msgid "Shared by consecutive slots booked together."
+msgstr ""
+
+msgid "price (RUB)"
+msgstr ""
+
+msgid "Price charged when booked; refunds use this amount."
+msgstr ""
+
+msgid "starts at"
+msgstr ""
+
+msgid "ends at"
+msgstr ""
+
+msgid "created at"
+msgstr ""
+
+msgid "cancelled at"
+msgstr ""
+
+msgid "booking"
+msgstr ""
+
+msgid "bookings"
+msgstr ""
+
+msgid "Machine, time slot and resident must belong to the same dormitory."
+msgstr ""
+
+msgid "Ledger"
+msgstr ""
+
+msgid "credit"
+msgstr ""
+
+msgid "booking charge"
+msgstr ""
+
+msgid "refund"
+msgstr ""
+
+msgid "adjustment"
+msgstr ""
+
+msgid "amount (RUB)"
+msgstr ""
+
+msgid "kind"
+msgstr ""
+
+msgid "note"
+msgstr ""
+
+msgid "created by"
+msgstr ""
+
+msgid "Who recorded this entry (empty for automatic entries)."
+msgstr ""
+
+msgid "ledger entry"
+msgstr ""
+
+msgid "ledger entries"
+msgstr ""
+
+msgid "Key log"
+msgstr ""
+
+msgid "key taken at"
+msgstr ""
+
+msgid "key returned at"
+msgstr ""
+
+msgid "recorded by"
+msgstr ""
+
+msgid "key log entry"
+msgstr ""
+
+msgid "key log"
+msgstr ""

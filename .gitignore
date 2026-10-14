@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project-specific
+# Tailwind standalone binary (downloaded by scripts/tailwind.py install)
+/bin/
+# Compiled CSS (built by scripts/tailwind.py build)
+/static/css/app.css

@@ -1,0 +1,254 @@
+# Dorm Laundry translations (ru).
+# This file is distributed under the same license as the project (see LICENSE).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dorm-laundry\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+msgid "Core"
+msgstr "Основное"
+
+msgid "Accounts"
+msgstr "Учётные записи"
+
+msgid "Russian"
+msgstr "Русский"
+
+msgid "English"
+msgstr "Английский"
+
+msgid "Dorm Laundry"
+msgstr "Прачечная общежития"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Change"
+msgstr "Сменить"
+
+msgid "Book a washing machine"
+msgstr "Забронировать стиральную машину"
+
+msgid "The availability grid will appear here."
+msgstr "Здесь появится сетка свободных слотов."
+
+msgid "Dormitories"
+msgstr "Общежития"
+
+#, python-format
+msgid "Unknown timezone: %(value)s"
+msgstr "Неизвестный часовой пояс: %(value)s"
+
+msgid "name"
+msgstr "название"
+
+msgid "slug"
+msgstr "короткое имя"
+
+msgid "timezone"
+msgstr "часовой пояс"
+
+msgid "price per slot (RUB)"
+msgstr "цена за слот (руб.)"
+
+msgid "Whole rubles per machine per slot."
+msgstr "Целые рубли за одну машину на один слот."
+
+msgid "cancellation cutoff (hours)"
+msgstr "срок отмены (часы)"
+
+msgid "Cancelling at least this many hours before the start gives a refund."
+msgstr ""
+"При отмене не позднее чем за столько часов до начала деньги возвращаются."
+
+msgid "booking horizon (days)"
+msgstr "горизонт бронирования (дни)"
+
+msgid "How many days ahead residents can book."
+msgstr "На сколько дней вперёд жильцы могут бронировать."
+
+msgid "dormitory"
+msgstr "общежитие"
+
+msgid "dormitories"
+msgstr "общежития"
+
+msgid "start time"
+msgstr "время начала"
+
+msgid "Local time of the dormitory."
+msgstr "Местное время общежития."
+
+msgid "duration (minutes)"
+msgstr "длительность (минуты)"
+
+msgid "active"
+msgstr "активно"
+
+msgid "time slot"
+msgstr "временной слот"
+
+msgid "time slots"
+msgstr "временные слоты"
+
+msgid "A slot must end on the same day it starts."
+msgstr "Слот должен заканчиваться в тот же день, когда начинается."
+
+msgid "label"
+msgstr "обозначение"
+
+msgid "E.g. “Machine 1”."
+msgstr "Например, «Машина 1»."
+
+msgid "Inactive machines cannot be booked."
+msgstr "Неактивные машины нельзя забронировать."
+
+msgid "machine"
+msgstr "машина"
+
+msgid "machines"
+msgstr "машины"
+
+msgid "user"
+msgstr "пользователь"
+
+msgid "student code"
+msgstr "студенческий код"
+
+msgid "full name"
+msgstr "ФИО"
+
+msgid "room"
+msgstr "комната"
+
+msgid "language"
+msgstr "язык"
+
+msgid "resident"
+msgstr "жилец"
+
+msgid "residents"
+msgstr "жильцы"
+
+msgid "staff profile"
+msgstr "профиль сотрудника"
+
+msgid "staff profiles"
+msgstr "профили сотрудников"
+
+msgid "Bookings"
+msgstr "Бронирования"
+
+msgctxt "booking status"
+msgid "active"
+msgstr "активна"
+
+msgctxt "booking status"
+msgid "cancelled"
+msgstr "отменена"
+
+msgctxt "booking status"
+msgid "completed"
+msgstr "завершена"
+
+msgid "date"
+msgstr "дата"
+
+msgid "Local date in the dormitory's timezone."
+msgstr "Местная дата в часовом поясе общежития."
+
+msgid "status"
+msgstr "статус"
+
+msgid "group"
+msgstr "группа"
+
+msgid "Shared by consecutive slots booked together."
+msgstr "Общая для подряд идущих слотов, забронированных вместе."
+
+msgid "price (RUB)"
+msgstr "цена (руб.)"
+
+msgid "Price charged when booked; refunds use this amount."
+msgstr "Сумма, списанная при бронировании; возврат делается на эту же сумму."
+
+msgid "starts at"
+msgstr "начало"
+
+msgid "ends at"
+msgstr "окончание"
+
+msgid "created at"
+msgstr "создано"
+
+msgid "cancelled at"
+msgstr "отменено"
+
+msgid "booking"
+msgstr "бронирование"
+
+msgid "bookings"
+msgstr "бронирования"
+
+msgid "Machine, time slot and resident must belong to the same dormitory."
+msgstr "Машина, слот и жилец должны относиться к одному общежитию."
+
+msgid "Ledger"
+msgstr "Журнал операций"
+
+msgid "credit"
+msgstr "пополнение"
+
+msgid "booking charge"
+msgstr "оплата бронирования"
+
+msgid "refund"
+msgstr "возврат"
+
+msgid "adjustment"
+msgstr "корректировка"
+
+msgid "amount (RUB)"
+msgstr "сумма (руб.)"
+
+msgid "kind"
+msgstr "тип"
+
+msgid "note"
+msgstr "примечание"
+
+msgid "created by"
+msgstr "кем создано"
+
+msgid "Who recorded this entry (empty for automatic entries)."
+msgstr "Кто внёс запись (пусто для автоматических записей)."
+
+msgid "ledger entry"
+msgstr "операция"
+
+msgid "ledger entries"
+msgstr "операции"
+
+msgid "Key log"
+msgstr "Журнал ключей"
+
+msgid "key taken at"
+msgstr "ключ выдан"
+
+msgid "key returned at"
+msgstr "ключ возвращён"
+
+msgid "recorded by"
+msgstr "кем записано"
+
+msgid "key log entry"
+msgstr "запись о ключе"
+
+msgid "key log"
+msgstr "журнал ключей"

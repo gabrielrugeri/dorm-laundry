@@ -1,0 +1,7 @@
+# Runtime dependencies. Edit this file, then regenerate requirements.txt with:
+#   pip-compile requirements.in
+Django>=5.2,<5.3   # 5.2 is an LTS release
+django-environ     # read settings from environment variables / .env
+whitenoise         # serve static files from our own server
+psycopg[binary]    # PostgreSQL driver (production)
+gunicorn           # production WSGI server

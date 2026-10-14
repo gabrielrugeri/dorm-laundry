@@ -1,0 +1,7 @@
+/* Tailwind entry point. Compiled by `python scripts/tailwind.py build`
+   into static/css/app.css (gitignored, built in CI and at deploy). */
+@import "tailwindcss" source(none);
+
+/* Where Tailwind looks for class names. */
+@source "../../templates";
+@source "../../apps";
