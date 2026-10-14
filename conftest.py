@@ -78,3 +78,13 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "postgres" in item.keywords:
             item.add_marker(skip)
+
+
+@pytest.fixture(autouse=True)
+def _clear_cache():
+    """Login lockout counters live in the cache; start every test clean."""
+    from django.core.cache import cache
+
+    cache.clear()
+    yield
+    cache.clear()

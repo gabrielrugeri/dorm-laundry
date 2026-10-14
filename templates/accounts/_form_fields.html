@@ -1,0 +1,14 @@
+{# Renders a form's errors and fields with consistent styling. #}
+{% if form.non_field_errors %}
+  <div class="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800" role="alert">
+    {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+  </div>
+{% endif %}
+{% for field in form %}
+  <div class="mb-4">
+    <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
+    {{ field }}
+    {% if field.help_text %}<p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
+    {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+  </div>
+{% endfor %}

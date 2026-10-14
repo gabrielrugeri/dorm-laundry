@@ -257,3 +257,25 @@ msgstr ""
 
 msgid "This PIN is too easy to guess. Avoid repeated or consecutive digits."
 msgstr ""
+
+msgid "Student code"
+msgstr ""
+
+msgid "PIN"
+msgstr ""
+
+msgid "Invalid student code or PIN."
+msgstr ""
+
+msgid "Too many failed attempts. Please try again later."
+msgstr ""
+
+msgid "Log in"
+msgstr ""
+
+msgid ""
+"First time here? Ask the dormitory administration for your activation link."
+msgstr ""
+
+msgid "Log out"
+msgstr ""

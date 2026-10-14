@@ -260,3 +260,26 @@ msgid "This PIN is too easy to guess. Avoid repeated or consecutive digits."
 msgstr ""
 "Этот PIN-код слишком легко угадать. Не используйте повторяющиеся или идущие "
 "подряд цифры."
+
+msgid "Student code"
+msgstr "Студенческий код"
+
+msgid "PIN"
+msgstr "PIN-код"
+
+msgid "Invalid student code or PIN."
+msgstr "Неверный студенческий код или PIN-код."
+
+msgid "Too many failed attempts. Please try again later."
+msgstr "Слишком много неудачных попыток. Попробуйте позже."
+
+msgid "Log in"
+msgstr "Войти"
+
+msgid ""
+"First time here? Ask the dormitory administration for your activation link."
+msgstr ""
+"Впервые здесь? Попросите у администрации общежития ссылку для активации."
+
+msgid "Log out"
+msgstr "Выйти"
