@@ -41,3 +41,17 @@ def test_seed_demo_roles(db):
     assert roles.has_role(User.objects.get(username="manager"), roles.MANAGER)
     assert roles.has_role(User.objects.get(username="admin"), roles.ADMIN)
     assert roles.has_role(Resident.objects.first().user, roles.RESIDENT)
+
+
+def test_seed_demo_slots_run_from_10_to_midnight(db):
+    from datetime import time
+
+    from apps.dorms.models import Dormitory
+
+    old = Dormitory.objects.create(name="Demo", slug="demo")
+    TimeSlot.objects.create(dormitory=old, start_time=time(8, 0))
+    call_command("seed_demo")
+    active = TimeSlot.objects.filter(active=True).order_by("start_time")
+    assert [s.start_time.hour for s in active] == [10, 12, 14, 16, 18, 20, 22]
+    assert str(active.last()) == "22:00–00:00"
+    assert not TimeSlot.objects.get(start_time=time(8, 0)).active

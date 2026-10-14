@@ -8,7 +8,7 @@
   <h2 id="keys-out-title" class="mb-2 font-medium">{% translate "Keys out now" %}</h2>
   {% for key in keys_out %}
     <p class="flex flex-wrap justify-between gap-x-3 py-1 {% if key.overdue %}font-semibold text-red-700{% endif %}">
-      <span>{{ key.booking.machine.label }} · {{ key.booking.resident.full_name }} ({{ key.booking.resident.room }})</span>
+      <span>{{ key.booking.machine.name }} · {{ key.booking.resident.full_name }} ({{ key.booking.resident.room }})</span>
       <span class="text-sm">
         {% blocktranslate with taken=key.log.taken_at|date:"j E, H:i" %}since {{ taken }}{% endblocktranslate %}
         {% if key.overdue %}· {% blocktranslate with due=key.due_at|time:"H:i" %}overdue, due {{ due }}{% endblocktranslate %}{% endif %}
@@ -34,7 +34,7 @@
   {% for row in rows %}
     <li class="px-4 py-3 {% if row.overdue %}bg-red-50{% endif %}">
       <div class="flex flex-wrap items-baseline justify-between gap-x-3">
-        <span class="font-medium">{{ row.group.starts_at|time:"H:i" }}–{{ row.group.ends_at|time:"H:i" }} · {{ row.group.machine.label }}</span>
+        <span class="font-medium">{{ row.group.starts_at|time:"H:i" }}–{{ row.group.ends_at|time:"H:i" }} · {{ row.group.machine.name }}</span>
         <span class="text-sm {% if row.overdue %}font-semibold text-red-700{% else %}text-slate-600{% endif %}">
           {% if row.status == "returned" %}
             {% blocktranslate with time=row.log.returned_at|time:"H:i" %}returned {{ time }}{% endblocktranslate %}

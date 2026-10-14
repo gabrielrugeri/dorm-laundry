@@ -97,12 +97,6 @@ msgstr "временные слоты"
 msgid "A slot must end on the same day it starts."
 msgstr "Слот должен заканчиваться в тот же день, когда начинается."
 
-msgid "label"
-msgstr "обозначение"
-
-msgid "E.g. “Machine 1”."
-msgstr "Например, «Машина 1»."
-
 msgid "Inactive machines cannot be booked."
 msgstr "Неактивные машины нельзя забронировать."
 
@@ -401,12 +395,6 @@ msgstr "Это бронирование уже началось, отменит�
 msgid "You are not allowed to change this booking."
 msgstr "У вас нет прав изменять это бронирование."
 
-msgid "Machine"
-msgstr "Машина"
-
-msgid "How long"
-msgstr "Длительность"
-
 msgid "Your booking is confirmed."
 msgstr "Бронирование подтверждено."
 
@@ -417,26 +405,11 @@ msgstr "%(amount)s ₽"
 msgid "Today"
 msgstr "Сегодня"
 
-msgid "Yours"
-msgstr "Ваше"
-
-msgid "Started"
-msgstr "Уже началось"
-
-msgid "Fully booked"
-msgstr "Всё занято"
-
-msgid "No time slots are set up yet."
-msgstr "Временные слоты ещё не настроены."
-
 msgid "Book"
 msgstr "Забронировать"
 
 msgid "Back to the schedule"
 msgstr "Назад к расписанию"
-
-msgid "All machines are booked for this time slot."
-msgstr "На это время все машины заняты."
 
 msgid "Booking"
 msgstr "Бронирование"
@@ -458,38 +431,6 @@ msgstr "Забронировано"
 
 msgid "Days"
 msgstr "Дни"
-
-#, python-format
-msgid "Starting at %(slot)s"
-msgstr "Начало: %(slot)s"
-
-#, python-format
-msgid "%(price)s per slot. Your balance: %(balance)s."
-msgstr "%(price)s за слот. Ваш баланс: %(balance)s."
-
-#, python-format
-msgid "%(free)s of %(total)s free"
-msgid_plural "%(free)s of %(total)s free"
-msgstr[0] "свободна %(free)s из %(total)s"
-msgstr[1] "свободно %(free)s из %(total)s"
-msgstr[2] "свободно %(free)s из %(total)s"
-msgstr[3] "свободно %(free)s из %(total)s"
-
-#, python-format
-msgid "%(n)s slot (%(span)s)"
-msgid_plural "%(n)s slots (%(span)s)"
-msgstr[0] "%(n)s слот (%(span)s)"
-msgstr[1] "%(n)s слота (%(span)s)"
-msgstr[2] "%(n)s слотов (%(span)s)"
-msgstr[3] "%(n)s слота (%(span)s)"
-
-#, python-format
-msgid "%(machine)s is free for only %(free)s slot from this time."
-msgid_plural "%(machine)s is free for only %(free)s slots from this time."
-msgstr[0] "%(machine)s свободна с этого времени только на %(free)s слот."
-msgstr[1] "%(machine)s свободна с этого времени только на %(free)s слота."
-msgstr[2] "%(machine)s свободна с этого времени только на %(free)s слотов."
-msgstr[3] "%(machine)s свободна с этого времени только на %(free)s слота."
 
 msgid "This booking can no longer be cancelled."
 msgstr "Это бронирование уже нельзя отменить."
@@ -580,9 +521,6 @@ msgstr "Основное меню"
 msgid "Pages"
 msgstr "Страницы"
 
-msgid "Finished"
-msgstr "Завершено"
-
 msgid "This key action is not possible."
 msgstr "Это действие с ключом невозможно."
 
@@ -650,3 +588,85 @@ msgstr "возвращён в %(time)s"
 #, python-format
 msgid "taken %(time)s"
 msgstr "выдан в %(time)s"
+
+#, python-format
+msgid "Machine %(number)s"
+msgstr "Машина %(number)s"
+
+msgid "number"
+msgstr "номер"
+
+msgid "Shown as “Machine 3” in the selected language."
+msgstr "Показывается как «Машина 3» на выбранном языке."
+
+msgid "Machines"
+msgstr "Машины"
+
+msgid "Choose at least one machine."
+msgstr "Выберите хотя бы одну машину."
+
+msgid "There are not enough time slots left in the day."
+msgstr "До конца дня осталось недостаточно слотов."
+
+msgid "How long?"
+msgstr "На сколько?"
+
+msgid "Your bookings this day:"
+msgstr "Ваши бронирования в этот день:"
+
+msgid "Out of service"
+msgstr "Не работает"
+
+msgid "Your bookings"
+msgstr "Ваши бронирования"
+
+msgctxt "machine state"
+msgid "Booked"
+msgstr "Занята"
+
+#, python-format
+msgid "%(hours)s h"
+msgstr "%(hours)s ч"
+
+#, python-format
+msgid "Your balance: %(balance)s."
+msgstr "Ваш баланс: %(balance)s."
+
+#, python-format
+msgid "Free only until %(time)s"
+msgstr "Свободна только до %(time)s"
+
+#, python-format
+msgid "%(n)s slot"
+msgid_plural "%(n)s slots"
+msgstr[0] "%(n)s слот"
+msgstr[1] "%(n)s слота"
+msgstr[2] "%(n)s слотов"
+msgstr[3] "%(n)s слота"
+
+#, python-format
+msgid "%(free)s machine free"
+msgid_plural "%(free)s machines free"
+msgstr[0] "свободна %(free)s машина"
+msgstr[1] "свободно %(free)s машины"
+msgstr[2] "свободно %(free)s машин"
+msgstr[3] "свободно %(free)s машины"
+
+#, python-format
+msgid "No machine is free for %(n)s slot in a row on this day."
+msgid_plural "No machine is free for %(n)s slots in a row on this day."
+msgstr[0] "В этот день нет машин, свободных на %(n)s слот подряд."
+msgstr[1] "В этот день нет машин, свободных на %(n)s слота подряд."
+msgstr[2] "В этот день нет машин, свободных на %(n)s слотов подряд."
+msgstr[3] "В этот день нет машин, свободных на %(n)s слота подряд."
+
+#, python-format
+msgid "%(price)s per machine for %(n)s slot."
+msgid_plural "%(price)s per machine for %(n)s slots."
+msgstr[0] "%(price)s за машину на %(n)s слот."
+msgstr[1] "%(price)s за машину на %(n)s слота."
+msgstr[2] "%(price)s за машину на %(n)s слотов."
+msgstr[3] "%(price)s за машину на %(n)s слота."
+
+msgid "Total"
+msgstr "Итого"

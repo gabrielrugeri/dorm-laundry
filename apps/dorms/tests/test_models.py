@@ -34,12 +34,43 @@ def test_same_slot_time_allowed_in_other_dormitory(slot, other_dormitory):
 
 
 def test_machine_label_unique_per_dormitory(machine, dormitory, other_dormitory):
-    Machine.objects.create(dormitory=other_dormitory, label=machine.label)
+    Machine.objects.create(dormitory=other_dormitory, number=machine.number)
     with pytest.raises(IntegrityError):
-        Machine.objects.create(dormitory=dormitory, label=machine.label)
+        Machine.objects.create(dormitory=dormitory, number=machine.number)
 
 
 def test_unknown_timezone_rejected(db):
     dorm = Dormitory(name="X", slug="x", timezone="Mars/Olympus")
     with pytest.raises(ValidationError):
         dorm.full_clean()
+
+
+def test_machine_name_follows_the_language(machine):
+    from django.utils import translation
+
+    with translation.override("ru"):
+        assert machine.name == "Машина 1"
+    with translation.override("en"):
+        assert str(machine) == "Machine 1"
+
+
+@pytest.mark.django_db(transaction=True)
+def test_label_migration_turns_labels_into_numbers():
+    """Labels with digits keep their number; others get the next free one."""
+    from django.db import connection
+    from django.db.migrations.executor import MigrationExecutor
+
+    executor = MigrationExecutor(connection)
+    executor.migrate([("dorms", "0001_initial")])
+    old_apps = executor.loader.project_state([("dorms", "0001_initial")]).apps
+    OldDorm = old_apps.get_model("dorms", "Dormitory")
+    OldMachine = old_apps.get_model("dorms", "Machine")
+    dorm = OldDorm.objects.create(name="Old", slug="old")
+    for label in ["Machine 3", "Big one", "Machine 1"]:
+        OldMachine.objects.create(dormitory=dorm, label=label)
+
+    executor = MigrationExecutor(connection)
+    executor.loader.build_graph()
+    executor.migrate(executor.loader.graph.leaf_nodes())
+    numbers = dict(Machine.objects.filter(dormitory__slug="old").values_list("pk", "number"))
+    assert sorted(numbers.values()) == [1, 2, 3]

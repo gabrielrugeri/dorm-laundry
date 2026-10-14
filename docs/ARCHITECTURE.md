@@ -46,7 +46,7 @@ Staff are scoped through `StaffProfile.dormitory`.
 | Money signs make sense | `CHECK`: credit/refund > 0, booking < 0, adjustment ≠ 0 |
 | Only charges/refunds point to bookings | `CHECK` on `LedgerEntry.booking` |
 | Key returned after taken | `CHECK` on `KeyLog` |
-| Unique student code, slot start, machine label | per-dormitory `UNIQUE` constraints |
+| Unique student code, slot start, machine number | per-dormitory `UNIQUE` constraints |
 
 Rows that other rows depend on are deleted with `PROTECT`. Deactivate them
 instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
@@ -82,13 +82,16 @@ bookings. Views and the admin call it instead of saving `Booking` or
 when the action is not allowed; its `message` is translated and safe to show
 to residents.
 
-- `book_slots(resident, machine, day, slots)` books one or more consecutive
-  slots on one machine. Slots are consecutive when they are neighbours among the
-  dormitory's active slots and each one ends exactly when the next one starts.
-  It creates one `Booking` per slot, all sharing a `group_id`, and charges one
-  ledger entry per slot, all in one transaction: either everything is booked
-  and charged, or nothing is. The day must be within `booking_horizon_days`
-  (today counts as day 1) and the first slot must not have started.
+- `book_machines(resident, machines, day, slots)` books one or more machines
+  for the same consecutive slots. Slots are consecutive when they are
+  neighbours among the dormitory's active slots and each one ends exactly when
+  the next one starts. Each machine gets its own group: one `Booking` per slot,
+  sharing a `group_id`, and one ledger charge per slot. Everything happens in
+  one transaction with one balance check for the whole amount (machines ×
+  slots × price): either everything is booked and charged, or nothing is. The
+  day must be within `booking_horizon_days` (today counts as day 1) and the
+  first slot must not have started. `book_slots(resident, machine, day, slots)`
+  is the same for one machine.
 - `cancel_booking(booking, actor=user)` cancels one slot. The owner can cancel,
   and so can a manager or admin of the same dormitory. Cancelling at least
   `cancellation_cutoff_hours` before the start refunds `price_rub`. Later
@@ -106,7 +109,7 @@ Concurrency:
 
 - Two residents booking the same slot: the partial unique index lets only
   one insert commit, and the other request gets `SlotUnavailable`.
-- One resident sending two bookings at once: `book_slots` locks the resident's
+- One resident sending two bookings at once: `book_machines` locks the resident's
   row (`SELECT ... FOR UPDATE`) before checking the balance, so the second
   request sees the balance after the first one's charge. SQLite serialises
   all writes anyway (`IMMEDIATE` transactions).
@@ -120,14 +123,25 @@ PostgreSQL CI job, or locally with `DATABASE_URL` set to a PostgreSQL database.
 There is no limit on how many consecutive slots one booking may take. That is
 an open question for the dormitory administration.
 
+## Machines and slots
+
+- Machines have a **number**; pages show them as "Machine 3" / «Машина 3» in
+  the selected language (`Machine.name`). Nothing about a machine is stored
+  as English text.
+- Slots are data (`TimeSlot`), set per dormitory in the admin. The demo uses
+  seven two-hour slots from 10:00 to midnight. A slot may end exactly at
+  midnight; it is shown as 22:00–00:00 and its calendar event ends at 00:00
+  of the next day.
+
 ## Resident screens
 
 All are behind `resident_required` and use only the resident's own data.
 
 | URL | What |
 |---|---|
-| `/` | Availability grid: one day at a time (today … booking horizon), free machines per slot, own bookings marked. Day tabs swap only the grid with htmx; plain links work without JavaScript. |
-| `/book/<date>/<slot>/` | Choose a free machine and how many consecutive slots (limited to how long that machine stays free), then `book_slots()`. Service errors are shown on the form. |
+| `/?day=…&length=N` | Schedule: pick a day (today … booking horizon) and a length ("How long?": N slots in a row). Lists only start times where at least one machine is free for all N slots, with how many machines are; the resident's own bookings of the day are listed above. Tabs swap only the grid with htmx; plain links work without JavaScript. |
+| `/book/<date>/<slot>/?length=N` | Every machine, with checkboxes for those free for all N slots; the others are greyed out and say why (booked, free only until HH:MM, out of service). Ticking several machines books them all with `book_machines()`; a small script shows the running total. Service errors are shown on the form. |
+| `/bookings/confirmed/?g=…` | What was just booked: one item per machine, each with "Add to calendar". |
 | `/bookings/` | Upcoming bookings (one row per group) and the last 30 days of past and cancelled ones. |
 | `/bookings/<group>/` | One booking; links to the calendar file and to cancelling. |
 | `/bookings/<group>/cancel/` | States per slot whether it will be refunded, then `cancel_group()` on POST. |

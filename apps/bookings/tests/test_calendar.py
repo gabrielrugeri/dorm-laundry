@@ -80,3 +80,18 @@ def test_text_is_escaped_and_long_lines_folded(dormitory, machine, slot, residen
     assert "SUMMARY:A\\, B\\; C\r\n" in body
     assert all(len(line.encode()) <= 75 for line in body.split("\r\n"))
     assert "LOCATION:Dorm\\; No. 1\\, Building Long" in unfold(body)
+
+
+def test_slot_ending_at_midnight_ends_next_day(client, resident, machine, dormitory):
+    """22:00–00:00 must end at 00:00 of the *next* day in the calendar file."""
+    from apps.bookings.availability import local_today
+
+    LedgerEntry.objects.create(resident=resident, kind="credit", amount=50)
+    late = TimeSlot.objects.create(dormitory=dormitory, start_time=time(22, 0))
+    day = local_today(dormitory) + timedelta(days=2)
+    booking = services.book_slots(resident, machine, day, [late])[0]
+    client.force_login(resident.user)
+    body = unfold(client.get(calendar_url(booking.group_id)).content.decode())
+    next_day = day + timedelta(days=1)
+    assert f"DTSTART;TZID=Europe/Moscow:{day:%Y%m%d}T220000\r\n" in body
+    assert f"DTEND;TZID=Europe/Moscow:{next_day:%Y%m%d}T000000\r\n" in body
