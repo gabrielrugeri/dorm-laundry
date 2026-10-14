@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "My bookings" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <h1 class="mb-3 text-xl font-semibold">{% translate "My bookings" %}</h1>
+  <ul class="mb-6 divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+    {% for group in upcoming %}
+      <li>{% include "bookings/_group_row.html" with show_cancel=True %}</li>
+    {% empty %}
+      <li class="px-4 py-3 text-slate-600">
+        {% translate "You have no upcoming bookings." %}
+        <a href="{% url 'core:home' %}" class="text-blue-700 underline">{% translate "Book a washing machine" %}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% if past %}
+    <h2 class="mb-2 font-medium">{% translate "Past and cancelled" %}</h2>
+    <ul class="divide-y divide-slate-200 rounded-lg bg-white text-slate-600 shadow-sm">
+      {% for group in past %}
+        <li>{% include "bookings/_group_row.html" with show_cancel=False %}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endblock %}

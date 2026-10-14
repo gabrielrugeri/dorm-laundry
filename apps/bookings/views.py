@@ -1,9 +1,10 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django.utils.translation import ngettext
 
 from apps.accounts.decorators import resident_required
 from apps.dorms.models import TimeSlot
@@ -11,7 +12,11 @@ from apps.ledger.models import LedgerEntry
 
 from . import availability, services
 from .forms import BookingForm
-from .groups import get_group_or_404
+from .groups import get_group_or_404, resident_groups
+from .models import Booking
+
+# How far back "My bookings" shows past and cancelled bookings.
+HISTORY_DAYS = 30
 
 
 def _chosen_day(request, days):
@@ -80,4 +85,52 @@ def book(request, day, slot_id):
 def group_detail(request, group_id):
     """One booking (all slots booked together); shown after booking."""
     group = get_group_or_404(request.user.resident, group_id)
-    return render(request, "bookings/detail.html", {"group": group})
+    now = timezone.now()
+    can_cancel = any(b.starts_at > now for b in group.active_bookings())
+    return render(request, "bookings/detail.html", {"group": group, "can_cancel": can_cancel})
+
+
+@resident_required
+def my_bookings(request):
+    resident = request.user.resident
+    now = timezone.now()
+    since = availability.local_today(request.dormitory, now) - timedelta(days=HISTORY_DAYS)
+    groups = resident_groups(resident, Booking.objects.filter(resident=resident, date__gte=since))
+    upcoming = [g for g in groups if any(b.ends_at > now for b in g.active_bookings())]
+    past = [g for g in reversed(groups) if g not in upcoming]
+    return render(request, "bookings/my_bookings.html", {"upcoming": upcoming, "past": past})
+
+
+@resident_required
+def cancel(request, group_id):
+    """Confirm, then cancel the slots of a booking that have not started yet."""
+    group = get_group_or_404(request.user.resident, group_id)
+    now = timezone.now()
+    cancellable = [b for b in group.active_bookings() if b.starts_at > now]
+    if not cancellable:
+        messages.error(request, _("This booking can no longer be cancelled."))
+        return redirect("bookings:mine")
+
+    if request.method == "POST":
+        try:
+            services.cancel_group(group.group_id, actor=request.user)
+        except services.BookingError as error:
+            messages.error(request, error.message)
+        else:
+            messages.success(request, _("Your booking is cancelled."))
+        return redirect("bookings:mine")
+
+    refunds = [(b, services.refund_due(b, now)) for b in cancellable]
+    hours = request.dormitory.cancellation_cutoff_hours
+    context = {
+        "group": group,
+        "refunds": refunds,
+        "refund_total": sum(b.price_rub for b, due in refunds if due),
+        "cutoff_text": ngettext(
+            "Cancelling at least %(hours)s hour before the start gives a refund.",
+            "Cancelling at least %(hours)s hours before the start gives a refund.",
+            hours,
+        )
+        % {"hours": hours},
+    }
+    return render(request, "bookings/cancel.html", context)

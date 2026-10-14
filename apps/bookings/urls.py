@@ -8,5 +8,7 @@ app_name = "bookings"
 
 urlpatterns = [
     path("book/<isodate:day>/<int:slot_id>/", views.book, name="book"),
+    path("bookings/", views.my_bookings, name="mine"),
     path("bookings/<uuid:group_id>/", views.group_detail, name="detail"),
+    path("bookings/<uuid:group_id>/cancel/", views.cancel, name="cancel"),
 ]

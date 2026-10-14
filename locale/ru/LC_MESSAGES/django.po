@@ -490,3 +490,54 @@ msgstr[0] "%(machine)s свободна с этого времени тольк�
 msgstr[1] "%(machine)s свободна с этого времени только на %(free)s слота."
 msgstr[2] "%(machine)s свободна с этого времени только на %(free)s слотов."
 msgstr[3] "%(machine)s свободна с этого времени только на %(free)s слота."
+
+msgid "This booking can no longer be cancelled."
+msgstr "Это бронирование уже нельзя отменить."
+
+msgid "Your booking is cancelled."
+msgstr "Бронирование отменено."
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "Cancel booking"
+msgstr "Отмена бронирования"
+
+msgid "No refund"
+msgstr "Без возврата"
+
+msgid "Cancel without refund"
+msgstr "Отменить без возврата"
+
+msgid "Keep booking"
+msgstr "Оставить бронирование"
+
+msgid "My bookings"
+msgstr "Мои бронирования"
+
+msgid "You have no upcoming bookings."
+msgstr "У вас нет предстоящих бронирований."
+
+msgid "Past and cancelled"
+msgstr "Прошедшие и отменённые"
+
+#, python-format
+msgid "%(amount)s refunded"
+msgstr "возврат %(amount)s"
+
+#, python-format
+msgid "Cancel and get %(amount)s back"
+msgstr "Отменить и вернуть %(amount)s"
+
+#, python-format
+msgid "Cancelling at least %(hours)s hour before the start gives a refund."
+msgid_plural ""
+"Cancelling at least %(hours)s hours before the start gives a refund."
+msgstr[0] ""
+"При отмене не позднее чем за %(hours)s час до начала деньги возвращаются."
+msgstr[1] ""
+"При отмене не позднее чем за %(hours)s часа до начала деньги возвращаются."
+msgstr[2] ""
+"При отмене не позднее чем за %(hours)s часов до начала деньги возвращаются."
+msgstr[3] ""
+"При отмене не позднее чем за %(hours)s часа до начала деньги возвращаются."

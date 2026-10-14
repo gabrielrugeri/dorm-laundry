@@ -465,3 +465,48 @@ msgid "%(machine)s is free for only %(free)s slot from this time."
 msgid_plural "%(machine)s is free for only %(free)s slots from this time."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "This booking can no longer be cancelled."
+msgstr ""
+
+msgid "Your booking is cancelled."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Cancel booking"
+msgstr ""
+
+msgid "No refund"
+msgstr ""
+
+msgid "Cancel without refund"
+msgstr ""
+
+msgid "Keep booking"
+msgstr ""
+
+msgid "My bookings"
+msgstr ""
+
+msgid "You have no upcoming bookings."
+msgstr ""
+
+msgid "Past and cancelled"
+msgstr ""
+
+#, python-format
+msgid "%(amount)s refunded"
+msgstr ""
+
+#, python-format
+msgid "Cancel and get %(amount)s back"
+msgstr ""
+
+#, python-format
+msgid "Cancelling at least %(hours)s hour before the start gives a refund."
+msgid_plural ""
+"Cancelling at least %(hours)s hours before the start gives a refund."
+msgstr[0] ""
+msgstr[1] ""
