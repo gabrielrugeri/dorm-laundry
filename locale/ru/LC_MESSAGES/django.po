@@ -292,3 +292,83 @@ msgstr "Здесь появится расписание выдачи ключе
 
 msgid "Administration"
 msgstr "Администрирование"
+
+msgid "PIN set"
+msgstr "PIN-код задан"
+
+msgid "Create activation links"
+msgstr "Создать ссылки для активации"
+
+msgid "Activation links"
+msgstr "Ссылки для активации"
+
+msgid "Reset PIN and create activation links"
+msgstr "Сбросить PIN-код и создать ссылки для активации"
+
+msgid "PINs reset"
+msgstr "PIN-коды сброшены"
+
+msgid "New PIN"
+msgstr "Новый PIN-код"
+
+msgid "6 digits. Avoid repeated or consecutive digits."
+msgstr "6 цифр. Не используйте повторяющиеся или идущие подряд цифры."
+
+msgid "Repeat the PIN"
+msgstr "Повторите PIN-код"
+
+msgid "The two PINs do not match."
+msgstr "PIN-коды не совпадают."
+
+msgid "Choose your PIN"
+msgstr "Придумайте PIN-код"
+
+msgid "You will log in with your student code and this PIN. Do not share it."
+msgstr ""
+"Вы будете входить по студенческому коду и этому PIN-коду. Никому его не "
+"сообщайте."
+
+msgid "Save PIN and log in"
+msgstr "Сохранить PIN-код и войти"
+
+msgid "Link not valid"
+msgstr "Ссылка недействительна"
+
+msgid ""
+"This activation link is invalid, expired or already used. Ask the dormitory "
+"administration for a new one."
+msgstr ""
+"Ссылка для активации недействительна, устарела или уже использована. "
+"Попросите новую у администрации общежития."
+
+msgid "Resident"
+msgstr "Жилец"
+
+msgid "Room"
+msgstr "Комната"
+
+msgid "Activation link"
+msgstr "Ссылка для активации"
+
+msgid "Back to residents"
+msgstr "Назад к списку жильцов"
+
+#, python-format
+msgid ""
+"Give each resident their own link. Links work once and expire after %(days)s "
+"day."
+msgid_plural ""
+"Give each resident their own link. Links work once and expire after %(days)s "
+"days."
+msgstr[0] ""
+"Выдайте каждому жильцу его собственную ссылку. Ссылка действует один раз и "
+"истекает через %(days)s день."
+msgstr[1] ""
+"Выдайте каждому жильцу его собственную ссылку. Ссылка действует один раз и "
+"истекает через %(days)s дня."
+msgstr[2] ""
+"Выдайте каждому жильцу его собственную ссылку. Ссылка действует один раз и "
+"истекает через %(days)s дней."
+msgstr[3] ""
+"Выдайте каждому жильцу его собственную ссылку. Ссылка действует один раз и "
+"истекает через %(days)s дня."

@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block content %}
+  <p>{% blocktranslate count days=valid_days %}Give each resident their own link. Links work once and expire after {{ days }} day.{% plural %}Give each resident their own link. Links work once and expire after {{ days }} days.{% endblocktranslate %}</p>
+  <table>
+    <thead>
+      <tr><th>{% translate "Resident" %}</th><th>{% translate "Room" %}</th><th>{% translate "Activation link" %}</th></tr>
+    </thead>
+    <tbody>
+      {% for resident, url in links %}
+        <tr><td>{{ resident.full_name }}</td><td>{{ resident.room }}</td><td><input type="text" readonly value="{{ url }}" size="80" onclick="this.select()"></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p><a href="{% url 'admin:accounts_resident_changelist' %}">{% translate "Back to residents" %}</a></p>
+{% endblock %}
