@@ -252,3 +252,34 @@ msgstr "запись о ключе"
 
 msgid "key log"
 msgstr "журнал ключей"
+
+msgid "This booking is not possible."
+msgstr "Это бронирование невозможно."
+
+msgid "This time slot is no longer available. Please choose another one."
+msgstr "Это время уже занято. Пожалуйста, выберите другое."
+
+msgid "Your balance is too low for this booking."
+msgstr "Недостаточно средств на балансе для этого бронирования."
+
+msgid "Selected time slots must follow each other without gaps."
+msgstr "Выбранные слоты должны идти подряд, без перерывов."
+
+msgid "This time slot cannot be booked: it is in the past or too far ahead."
+msgstr ""
+"Этот слот нельзя забронировать: он уже прошёл или слишком далеко в будущем."
+
+msgid "This machine is not available for booking."
+msgstr "Эта машина недоступна для бронирования."
+
+msgid "This machine or time slot does not belong to your dormitory."
+msgstr "Эта машина или слот не относится к вашему общежитию."
+
+msgid "This booking has already been cancelled."
+msgstr "Это бронирование уже отменено."
+
+msgid "This booking has already started and can no longer be cancelled."
+msgstr "Это бронирование уже началось, отменить его нельзя."
+
+msgid "You are not allowed to change this booking."
+msgstr "У вас нет прав изменять это бронирование."
