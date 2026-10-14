@@ -35,9 +35,6 @@ msgstr ""
 msgid "Book a washing machine"
 msgstr ""
 
-msgid "The availability grid will appear here."
-msgstr ""
-
 msgid "Dormitories"
 msgstr ""
 
@@ -383,4 +380,172 @@ msgid "This booking has already started and can no longer be cancelled."
 msgstr ""
 
 msgid "You are not allowed to change this booking."
+msgstr ""
+
+msgid "Machine"
+msgstr ""
+
+msgid "How long"
+msgstr ""
+
+msgid "Your booking is confirmed."
+msgstr ""
+
+#, python-format
+msgid "%(amount)s RUB"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Yours"
+msgstr ""
+
+msgid "Started"
+msgstr ""
+
+msgid "Fully booked"
+msgstr ""
+
+msgid "No time slots are set up yet."
+msgstr ""
+
+msgid "Book"
+msgstr ""
+
+msgid "Back to the schedule"
+msgstr ""
+
+msgid "All machines are booked for this time slot."
+msgstr ""
+
+msgid "Booking"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Cancelled"
+msgstr ""
+
+msgid "Booked"
+msgstr ""
+
+msgid "Days"
+msgstr ""
+
+#, python-format
+msgid "Starting at %(slot)s"
+msgstr ""
+
+#, python-format
+msgid "%(price)s per slot. Your balance: %(balance)s."
+msgstr ""
+
+#, python-format
+msgid "%(free)s of %(total)s free"
+msgid_plural "%(free)s of %(total)s free"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(n)s slot (%(span)s)"
+msgid_plural "%(n)s slots (%(span)s)"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(machine)s is free for only %(free)s slot from this time."
+msgid_plural "%(machine)s is free for only %(free)s slots from this time."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "This booking can no longer be cancelled."
+msgstr ""
+
+msgid "Your booking is cancelled."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Cancel booking"
+msgstr ""
+
+msgid "No refund"
+msgstr ""
+
+msgid "Cancel without refund"
+msgstr ""
+
+msgid "Keep booking"
+msgstr ""
+
+msgid "My bookings"
+msgstr ""
+
+msgid "You have no upcoming bookings."
+msgstr ""
+
+msgid "Past and cancelled"
+msgstr ""
+
+#, python-format
+msgid "%(amount)s refunded"
+msgstr ""
+
+#, python-format
+msgid "Cancel and get %(amount)s back"
+msgstr ""
+
+#, python-format
+msgid "Cancelling at least %(hours)s hour before the start gives a refund."
+msgid_plural ""
+"Cancelling at least %(hours)s hours before the start gives a refund."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Laundry: %(machine)s"
+msgstr ""
+
+msgid "Add to calendar"
+msgstr ""
+
+msgid "Balance"
+msgstr ""
+
+msgid "Current balance"
+msgstr ""
+
+msgid ""
+"To top up, pay the dormitory administration. They add the money to your "
+"balance."
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "No transactions yet."
+msgstr ""
+
+msgid "Newer"
+msgstr ""
+
+msgid "Older"
+msgstr ""
+
+msgid "Main"
+msgstr ""
+
+msgid "Pages"
+msgstr ""
+
+msgid "Finished"
 msgstr ""

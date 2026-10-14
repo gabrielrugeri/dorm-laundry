@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{% translate "Cancel booking" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="rounded-lg bg-white p-4 shadow-sm">
+    <h1 class="mb-3 text-xl font-semibold">{% translate "Cancel booking" %}</h1>
+    <p class="mb-3">{{ group.machine.label }}, {{ group.day|date:"l, j E" }}</p>
+    <ul class="mb-3 space-y-1">
+      {% for booking, refund in refunds %}
+        <li class="flex justify-between gap-3">
+          <span>{{ booking.slot }}</span>
+          <span class="text-sm {% if refund %}text-green-800{% else %}text-amber-800{% endif %}">
+            {% if refund %}{% blocktranslate with amount=booking.price_rub|rub %}{{ amount }} refunded{% endblocktranslate %}{% else %}{% translate "No refund" %}{% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+    <p class="mb-4 text-sm text-slate-600">{{ cutoff_text }}</p>
+    <form method="post" class="flex flex-wrap gap-3">
+      {% csrf_token %}
+      <button type="submit" class="rounded bg-red-700 px-4 py-2 font-medium text-white hover:bg-red-800">
+        {% if refund_total %}{% blocktranslate with amount=refund_total|rub %}Cancel and get {{ amount }} back{% endblocktranslate %}{% else %}{% translate "Cancel without refund" %}{% endif %}
+      </button>
+      <a href="{% url 'bookings:mine' %}" class="rounded px-4 py-2 text-slate-700 underline">{% translate "Keep booking" %}</a>
+    </form>
+  </div>
+{% endblock %}

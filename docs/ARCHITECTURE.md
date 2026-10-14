@@ -68,6 +68,11 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   time in the dormitory's timezone.
 - `Booking.starts_at` / `ends_at` (UTC) are derived from those two on save.
   Queries such as "today", "overdue" and the cancellation cutoff use them.
+- Pages behind `resident_required` / `staff_required` render in the
+  dormitory's timezone (the decorator activates it), so every time residents
+  see is Moscow time.
+- Calendar files (`.ics`) also use Moscow wall-clock time
+  (`DTSTART;TZID=Europe/Moscow:…` with a VTIMEZONE of UTC+03:00), not UTC.
 
 ## Booking service
 
@@ -114,6 +119,28 @@ PostgreSQL CI job, or locally with `DATABASE_URL` set to a PostgreSQL database.
 
 There is no limit on how many consecutive slots one booking may take. That is
 an open question for the dormitory administration.
+
+## Resident screens
+
+All are behind `resident_required` and use only the resident's own data.
+
+| URL | What |
+|---|---|
+| `/` | Availability grid: one day at a time (today … booking horizon), free machines per slot, own bookings marked. Day tabs swap only the grid with htmx; plain links work without JavaScript. |
+| `/book/<date>/<slot>/` | Choose a free machine and how many consecutive slots (limited to how long that machine stays free), then `book_slots()`. Service errors are shown on the form. |
+| `/bookings/` | Upcoming bookings (one row per group) and the last 30 days of past and cancelled ones. |
+| `/bookings/<group>/` | One booking; links to the calendar file and to cancelling. |
+| `/bookings/<group>/cancel/` | States per slot whether it will be refunded, then `cancel_group()` on POST. |
+| `/bookings/<group>/calendar.ics` | Calendar file (`apps/bookings/ics.py`, no dependency). |
+| `/balance/` | Balance and own ledger history, 20 entries per page. |
+
+- `apps/bookings/availability.py` answers the grid's questions with counts,
+  never with other residents' bookings. `groups.py` turns the slots booked
+  together into one item and returns 404 for anyone else's group.
+- The navigation (bottom bar on phones) shows the balance on every page, from
+  the `apps.ledger.context_processors.resident_balance` context processor.
+- `apps/bookings/tests/test_privacy.py` visits every resident page and calendar
+  file and checks that another resident's name, room and code never appear.
 
 ## Consecutive slots and keys
 
@@ -168,3 +195,20 @@ of the group's last non-cancelled slot.
   language prefix.
 - CI runs `makemessages` and then `scripts/check_translations.py`. The build
   fails if any Russian string is untranslated or fuzzy.
+
+### Adding a language
+
+Nothing in the code depends on the language: all text goes through gettext,
+and the language switch and `Resident.language` read `settings.LANGUAGES`.
+To add one (Kazakh as an example):
+
+1. Add `("kk", _("Kazakh"))` to `LANGUAGES` in `config/settings/base.py`, then
+   run `python manage.py makemigrations` (the `Resident.language` choices change).
+2. `python manage.py makemessages -l kk`, translate
+   `locale/kk/LC_MESSAGES/django.po`, then `python manage.py compilemessages`.
+3. Add `-l kk` to the `makemessages` commands in CI, the README and
+   `docs/CLAUDE.md`, and make `scripts/check_translations.py` check the new
+   catalog too (today it checks Russian only).
+
+A right-to-left language (Arabic, Hebrew) would also need `dir="rtl"` on
+`<html>` and a check of the layouts.

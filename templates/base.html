@@ -24,7 +24,21 @@
       {% endif %}
     </div>
   </header>
-  <main class="mx-auto max-w-3xl p-4">
+  {% if resident_balance is not None %}
+    {# Resident navigation: a bottom bar on phones, a row under the header on wider screens. #}
+    {% load money %}
+    {% url 'core:home' as home_url %}{% url 'bookings:mine' as mine_url %}{% url 'ledger:balance' as balance_url %}
+    <nav aria-label="{% translate 'Main' %}"
+         class="fixed inset-x-0 bottom-0 z-10 grid grid-cols-3 border-t border-slate-200 bg-white text-center text-sm md:static md:mx-auto md:flex md:max-w-3xl md:gap-2 md:border-0 md:bg-transparent md:px-4 md:pt-3">
+      <a href="{{ home_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == home_url %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "Book" %}</a>
+      <a href="{{ mine_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == mine_url %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "My bookings" %}</a>
+      <a href="{{ balance_url }}" class="px-2 py-3 md:ml-auto md:rounded md:py-2 {% if request.path == balance_url %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "Balance" %}: {{ resident_balance|rub }}</a>
+    </nav>
+  {% endif %}
+  <main class="mx-auto max-w-3xl p-4 {% if resident_balance is not None %}pb-20 md:pb-4{% endif %}">
+    {% for message in messages %}
+      <div class="mb-4 rounded border p-3 {% if message.level_tag == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-green-300 bg-green-50 text-green-800{% endif %}" role="status">{{ message }}</div>
+    {% endfor %}
     {% block content %}{% endblock %}
   </main>
 </body>
