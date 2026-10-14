@@ -69,7 +69,9 @@ TEMPLATES = [
 ]
 
 # Database: DATABASE_URL, e.g. sqlite:///db.sqlite3 or postgres://user:pass@host:5432/name
-DATABASES = {"default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")}
+# An empty or unset DATABASE_URL means the local SQLite file.
+DATABASE_URL = env("DATABASE_URL", default="") or f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+DATABASES = {"default": env.db_url_config(DATABASE_URL)}
 if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
     # Take the write lock at the start of each transaction, so concurrent
     # writers wait for each other instead of failing with "database is locked".
