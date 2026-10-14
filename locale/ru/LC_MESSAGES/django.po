@@ -252,3 +252,11 @@ msgstr "запись о ключе"
 
 msgid "key log"
 msgstr "журнал ключей"
+
+msgid "The PIN must be exactly 6 digits."
+msgstr "PIN-код должен состоять ровно из 6 цифр."
+
+msgid "This PIN is too easy to guess. Avoid repeated or consecutive digits."
+msgstr ""
+"Этот PIN-код слишком легко угадать. Не используйте повторяющиеся или идущие "
+"подряд цифры."

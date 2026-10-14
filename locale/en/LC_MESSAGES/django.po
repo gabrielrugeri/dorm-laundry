@@ -251,3 +251,9 @@ msgstr ""
 
 msgid "key log"
 msgstr ""
+
+msgid "The PIN must be exactly 6 digits."
+msgstr ""
+
+msgid "This PIN is too easy to guess. Avoid repeated or consecutive digits."
+msgstr ""
