@@ -546,3 +546,6 @@ msgstr ""
 
 msgid "Pages"
 msgstr ""
+
+msgid "Finished"
+msgstr ""

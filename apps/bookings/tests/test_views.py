@@ -207,3 +207,26 @@ def test_pages_are_translated_to_russian(logged_in, slots, machine, machine2, to
     assert "Начало: 08:00–10:00" in page
     assert "50 ₽ за слот. Ваш баланс: 200 ₽." in page
     assert "3 слота (08:00–14:00)" in page
+
+
+def test_dates_use_russian_genitive_month(logged_in, dormitory, slots, machine):
+    """'14 октября', not '14 Октябрь'."""
+    from django.utils import formats, translation
+
+    logged_in.cookies["django_language"] = "ru"
+    day = availability.local_today(dormitory) + timedelta(days=1)
+    html = logged_in.get(HOME, {"day": day.isoformat()}).content.decode()
+    with translation.override("ru"):
+        genitive = formats.date_format(day, "j E")
+        nominative = formats.date_format(day, "j F")
+    assert genitive != nominative  # every Russian month has a different genitive
+    assert genitive in html
+    assert nominative not in html
+
+
+def test_finished_slots_say_finished(logged_in, dormitory, machine):
+    """A one-minute slot at 00:00 today has always ended by the time tests run."""
+    early = TimeSlot.objects.create(dormitory=dormitory, start_time=time(0, 0), duration_minutes=1)
+    today = availability.local_today(dormitory)
+    row = grid_rows(logged_in, today)[early.pk]
+    assert row.started and row.finished

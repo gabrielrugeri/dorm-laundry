@@ -43,6 +43,7 @@ class SlotAvailability:
     total: int
     mine: bool
     started: bool
+    finished: bool
 
     @property
     def bookable(self):
@@ -59,7 +60,7 @@ def day_availability(dormitory, resident, day, now=None):
     mine = set(taken.filter(resident=resident).values_list("slot", flat=True))
     rows = []
     for slot in active_slots(dormitory):
-        starts_at, _ends_at = slot.bounds(day)
+        starts_at, ends_at = slot.bounds(day)
         rows.append(
             SlotAvailability(
                 slot=slot,
@@ -68,6 +69,7 @@ def day_availability(dormitory, resident, day, now=None):
                 total=total,
                 mine=slot.pk in mine,
                 started=starts_at <= now,
+                finished=ends_at <= now,
             )
         )
     return rows

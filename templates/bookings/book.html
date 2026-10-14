@@ -3,7 +3,7 @@
 {% block title %}{% translate "Book" %} · {{ block.super }}{% endblock %}
 {% block content %}
   <p class="mb-2"><a href="{% url 'core:home' %}?day={{ day|date:'Y-m-d' }}" class="text-sm text-blue-700 underline">← {% translate "Back to the schedule" %}</a></p>
-  <h1 class="mb-1 text-xl font-semibold">{{ day|date:"l, j F" }}</h1>
+  <h1 class="mb-1 text-xl font-semibold">{{ day|date:"l, j E" }}</h1>
   <p class="mb-4 text-slate-600">{% blocktranslate with slot=slot %}Starting at {{ slot }}{% endblocktranslate %}</p>
 
   {% if unavailable %}
