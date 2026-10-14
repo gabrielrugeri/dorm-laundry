@@ -510,3 +510,10 @@ msgid_plural ""
 "Cancelling at least %(hours)s hours before the start gives a refund."
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-format
+msgid "Laundry: %(machine)s"
+msgstr ""
+
+msgid "Add to calendar"
+msgstr ""

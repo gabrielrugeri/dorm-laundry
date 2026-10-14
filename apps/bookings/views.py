@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 
 from django.contrib import messages
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -10,7 +11,7 @@ from apps.accounts.decorators import resident_required
 from apps.dorms.models import TimeSlot
 from apps.ledger.models import LedgerEntry
 
-from . import availability, services
+from . import availability, ics, services
 from .forms import BookingForm
 from .groups import get_group_or_404, resident_groups
 from .models import Booking
@@ -88,6 +89,24 @@ def group_detail(request, group_id):
     now = timezone.now()
     can_cancel = any(b.starts_at > now for b in group.active_bookings())
     return render(request, "bookings/detail.html", {"group": group, "can_cancel": can_cancel})
+
+
+@resident_required
+def calendar_file(request, group_id):
+    """The booking as an .ics file for the resident's calendar app."""
+    group = get_group_or_404(request.user.resident, group_id)
+    if group.is_cancelled:
+        raise Http404
+    body = ics.booking_calendar(
+        group,
+        request.dormitory,
+        uid_domain=request.get_host().split(":")[0],
+        summary=_("Laundry: %(machine)s") % {"machine": group.machine.label},
+    )
+    response = HttpResponse(body, content_type="text/calendar; charset=utf-8")
+    filename = f"laundry-{group.day.isoformat()}.ics"
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
 
 
 @resident_required

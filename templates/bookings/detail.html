@@ -10,7 +10,10 @@
       <dt class="text-slate-600">{% translate "Status" %}</dt><dd>{% if group.is_cancelled %}{% translate "Cancelled" %}{% else %}{% translate "Booked" %}{% endif %}</dd>
     </dl>
     <div class="mt-4 flex flex-wrap gap-3">
-      <a href="{% url 'bookings:mine' %}" class="rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "My bookings" %}</a>
+      {% if not group.is_cancelled %}
+        <a href="{% url 'bookings:calendar' group_id=group.group_id %}" class="rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Add to calendar" %}</a>
+      {% endif %}
+      <a href="{% url 'bookings:mine' %}" class="rounded border border-blue-700 px-4 py-2 font-medium text-blue-700 hover:bg-blue-50">{% translate "My bookings" %}</a>
       {% if can_cancel %}
         <a href="{% url 'bookings:cancel' group_id=group.group_id %}" class="rounded px-4 py-2 text-red-700 underline">{% translate "Cancel" %}</a>
       {% endif %}

@@ -541,3 +541,10 @@ msgstr[2] ""
 "При отмене не позднее чем за %(hours)s часов до начала деньги возвращаются."
 msgstr[3] ""
 "При отмене не позднее чем за %(hours)s часа до начала деньги возвращаются."
+
+#, python-format
+msgid "Laundry: %(machine)s"
+msgstr "Стирка: %(machine)s"
+
+msgid "Add to calendar"
+msgstr "Добавить в календарь"
