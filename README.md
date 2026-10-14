@@ -11,8 +11,9 @@ Works in Russian and English, and loads nothing from third-party servers.
 - How it works: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Contributor and AI-assistant guide: [docs/CLAUDE.md](docs/CLAUDE.md)
 
-> Status: early development. Data model, admin, demo data and resident
-> login/activation are in place; booking screens are next.
+> Status: early development. Residents can log in, see free machines, book,
+> cancel, export bookings to their calendar and see their balance. The
+> manager's key screen is next.
 
 ## Requirements
 
