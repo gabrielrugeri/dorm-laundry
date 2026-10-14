@@ -11,8 +11,8 @@ Works in Russian and English, and loads nothing from third-party servers.
 - How it works: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Contributor and AI-assistant guide: [docs/CLAUDE.md](docs/CLAUDE.md)
 
-> Status: project scaffold. Data model, admin and demo data are in place;
-> resident and manager screens are next.
+> Status: early development. Data model, admin, demo data and resident
+> login/activation are in place; booking screens are next.
 
 ## Requirements
 
@@ -44,9 +44,21 @@ Then open <http://127.0.0.1:8000/>. The Django admin is at `/admin/`.
 |---|---|---|
 | `admin` | `SEED_DEMO_STAFF_PASSWORD` (default `demo-staff-password`) | admin (superuser) |
 | `manager` | same as above | key manager |
-| `demo-D0001` … `demo-D0020` | `SEED_DEMO_RESIDENT_PIN` (default `123456`) | residents |
+| student code `D0001` … `D0020` | PIN `SEED_DEMO_RESIDENT_PIN` (default `123456`) | residents |
 
-Change these values on any server reachable by other people.
+Everyone logs in at `/account/login/`: residents with student code and PIN,
+staff with username and password. Change these values on any server
+reachable by other people.
+
+### Giving residents access
+
+Residents choose their own PIN through a one-time activation link:
+
+1. In the admin, open **Residents**, select residents and run
+   **Create activation links** (or **Reset PIN and create activation links**
+   if someone forgot their PIN).
+2. Give each resident their own link. It works once and expires after 7 days.
+3. The resident opens it, chooses a 6-digit PIN and is logged in.
 
 ## Everyday commands
 
