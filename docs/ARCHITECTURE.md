@@ -147,6 +147,26 @@ All are behind `resident_required` and use only the resident's own data.
 The key log belongs to the group's first booking, and the key is due at the end
 of the group's last non-cancelled slot.
 
+## Manager's key screen
+
+`/staff/` (managers and admins, `staff_required`) is the key schedule.
+
+- **Days:** yesterday, today and tomorrow. One row per booking group: time,
+  machine, the resident's **name and room** (staff-only), and the key status:
+  waiting, taken, returned, or overdue.
+- **One button per row:** "Key taken", then "Key returned", with an optional
+  note. "Undo" reverts the latest tap within 10 minutes; older corrections go
+  through the admin (Key log). htmx swaps the whole schedule after each tap;
+  without JavaScript it is a normal POST and redirect.
+- **"Keys out now":** every key taken and not returned, from any day, overdue
+  ones first. This answers "who has the key right now".
+- `apps/keylog/services.py` (`take_key`, `return_key`, `undo_last`) is the only
+  code that changes KeyLog rows. Times come from the server clock, the staff
+  member is recorded in `recorded_by`, and only active staff of the booking's
+  dormitory may act. `apps/keylog/schedule.py` builds the rows.
+- **Open question:** one key per machine, or one key for the laundry room?
+  Tracking per booking works either way.
+
 ## Login and activation
 
 - **Residents** log in with student code + 6-digit PIN
