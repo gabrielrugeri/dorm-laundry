@@ -10,7 +10,9 @@ import pytest
 from django.utils import translation
 
 from apps.bookings import services
+from apps.bookings.models import Booking
 from apps.dorms.models import Machine, TimeSlot
+from apps.ledger.models import LedgerEntry
 
 DAY = date(2026, 10, 20)
 # The day before DAY, at noon Moscow time.
@@ -98,3 +100,122 @@ def test_booking_window(dormitory, slot):
     services._check_booking_window(dormitory, date(2026, 10, 25), slot, NOW)
     with pytest.raises(services.OutsideBookingWindow):
         services._check_booking_window(dormitory, date(2026, 10, 26), slot, NOW)
+
+
+# --- book_slots ----------------------------------------------------------------
+
+
+def credit(resident, amount):
+    LedgerEntry.objects.create(resident=resident, amount=amount, kind=LedgerEntry.Kind.CREDIT)
+
+
+def balance(resident):
+    return LedgerEntry.objects.balance(resident)
+
+
+def test_book_one_slot_charges_the_price(resident, machine, slot):
+    credit(resident, 120)
+    [booking] = services.book_slots(resident, machine, DAY, [slot], now=NOW)
+    assert booking.status == Booking.Status.ACTIVE
+    assert booking.price_rub == 50
+    assert balance(resident) == 70
+    charge = LedgerEntry.objects.get(kind=LedgerEntry.Kind.BOOKING)
+    assert (charge.booking, charge.amount, charge.created_by) == (booking, -50, None)
+
+
+def test_book_two_consecutive_slots_charges_100(resident, machine, slot, slot_10):
+    credit(resident, 100)
+    # Order of the selection does not matter.
+    bookings = services.book_slots(resident, machine, DAY, [slot_10, slot], now=NOW)
+    assert [b.slot for b in bookings] == [slot, slot_10]
+    assert len({b.group_id for b in bookings}) == 1
+    charges = LedgerEntry.objects.filter(kind=LedgerEntry.Kind.BOOKING)
+    assert sorted(c.amount for c in charges) == [-50, -50]
+    assert {c.booking for c in charges} == set(bookings)
+    assert balance(resident) == 0
+
+
+def test_separate_bookings_get_separate_groups(resident, machine, slot, slot_10):
+    credit(resident, 100)
+    [first] = services.book_slots(resident, machine, DAY, [slot], now=NOW)
+    [second] = services.book_slots(resident, machine, DAY, [slot_10], now=NOW)
+    assert first.group_id != second.group_id
+
+
+def test_insufficient_balance_books_nothing(resident, machine, slot, slot_10):
+    credit(resident, 99)
+    with pytest.raises(services.InsufficientBalance):
+        services.book_slots(resident, machine, DAY, [slot, slot_10], now=NOW)
+    assert not Booking.objects.exists()
+    assert balance(resident) == 99
+
+
+def test_taken_slot_is_reported_and_not_charged(resident, other_resident, machine, slot):
+    credit(resident, 50)
+    credit(other_resident, 50)
+    services.book_slots(resident, machine, DAY, [slot], now=NOW)
+    with pytest.raises(services.SlotUnavailable):
+        services.book_slots(other_resident, machine, DAY, [slot], now=NOW)
+    assert balance(other_resident) == 50
+
+
+def test_consecutive_booking_is_all_or_nothing(resident, other_resident, machine, slot, slot_10):
+    credit(resident, 100)
+    credit(other_resident, 50)
+    services.book_slots(other_resident, machine, DAY, [slot_10], now=NOW)
+    with pytest.raises(services.SlotUnavailable):
+        services.book_slots(resident, machine, DAY, [slot, slot_10], now=NOW)
+    # The free 08:00 slot was not booked either.
+    assert Booking.objects.filter(resident=resident).count() == 0
+    assert balance(resident) == 100
+
+
+def test_cancelled_slot_can_be_booked_again(resident, other_resident, machine, slot):
+    credit(resident, 50)
+    credit(other_resident, 50)
+    [booking] = services.book_slots(resident, machine, DAY, [slot], now=NOW)
+    booking.status = Booking.Status.CANCELLED
+    booking.cancelled_at = NOW
+    booking.save()
+    services.book_slots(other_resident, machine, DAY, [slot], now=NOW)
+
+
+def test_free_dormitory_creates_no_charge(dormitory, resident, machine, slot):
+    dormitory.price_per_slot = 0
+    dormitory.save()
+    [booking] = services.book_slots(resident, machine, DAY, [slot], now=NOW)
+    assert booking.price_rub == 0
+    assert not LedgerEntry.objects.exists()
+
+
+def test_book_rejects_other_dormitory(resident, other_dormitory, slot):
+    credit(resident, 50)
+    foreign_machine = Machine.objects.create(dormitory=other_dormitory, label="Elsewhere")
+    with pytest.raises(services.WrongDormitory):
+        services.book_slots(resident, foreign_machine, DAY, [slot], now=NOW)
+
+
+def test_book_rejects_inactive_machine(resident, machine, slot):
+    credit(resident, 50)
+    machine.active = False
+    machine.save()
+    with pytest.raises(services.MachineUnavailable):
+        services.book_slots(resident, machine, DAY, [slot], now=NOW)
+
+
+@pytest.mark.parametrize("day", [date(2026, 10, 18), date(2026, 10, 26)])
+def test_book_rejects_days_outside_window(resident, machine, slot, day):
+    credit(resident, 50)
+    with pytest.raises(services.OutsideBookingWindow):
+        services.book_slots(resident, machine, day, [slot], now=NOW)
+
+
+def test_book_rejects_gaps(resident, machine, slot, slot_10, slot_12):
+    credit(resident, 100)
+    with pytest.raises(services.SlotsNotConsecutive):
+        services.book_slots(resident, machine, DAY, [slot, slot_12], now=NOW)
+
+
+def test_book_needs_a_slot(resident, machine):
+    with pytest.raises(ValueError):
+        services.book_slots(resident, machine, DAY, [], now=NOW)

@@ -8,7 +8,16 @@ Every function raises a `BookingError` subclass when the action is not
 allowed. Its `message` is translatable and safe to show to the resident.
 """
 
+import uuid
+
+from django.db import IntegrityError, transaction
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from apps.accounts.models import Resident
+from apps.ledger.models import LedgerEntry
+
+from .models import Booking
 
 
 class BookingError(Exception):
@@ -98,3 +107,73 @@ def _check_booking_window(dormitory, day, first_slot, now):
     starts_at, _ends_at = first_slot.bounds(day)
     if starts_at <= now:
         raise OutsideBookingWindow
+
+
+# --- Booking --------------------------------------------------------------------
+
+
+def book_slots(resident, machine, day, slots, *, now=None):
+    """Book `machine` for one or more consecutive `slots` on local date `day`.
+
+    Creates one Booking per slot, all sharing a new `group_id`, and charges
+    the dormitory's price for each slot as a separate ledger entry. Either
+    every slot is booked and charged, or nothing is.
+
+    Returns the new bookings in time order. Raises a BookingError if the
+    booking is not possible.
+    """
+    if not slots:
+        raise ValueError("book_slots() needs at least one slot.")
+    now = now or timezone.now()
+    dormitory = resident.dormitory
+    slots = sorted(slots, key=lambda slot: slot.start_time)
+
+    _check_same_dormitory(dormitory, machine, slots)
+    _check_bookable(machine, slots)
+    _check_consecutive(dormitory, slots)
+    _check_booking_window(dormitory, day, slots[0], now)
+
+    price = dormitory.price_per_slot
+    try:
+        with transaction.atomic():
+            # Lock the resident's row, so two requests from the same resident run one
+            # after the other and cannot both spend the same balance. (SQLite already
+            # serialises all writes; on PostgreSQL this lock is what does it.)
+            Resident.objects.select_for_update().get(pk=resident.pk)
+            if LedgerEntry.objects.balance(resident) < price * len(slots):
+                raise InsufficientBalance
+
+            group_id = uuid.uuid4()
+            bookings = []
+            for slot in slots:
+                booking = Booking.objects.create(
+                    machine=machine,
+                    date=day,
+                    slot=slot,
+                    resident=resident,
+                    group_id=group_id,
+                    price_rub=price,
+                )
+                if price:
+                    LedgerEntry.objects.create(
+                        resident=resident,
+                        amount=-price,
+                        kind=LedgerEntry.Kind.BOOKING,
+                        booking=booking,
+                    )
+                bookings.append(booking)
+    except IntegrityError:
+        # The database refused a booking: normally because someone else took one of
+        # these slots a moment ago. Anything else is a bug, so let it through.
+        if _any_slot_occupied(machine, day, slots):
+            raise SlotUnavailable from None
+        raise
+    return bookings
+
+
+def _any_slot_occupied(machine, day, slots):
+    return (
+        Booking.objects.filter(machine=machine, date=day, slot__in=slots)
+        .exclude(status=Booking.Status.CANCELLED)
+        .exists()
+    )
