@@ -53,6 +53,7 @@ Change these values on any server reachable by other people.
 | Task | Command |
 |---|---|
 | Run tests | `pytest` |
+| Also run the PostgreSQL-only race tests | `DATABASE_URL=postgres://user:pass@localhost:5432/laundry pytest` |
 | Lint and format | `ruff check . && ruff format .` |
 | Rebuild CSS while editing | `python scripts/tailwind.py watch` |
 | Update translations | `python manage.py makemessages -l ru -l en`, translate `locale/ru/LC_MESSAGES/django.po`, then `python scripts/check_translations.py && python manage.py compilemessages` |
