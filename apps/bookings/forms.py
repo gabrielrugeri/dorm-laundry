@@ -18,7 +18,7 @@ class BookingForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.runs = {str(machine.pk): (machine, count) for machine, count in runs}
         self.fields["machine"].choices = [
-            (str(machine.pk), machine.label) for machine, _count in runs
+            (str(machine.pk), machine.name) for machine, _count in runs
         ]
         longest = max((count for _machine, count in runs), default=0)
         self.fields["count"].choices = [
@@ -49,7 +49,7 @@ class BookingForm(forms.Form):
                         "%(machine)s is free for only %(free)s slots from this time.",
                         free,
                     )
-                    % {"machine": machine.label, "free": free},
+                    % {"machine": machine.name, "free": free},
                 )
             cleaned_data["machine"] = machine
         return cleaned_data

@@ -101,7 +101,7 @@ def calendar_file(request, group_id):
         group,
         request.dormitory,
         uid_domain=request.get_host().split(":")[0],
-        summary=_("Laundry: %(machine)s") % {"machine": group.machine.label},
+        summary=_("Laundry: %(machine)s") % {"machine": group.machine.name},
     )
     response = HttpResponse(body, content_type="text/calendar; charset=utf-8")
     filename = f"laundry-{group.day.isoformat()}.ics"

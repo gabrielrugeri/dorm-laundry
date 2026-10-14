@@ -34,7 +34,7 @@ def slots(dormitory, slot):
 
 @pytest.fixture
 def machine2(dormitory):
-    return Machine.objects.create(dormitory=dormitory, label="Machine 2")
+    return Machine.objects.create(dormitory=dormitory, number=2)
 
 
 @pytest.fixture

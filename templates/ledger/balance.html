@@ -16,7 +16,7 @@
           <p class="font-medium">{{ entry.get_kind_display|capfirst }}</p>
           <p class="text-sm text-slate-600">
             {{ entry.created_at|date:"j M Y, H:i" }}
-            {% if entry.booking %}· {{ entry.booking.date|date:"j M" }}, {{ entry.booking.slot }}, {{ entry.booking.machine.label }}{% endif %}
+            {% if entry.booking %}· {{ entry.booking.date|date:"j M" }}, {{ entry.booking.slot }}, {{ entry.booking.machine.name }}{% endif %}
           </p>
           {% if entry.note and not entry.booking %}<p class="text-sm text-slate-600">{{ entry.note }}</p>{% endif %}
         </div>

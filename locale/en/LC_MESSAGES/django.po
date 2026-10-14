@@ -96,12 +96,6 @@ msgstr ""
 msgid "A slot must end on the same day it starts."
 msgstr ""
 
-msgid "label"
-msgstr ""
-
-msgid "E.g. “Machine 1”."
-msgstr ""
-
 msgid "Inactive machines cannot be booked."
 msgstr ""
 
@@ -616,4 +610,14 @@ msgstr ""
 
 #, python-format
 msgid "taken %(time)s"
+msgstr ""
+
+#, python-format
+msgid "Machine %(number)s"
+msgstr ""
+
+msgid "number"
+msgstr ""
+
+msgid "Shown as “Machine 3” in the selected language."
 msgstr ""

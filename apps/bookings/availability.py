@@ -93,7 +93,7 @@ def free_runs(dormitory, day, first_slot):
     Returns ([(machine, count), ...], slots), where `slots` are the slots that
     could follow `first_slot` (see following_slots)."""
     slots = following_slots(dormitory, first_slot)
-    machines = list(dormitory.machines.filter(active=True).order_by("label"))
+    machines = list(dormitory.machines.filter(active=True).order_by("number"))
     taken = set(occupied(machines, day).filter(slot__in=slots).values_list("machine_id", "slot_id"))
     runs = []
     for machine in machines:

@@ -97,12 +97,6 @@ msgstr "временные слоты"
 msgid "A slot must end on the same day it starts."
 msgstr "Слот должен заканчиваться в тот же день, когда начинается."
 
-msgid "label"
-msgstr "обозначение"
-
-msgid "E.g. “Machine 1”."
-msgstr "Например, «Машина 1»."
-
 msgid "Inactive machines cannot be booked."
 msgstr "Неактивные машины нельзя забронировать."
 
@@ -650,3 +644,13 @@ msgstr "возвращён в %(time)s"
 #, python-format
 msgid "taken %(time)s"
 msgstr "выдан в %(time)s"
+
+#, python-format
+msgid "Machine %(number)s"
+msgstr "Машина %(number)s"
+
+msgid "number"
+msgstr "номер"
+
+msgid "Shown as “Machine 3” in the selected language."
+msgstr "Показывается как «Машина 3» на выбранном языке."

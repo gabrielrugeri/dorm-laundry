@@ -52,7 +52,7 @@ def test_error_message_can_be_overridden():
 
 def test_same_dormitory_check(dormitory, other_dormitory, machine, slot):
     services._check_same_dormitory(dormitory, machine, [slot])
-    foreign_machine = Machine.objects.create(dormitory=other_dormitory, label="Elsewhere")
+    foreign_machine = Machine.objects.create(dormitory=other_dormitory, number=9)
     with pytest.raises(services.WrongDormitory):
         services._check_same_dormitory(dormitory, foreign_machine, [slot])
     foreign_slot = TimeSlot.objects.create(dormitory=other_dormitory, start_time=time(8, 0))
@@ -193,7 +193,7 @@ def test_free_dormitory_creates_no_charge(dormitory, resident, machine, slot):
 
 def test_book_rejects_other_dormitory(resident, other_dormitory, slot):
     credit(resident, 50)
-    foreign_machine = Machine.objects.create(dormitory=other_dormitory, label="Elsewhere")
+    foreign_machine = Machine.objects.create(dormitory=other_dormitory, number=9)
     with pytest.raises(services.WrongDormitory):
         services.book_slots(resident, foreign_machine, DAY, [slot], now=NOW)
 

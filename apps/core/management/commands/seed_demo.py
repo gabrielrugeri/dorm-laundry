@@ -50,7 +50,7 @@ class Command(BaseCommand):
             for hour in SLOT_HOURS
         ]
         machines = [
-            Machine.objects.get_or_create(dormitory=dorm, label=f"Machine {n}")[0]
+            Machine.objects.get_or_create(dormitory=dorm, number=n)[0]
             for n in range(1, MACHINE_COUNT + 1)
         ]
 
