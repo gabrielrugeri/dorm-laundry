@@ -46,7 +46,7 @@ Staff are scoped through `StaffProfile.dormitory`.
 | Money signs make sense | `CHECK`: credit/refund > 0, booking < 0, adjustment ≠ 0 |
 | Only charges/refunds point to bookings | `CHECK` on `LedgerEntry.booking` |
 | Key returned after taken | `CHECK` on `KeyLog` |
-| Unique student code, slot start, machine label | per-dormitory `UNIQUE` constraints |
+| Unique student code, slot start, machine number | per-dormitory `UNIQUE` constraints |
 
 Rows that other rows depend on are deleted with `PROTECT`. Deactivate them
 instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
@@ -109,7 +109,7 @@ Concurrency:
 
 - Two residents booking the same slot: the partial unique index lets only
   one insert commit, and the other request gets `SlotUnavailable`.
-- One resident sending two bookings at once: `book_slots` locks the resident's
+- One resident sending two bookings at once: `book_machines` locks the resident's
   row (`SELECT ... FOR UPDATE`) before checking the balance, so the second
   request sees the balance after the first one's charge. SQLite serialises
   all writes anyway (`IMMEDIATE` transactions).
@@ -122,6 +122,16 @@ PostgreSQL CI job, or locally with `DATABASE_URL` set to a PostgreSQL database.
 
 There is no limit on how many consecutive slots one booking may take. That is
 an open question for the dormitory administration.
+
+## Machines and slots
+
+- Machines have a **number**; pages show them as "Machine 3" / «Машина 3» in
+  the selected language (`Machine.name`). Nothing about a machine is stored
+  as English text.
+- Slots are data (`TimeSlot`), set per dormitory in the admin. The demo uses
+  seven two-hour slots from 10:00 to midnight. A slot may end exactly at
+  midnight; it is shown as 22:00–00:00 and its calendar event ends at 00:00
+  of the next day.
 
 ## Resident screens
 
