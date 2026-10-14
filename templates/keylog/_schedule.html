@@ -1,0 +1,77 @@
+{% load i18n %}
+{# Swapped as a whole by htmx after each tap, so the "keys out" box stays current. #}
+{% for message in messages %}
+  <div class="mb-4 rounded border border-red-300 bg-red-50 p-3 text-red-800" role="alert">{{ message }}</div>
+{% endfor %}
+
+<section class="mb-4 rounded-lg bg-white p-4 shadow-sm" aria-labelledby="keys-out-title">
+  <h2 id="keys-out-title" class="mb-2 font-medium">{% translate "Keys out now" %}</h2>
+  {% for key in keys_out %}
+    <p class="flex flex-wrap justify-between gap-x-3 py-1 {% if key.overdue %}font-semibold text-red-700{% endif %}">
+      <span>{{ key.booking.machine.label }} · {{ key.booking.resident.full_name }} ({{ key.booking.resident.room }})</span>
+      <span class="text-sm">
+        {% blocktranslate with taken=key.log.taken_at|date:"j E, H:i" %}since {{ taken }}{% endblocktranslate %}
+        {% if key.overdue %}· {% blocktranslate with due=key.due_at|time:"H:i" %}overdue, due {{ due }}{% endblocktranslate %}{% endif %}
+      </span>
+    </p>
+  {% empty %}
+    <p class="text-slate-600">{% translate "All keys are in." %}</p>
+  {% endfor %}
+</section>
+
+<nav class="mb-3 flex gap-2" aria-label="{% translate 'Days' %}">
+  {% for d in days %}
+    <a href="?day={{ d|date:'Y-m-d' }}" hx-get="?day={{ d|date:'Y-m-d' }}" hx-target="#schedule" hx-push-url="true"
+       class="rounded px-3 py-2 text-sm {% if d == day %}bg-blue-700 text-white{% else %}bg-white text-slate-700 shadow-sm{% endif %}"
+       {% if d == day %}aria-current="date"{% endif %}>
+      {% if forloop.counter == 1 %}{% translate "Yesterday" %}{% elif forloop.counter == 2 %}{% translate "Today" %}{% else %}{% translate "Tomorrow" %}{% endif %}
+    </a>
+  {% endfor %}
+</nav>
+
+<h2 class="mb-2 font-medium">{{ day|date:"l, j E" }}</h2>
+<ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+  {% for row in rows %}
+    <li class="px-4 py-3 {% if row.overdue %}bg-red-50{% endif %}">
+      <div class="flex flex-wrap items-baseline justify-between gap-x-3">
+        <span class="font-medium">{{ row.group.starts_at|time:"H:i" }}–{{ row.group.ends_at|time:"H:i" }} · {{ row.group.machine.label }}</span>
+        <span class="text-sm {% if row.overdue %}font-semibold text-red-700{% else %}text-slate-600{% endif %}">
+          {% if row.status == "returned" %}
+            {% blocktranslate with time=row.log.returned_at|time:"H:i" %}returned {{ time }}{% endblocktranslate %}
+          {% elif row.status == "taken" %}
+            {% blocktranslate with time=row.log.taken_at|time:"H:i" %}taken {{ time }}{% endblocktranslate %}{% if row.overdue %} · {% translate "overdue" %}{% endif %}
+          {% else %}
+            {% translate "waiting" %}
+          {% endif %}
+        </span>
+      </div>
+      <p>{{ row.resident.full_name }} · {% blocktranslate with room=row.resident.room %}room {{ room }}{% endblocktranslate %}</p>
+      {% if row.log.note %}<p class="whitespace-pre-line text-sm text-slate-600">{{ row.log.note }}</p>{% endif %}
+
+      <div class="mt-2 flex flex-wrap items-center gap-2">
+        {% if row.status != "returned" %}
+          {% if row.status == "waiting" %}{% url 'keylog:action' group_id=row.group.group_id action='take' as action_url %}{% else %}{% url 'keylog:action' group_id=row.group.group_id action='return' as action_url %}{% endif %}
+          <form method="post" action="{{ action_url }}" hx-post="{{ action_url }}" hx-target="#schedule" class="flex flex-1 flex-wrap gap-2">
+            {% csrf_token %}
+            <input type="hidden" name="day" value="{{ day|date:'Y-m-d' }}">
+            <input type="text" name="note" maxlength="200" placeholder="{% translate 'Note (optional)' %}" aria-label="{% translate 'Note (optional)' %}"
+                   class="min-w-0 flex-1 rounded border border-slate-300 px-3 py-2 text-sm">
+            <button type="submit" class="rounded px-4 py-2 font-medium text-white {% if row.status == 'waiting' %}bg-blue-700 hover:bg-blue-800{% else %}bg-green-700 hover:bg-green-800{% endif %}">
+              {% if row.status == "waiting" %}{% translate "Key taken" %}{% else %}{% translate "Key returned" %}{% endif %}
+            </button>
+          </form>
+        {% endif %}
+        {% if row.can_undo %}
+          {% url 'keylog:action' group_id=row.group.group_id action='undo' as undo_url %}
+          <form method="post" action="{{ undo_url }}" hx-post="{{ undo_url }}" hx-target="#schedule">
+            {% csrf_token %}
+            <input type="hidden" name="day" value="{{ day|date:'Y-m-d' }}">
+            <button type="submit" class="px-2 py-2 text-sm text-slate-600 underline">{% translate "Undo" %}</button>
+          </form>
+        {% endif %}
+      </div>
+    </li>
+  {% empty %}
+    <li class="px-4 py-3 text-slate-600">{% translate "No bookings on this day." %}</li>
+  {% endfor %}
+</ul>

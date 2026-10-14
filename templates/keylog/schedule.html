@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Today's key schedule" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="mb-3 flex items-center justify-between gap-3">
+    <h1 class="text-xl font-semibold">{% translate "Today's key schedule" %}</h1>
+    {% if user.is_staff %}<a href="{% url 'admin:index' %}" class="text-sm text-blue-700 underline">{% translate "Administration" %}</a>{% endif %}
+  </div>
+  <div id="schedule">
+    {% include "keylog/_schedule.html" %}
+  </div>
+{% endblock %}

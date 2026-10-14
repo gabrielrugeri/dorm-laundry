@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 
-from apps.accounts.decorators import is_staff_member, staff_required
+from apps.accounts.decorators import is_staff_member
 from apps.bookings.views import grid
+from apps.keylog.views import schedule
 
 
 @login_required
@@ -13,6 +14,6 @@ def home(request):
     return grid(request)
 
 
-@staff_required
 def staff_home(request):
-    return render(request, "core/staff_home.html")
+    """Managers and admins start on today's key schedule."""
+    return schedule(request)
