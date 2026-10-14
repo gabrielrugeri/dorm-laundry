@@ -12,3 +12,6 @@ from .base import *  # noqa: E402, F403
 
 # Hashing passwords properly is slow; tests don't need it.
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+# Serve static files from the app directories without needing collectstatic.
+WHITENOISE_AUTOREFRESH = True
