@@ -5,14 +5,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% translate "Dorm Laundry" %}{% endblock %}</title>
+  {# Everything is served from our own server: no CDNs or third-party scripts. #}
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="{% static 'vendor/htmx/htmx.min.js' %}" defer></script>
   {% block head %}{% endblock %}
 </head>
-<body>
-  <header>
-    <a href="{% url 'core:home' %}">{% translate "Dorm Laundry" %}</a>
+{# htmx sends the CSRF token with every request it makes. #}
+<body class="min-h-screen bg-slate-50 text-slate-900 font-sans" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <header class="flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-sm">
+    <a href="{% url 'core:home' %}" class="font-semibold">{% translate "Dorm Laundry" %}</a>
     {% include "core/_language_switch.html" %}
   </header>
-  <main>
+  <main class="mx-auto max-w-3xl p-4">
     {% block content %}{% endblock %}
   </main>
 </body>

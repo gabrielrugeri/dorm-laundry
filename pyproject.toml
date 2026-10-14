@@ -16,6 +16,8 @@ extend-exclude = ["**/migrations/*.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "DJ"]
+# Line length is handled by `ruff format`; long strings (hashes, URLs) are fine.
+ignore = ["E501"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["apps", "config"]
