@@ -83,6 +83,7 @@ Goal: a working, deployed demo (with fake data) that the dormitory administratio
 ## Open questions
 - Exact slot hours and days of operation?
 - Cancellation/refund policy the administration accepts?
+- Maximum number of consecutive slots in one booking? (No limit in the MVP.)
 - Who confirms payments and how is balance topped up (bank transfer, cash at the desk)?
 - Hosting: our own server vs. university infrastructure? Personal-data requirements for Russia (152-FZ)?
 - Current notebook format used by the manager (photo of a page would help).

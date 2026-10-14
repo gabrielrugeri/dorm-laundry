@@ -354,3 +354,33 @@ msgid_plural ""
 "days."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "This booking is not possible."
+msgstr ""
+
+msgid "This time slot is no longer available. Please choose another one."
+msgstr ""
+
+msgid "Your balance is too low for this booking."
+msgstr ""
+
+msgid "Selected time slots must follow each other without gaps."
+msgstr ""
+
+msgid "This time slot cannot be booked: it is in the past or too far ahead."
+msgstr ""
+
+msgid "This machine is not available for booking."
+msgstr ""
+
+msgid "This machine or time slot does not belong to your dormitory."
+msgstr ""
+
+msgid "This booking has already been cancelled."
+msgstr ""
+
+msgid "This booking has already started and can no longer be cancelled."
+msgstr ""
+
+msgid "You are not allowed to change this booking."
+msgstr ""

@@ -69,12 +69,56 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
 - `Booking.starts_at` / `ends_at` (UTC) are derived from those two on save.
   Queries such as "today", "overdue" and the cancellation cutoff use them.
 
-## Consecutive slots
+## Booking service
 
-Booking several consecutive slots creates one `Booking` per slot, all sharing
-a `group_id`. The group is charged and confirmed as one unit by the booking
-service (next feature). The key log belongs to the group's first booking, and
-the key is due at the end of the group's last non-cancelled slot.
+`apps/bookings/services.py` is the only code that creates or cancels
+bookings. Views and the admin call it instead of saving `Booking` or
+`LedgerEntry` rows themselves. Each function raises a `BookingError` subclass
+when the action is not allowed; its `message` is translated and safe to show
+to residents.
+
+- `book_slots(resident, machine, day, slots)` books one or more consecutive
+  slots on one machine. Slots are consecutive when they are neighbours among the
+  dormitory's active slots and each one ends exactly when the next one starts.
+  It creates one `Booking` per slot, all sharing a `group_id`, and charges one
+  ledger entry per slot, all in one transaction: either everything is booked
+  and charged, or nothing is. The day must be within `booking_horizon_days`
+  (today counts as day 1) and the first slot must not have started.
+- `cancel_booking(booking, actor=user)` cancels one slot. The owner can cancel,
+  and so can a manager or admin of the same dormitory. Cancelling at least
+  `cancellation_cutoff_hours` before the start refunds `price_rub`. Later
+  cancellations are allowed and free the machine, but are not refunded. A
+  booking that has started cannot be cancelled. Staff cannot override the
+  refund rule; corrections go through an `adjustment` ledger entry.
+- `cancel_group(group_id, actor=user)` cancels a group's slots that have not
+  started; each one follows the refund rule on its own.
+- `refund_due(booking)` tells the UI whether cancelling now would be refunded.
+
+Ledger entries made because a resident booked or cancelled have
+`created_by = None`. When staff cancel, the refund records the staff user.
+
+Concurrency:
+
+- Two residents booking the same slot: the partial unique index lets only
+  one insert commit, and the other request gets `SlotUnavailable`.
+- One resident sending two bookings at once: `book_slots` locks the resident's
+  row (`SELECT ... FOR UPDATE`) before checking the balance, so the second
+  request sees the balance after the first one's charge. SQLite serialises
+  all writes anyway (`IMMEDIATE` transactions).
+- Cancelling twice: the booking row is locked and its status checked, and
+  `UNIQUE(booking, kind)` on the ledger refuses a second refund.
+
+These cases have real multi-threaded tests in
+`apps/bookings/tests/test_races.py`, marked `postgres`. They run in the
+PostgreSQL CI job, or locally with `DATABASE_URL` set to a PostgreSQL database.
+
+There is no limit on how many consecutive slots one booking may take. That is
+an open question for the dormitory administration.
+
+## Consecutive slots and keys
+
+The key log belongs to the group's first booking, and the key is due at the end
+of the group's last non-cancelled slot.
 
 ## Login and activation
 
