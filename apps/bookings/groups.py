@@ -44,15 +44,20 @@ class BookingGroup:
         return [b for b in self.bookings if b.status == Booking.Status.ACTIVE]
 
 
-def resident_groups(resident, bookings=None):
-    """The resident's bookings as groups, ordered by start time."""
-    if bookings is None:
-        bookings = Booking.objects.filter(resident=resident)
+def group_bookings(bookings):
+    """Turn a Booking queryset into BookingGroups, ordered by start time."""
     bookings = bookings.select_related("machine", "slot").order_by("group_id", "starts_at")
     groups = [
         BookingGroup(key, list(items)) for key, items in groupby(bookings, lambda b: b.group_id)
     ]
     return sorted(groups, key=lambda group: group.bookings[0].starts_at)
+
+
+def resident_groups(resident, bookings=None):
+    """The resident's bookings as groups, ordered by start time."""
+    if bookings is None:
+        bookings = Booking.objects.filter(resident=resident)
+    return group_bookings(bookings)
 
 
 def get_group_or_404(resident, group_id):

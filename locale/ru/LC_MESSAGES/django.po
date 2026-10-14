@@ -582,3 +582,18 @@ msgstr "Страницы"
 
 msgid "Finished"
 msgstr "Завершено"
+
+msgid "This key action is not possible."
+msgstr "Это действие с ключом невозможно."
+
+msgid "Only staff of this dormitory can record keys."
+msgstr "Записывать выдачу ключей могут только сотрудники этого общежития."
+
+msgid "This booking was cancelled."
+msgstr "Это бронирование отменено."
+
+msgid "The key has not been taken yet."
+msgstr "Ключ ещё не выдан."
+
+msgid "There is nothing to undo, or it is too late to undo it."
+msgstr "Отменять нечего, или отменить уже нельзя."
