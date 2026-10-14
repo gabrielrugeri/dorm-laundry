@@ -80,6 +80,13 @@ def test_tampered_link_is_rejected(client, new_resident):
     assert not response.context["validlink"]
 
 
+def test_invalid_link_page_does_not_mention_passwords(client, new_resident):
+    client.cookies["django_language"] = "en"
+    response = client.get(link_for(new_resident.user)[:-3] + "xx/")
+    assert "<title>Link not valid" in response.content.decode()
+    assert "password" not in response.content.decode().lower()
+
+
 def test_links_are_for_residents_only(client, db):
     staff = User.objects.create_user(username="staff-member")
     response = client.get(link_for(staff))

@@ -50,5 +50,12 @@ class ActivateView(auth_views.PasswordResetConfirmView):
             return None
         return user
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not context["validlink"]:
+            # Django's default title here talks about password resets.
+            context["title"] = _("Link not valid")
+        return context
+
     def form_valid(self, form):
         return remember_language(super().form_valid(form), self.user)
