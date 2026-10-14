@@ -12,8 +12,9 @@ Works in Russian and English, and loads nothing from third-party servers.
 - Contributor and AI-assistant guide: [docs/CLAUDE.md](docs/CLAUDE.md)
 
 > Status: early development. Residents can log in, see free machines, book,
-> cancel, export bookings to their calendar and see their balance. The
-> manager's key screen is next.
+> cancel, export bookings to their calendar and see their balance. Managers
+> record key hand-overs on the key schedule. Resident CSV import and the
+> installable PWA are next.
 
 ## Requirements
 

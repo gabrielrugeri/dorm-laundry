@@ -582,3 +582,71 @@ msgstr "Страницы"
 
 msgid "Finished"
 msgstr "Завершено"
+
+msgid "This key action is not possible."
+msgstr "Это действие с ключом невозможно."
+
+msgid "Only staff of this dormitory can record keys."
+msgstr "Записывать выдачу ключей могут только сотрудники этого общежития."
+
+msgid "This booking was cancelled."
+msgstr "Это бронирование отменено."
+
+msgid "The key has not been taken yet."
+msgstr "Ключ ещё не выдан."
+
+msgid "There is nothing to undo, or it is too late to undo it."
+msgstr "Отменять нечего, или отменить уже нельзя."
+
+msgid "Keys out now"
+msgstr "Ключи на руках"
+
+msgid "All keys are in."
+msgstr "Все ключи на месте."
+
+msgid "Yesterday"
+msgstr "Вчера"
+
+msgid "Tomorrow"
+msgstr "Завтра"
+
+msgid "overdue"
+msgstr "просрочен"
+
+msgid "waiting"
+msgstr "ожидается"
+
+msgid "Key taken"
+msgstr "Ключ выдан"
+
+msgid "Key returned"
+msgstr "Ключ возвращён"
+
+msgid "Undo"
+msgstr "Отменить действие"
+
+msgid "No bookings on this day."
+msgstr "В этот день бронирований нет."
+
+msgid "Note (optional)"
+msgstr "Примечание (необязательно)"
+
+#, python-format
+msgid "since %(taken)s"
+msgstr "с %(taken)s"
+
+#, python-format
+msgid "overdue, due %(due)s"
+msgstr "просрочен, срок %(due)s"
+
+#, python-format
+msgid "room %(room)s"
+msgstr "комната %(room)s"
+
+#, python-format
+msgid "returned %(time)s"
+msgstr "возвращён в %(time)s"
+
+#, python-format
+msgid "taken %(time)s"
+msgstr "выдан в %(time)s"

@@ -549,3 +549,71 @@ msgstr ""
 
 msgid "Finished"
 msgstr ""
+
+msgid "This key action is not possible."
+msgstr ""
+
+msgid "Only staff of this dormitory can record keys."
+msgstr ""
+
+msgid "This booking was cancelled."
+msgstr ""
+
+msgid "The key has not been taken yet."
+msgstr ""
+
+msgid "There is nothing to undo, or it is too late to undo it."
+msgstr ""
+
+msgid "Keys out now"
+msgstr ""
+
+msgid "All keys are in."
+msgstr ""
+
+msgid "Yesterday"
+msgstr ""
+
+msgid "Tomorrow"
+msgstr ""
+
+msgid "overdue"
+msgstr ""
+
+msgid "waiting"
+msgstr ""
+
+msgid "Key taken"
+msgstr ""
+
+msgid "Key returned"
+msgstr ""
+
+msgid "Undo"
+msgstr ""
+
+msgid "No bookings on this day."
+msgstr ""
+
+msgid "Note (optional)"
+msgstr ""
+
+#, python-format
+msgid "since %(taken)s"
+msgstr ""
+
+#, python-format
+msgid "overdue, due %(due)s"
+msgstr ""
+
+#, python-format
+msgid "room %(room)s"
+msgstr ""
+
+#, python-format
+msgid "returned %(time)s"
+msgstr ""
+
+#, python-format
+msgid "taken %(time)s"
+msgstr ""
