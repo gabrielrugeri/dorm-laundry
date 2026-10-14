@@ -33,7 +33,14 @@ Read `docs/MVP-SPEC.md` before starting any task. It is the source of truth for 
 - Update `README.md` and `docs/` when behaviour or setup changes.
 
 ## Commands (fill in as the project grows)
-- Setup: `python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
+- Setup: `python -m venv .venv && source .venv/bin/activate && pip install -r requirements-dev.txt` (Windows: `.venv\Scripts\activate`)
+- CSS: `python scripts/tailwind.py build` (or `watch` while editing templates)
 - Run: `python manage.py migrate && python manage.py seed_demo && python manage.py runserver`
 - Tests: `pytest`
-- Translations: `python manage.py makemessages -l ru -l en && python manage.py compilemessages`
+- Lint/format: `ruff check . && ruff format .`
+- Translations: `python manage.py makemessages -l ru -l en && python scripts/check_translations.py && python manage.py compilemessages` (needs GNU gettext)
+- Dependencies: edit `requirements*.in`, then `pip-compile requirements.in && pip-compile requirements-dev.in`
+
+## Layout
+- `config/settings/{base,dev,prod,test}.py`; apps live in `apps/` (`core`, `accounts`, `dorms`, `bookings`, `ledger`, `keylog`).
+- Data model and the rules it enforces: `docs/ARCHITECTURE.md`.
