@@ -517,3 +517,32 @@ msgstr ""
 
 msgid "Add to calendar"
 msgstr ""
+
+msgid "Balance"
+msgstr ""
+
+msgid "Current balance"
+msgstr ""
+
+msgid ""
+"To top up, pay the dormitory administration. They add the money to your "
+"balance."
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "No transactions yet."
+msgstr ""
+
+msgid "Newer"
+msgstr ""
+
+msgid "Older"
+msgstr ""
+
+msgid "Main"
+msgstr ""
+
+msgid "Pages"
+msgstr ""

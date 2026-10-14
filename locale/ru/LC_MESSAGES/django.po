@@ -548,3 +548,34 @@ msgstr "Стирка: %(machine)s"
 
 msgid "Add to calendar"
 msgstr "Добавить в календарь"
+
+msgid "Balance"
+msgstr "Баланс"
+
+msgid "Current balance"
+msgstr "Текущий баланс"
+
+msgid ""
+"To top up, pay the dormitory administration. They add the money to your "
+"balance."
+msgstr ""
+"Чтобы пополнить баланс, внесите оплату администрации общежития — деньги "
+"зачислят на ваш баланс."
+
+msgid "History"
+msgstr "История"
+
+msgid "No transactions yet."
+msgstr "Операций пока нет."
+
+msgid "Newer"
+msgstr "Новее"
+
+msgid "Older"
+msgstr "Старше"
+
+msgid "Main"
+msgstr "Основное меню"
+
+msgid "Pages"
+msgstr "Страницы"

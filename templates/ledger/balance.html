@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{% translate "Balance" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="mb-4 rounded-lg bg-white p-4 shadow-sm">
+    <p class="text-sm text-slate-600">{% translate "Current balance" %}</p>
+    <p class="text-3xl font-semibold">{{ balance|rub }}</p>
+    <p class="mt-2 text-sm text-slate-600">{% translate "To top up, pay the dormitory administration. They add the money to your balance." %}</p>
+  </div>
+
+  <h2 class="mb-2 font-medium">{% translate "History" %}</h2>
+  <ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+    {% for entry in page %}
+      <li class="flex items-start justify-between gap-3 px-4 py-3">
+        <div class="min-w-0">
+          <p class="font-medium">{{ entry.get_kind_display|capfirst }}</p>
+          <p class="text-sm text-slate-600">
+            {{ entry.created_at|date:"j M Y, H:i" }}
+            {% if entry.booking %}· {{ entry.booking.date|date:"j M" }}, {{ entry.booking.slot }}, {{ entry.booking.machine.label }}{% endif %}
+          </p>
+          {% if entry.note and not entry.booking %}<p class="text-sm text-slate-600">{{ entry.note }}</p>{% endif %}
+        </div>
+        <span class="shrink-0 font-medium {% if entry.amount > 0 %}text-green-800{% else %}text-slate-900{% endif %}">{{ entry.amount|rub_signed }}</span>
+      </li>
+    {% empty %}
+      <li class="px-4 py-3 text-slate-600">{% translate "No transactions yet." %}</li>
+    {% endfor %}
+  </ul>
+
+  {% if page.has_other_pages %}
+    <nav class="mt-4 flex justify-between text-sm" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}" class="text-blue-700 underline">← {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
+      {% if page.has_next %}<a href="?page={{ page.next_page_number }}" class="text-blue-700 underline">{% translate "Older" %} →</a>{% endif %}
+    </nav>
+  {% endif %}
+{% endblock %}
