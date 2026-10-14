@@ -9,11 +9,13 @@ allowed. Its `message` is translatable and safe to show to the resident.
 """
 
 import uuid
+from datetime import timedelta
 
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from apps.accounts import roles
 from apps.accounts.models import Resident
 from apps.ledger.models import LedgerEntry
 
@@ -177,3 +179,91 @@ def _any_slot_occupied(machine, day, slots):
         .exclude(status=Booking.Status.CANCELLED)
         .exists()
     )
+
+
+# --- Cancellation ---------------------------------------------------------------
+
+
+def refund_due(booking, now=None):
+    """True if cancelling `booking` at `now` gives a refund.
+
+    Cancelling at least `cancellation_cutoff_hours` before the start is
+    refunded. Later cancellations are still allowed (they free the machine for
+    someone else) but are not refunded.
+    """
+    now = now or timezone.now()
+    cutoff = timedelta(hours=booking.machine.dormitory.cancellation_cutoff_hours)
+    return now <= booking.starts_at - cutoff
+
+
+def cancel_booking(booking, *, actor, now=None):
+    """Cancel one booking (one slot) on behalf of `actor`, a User.
+
+    Allowed for the resident who owns the booking, and for managers and admins
+    of the booking's dormitory. Refunds the price paid if `refund_due()`.
+
+    Returns the refund LedgerEntry, or None if there was no refund.
+    """
+    now = now or timezone.now()
+    with transaction.atomic():
+        # Lock the booking so that two cancellations of the same booking run one after
+        # the other: the second one sees it is already cancelled. UNIQUE(booking, kind)
+        # on the ledger would also refuse a second refund.
+        booking = (
+            Booking.objects.select_for_update()
+            .select_related("machine__dormitory", "resident")
+            .get(pk=booking.pk)
+        )
+        _check_can_change(actor, booking)
+        if booking.status == Booking.Status.CANCELLED:
+            raise AlreadyCancelled
+        if booking.status == Booking.Status.COMPLETED or booking.starts_at <= now:
+            raise TooLateToCancel
+
+        booking.status = Booking.Status.CANCELLED
+        booking.cancelled_at = now
+        booking.save(update_fields=["status", "cancelled_at"])
+
+        if not booking.price_rub or not refund_due(booking, now):
+            return None
+        # Automatic when residents cancel their own booking; otherwise record who did it.
+        created_by = None if actor.pk == booking.resident.user_id else actor
+        return LedgerEntry.objects.create(
+            resident=booking.resident,
+            amount=booking.price_rub,
+            kind=LedgerEntry.Kind.REFUND,
+            booking=booking,
+            created_by=created_by,
+        )
+
+
+def cancel_group(group_id, *, actor, now=None):
+    """Cancel every booking of a group that has not started yet.
+
+    Slots that already started (or were already cancelled) are left alone.
+    Each slot is refunded on its own, following `refund_due()`. Returns the
+    bookings that were cancelled.
+    """
+    now = now or timezone.now()
+    with transaction.atomic():
+        bookings = list(
+            Booking.objects.filter(
+                group_id=group_id, status=Booking.Status.ACTIVE, starts_at__gt=now
+            ).order_by("starts_at")
+        )
+        for booking in bookings:
+            cancel_booking(booking, actor=actor, now=now)
+    return bookings
+
+
+def _check_can_change(actor, booking):
+    """The owner of the booking, or a manager/admin of its dormitory."""
+    if not actor.is_active:
+        raise NotAllowed
+    if actor.pk == booking.resident.user_id:
+        return
+    staff_profile = getattr(actor, "staff_profile", None)
+    is_staff = roles.has_role(actor, roles.MANAGER) or roles.has_role(actor, roles.ADMIN)
+    if is_staff and staff_profile and staff_profile.dormitory_id == booking.machine.dormitory_id:
+        return
+    raise NotAllowed

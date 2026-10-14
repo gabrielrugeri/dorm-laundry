@@ -4,11 +4,14 @@ Times are passed with `now=` so the tests do not depend on the real clock.
 Slots are local Moscow time (UTC+3): 08:00 local is 05:00 UTC.
 """
 
-from datetime import UTC, date, datetime, time
+from datetime import UTC, date, datetime, time, timedelta
 
 import pytest
+from django.contrib.auth.models import Group
 from django.utils import translation
 
+from apps.accounts import roles
+from apps.accounts.models import StaffProfile, User
 from apps.bookings import services
 from apps.bookings.models import Booking
 from apps.dorms.models import Machine, TimeSlot
@@ -219,3 +222,153 @@ def test_book_rejects_gaps(resident, machine, slot, slot_10, slot_12):
 def test_book_needs_a_slot(resident, machine):
     with pytest.raises(ValueError):
         services.book_slots(resident, machine, DAY, [], now=NOW)
+
+
+# --- Cancellation --------------------------------------------------------------
+
+# DAY 08:00 Moscow is 05:00 UTC; with the default 2 h cutoff, refunds end at 03:00 UTC.
+CUTOFF = datetime(2026, 10, 20, 3, 0, tzinfo=UTC)
+
+
+def make_staff(dormitory, role, username):
+    user = User.objects.create_user(username=username, password="123456")
+    user.groups.add(Group.objects.get(name=role))
+    StaffProfile.objects.create(user=user, dormitory=dormitory)
+    return user
+
+
+@pytest.fixture
+def booked(resident, machine, slot):
+    """A 50 RUB booking for DAY 08:00, paid from a 50 RUB credit."""
+    credit(resident, 50)
+    [booking] = services.book_slots(resident, machine, DAY, [slot], now=NOW)
+    return booking
+
+
+def refunds():
+    return LedgerEntry.objects.filter(kind=LedgerEntry.Kind.REFUND)
+
+
+def test_refund_due_respects_cutoff(booked):
+    assert services.refund_due(booked, CUTOFF)
+    assert not services.refund_due(booked, CUTOFF + timedelta(seconds=1))
+
+
+def test_refund_due_uses_dormitory_cutoff(booked, dormitory):
+    dormitory.cancellation_cutoff_hours = 0
+    dormitory.save()
+    booked.refresh_from_db()
+    assert services.refund_due(booked, booked.starts_at)
+
+
+@pytest.mark.parametrize("now", [NOW, CUTOFF])
+def test_cancel_before_cutoff_refunds(booked, resident, now):
+    refund = services.cancel_booking(booked, actor=resident.user, now=now)
+    booked.refresh_from_db()
+    assert booked.status == Booking.Status.CANCELLED
+    assert booked.cancelled_at == now
+    assert (refund.kind, refund.amount, refund.booking) == (LedgerEntry.Kind.REFUND, 50, booked)
+    assert refund.created_by is None
+    assert balance(resident) == 50
+
+
+def test_refund_returns_price_paid_even_if_price_changed(booked, resident, dormitory):
+    dormitory.price_per_slot = 80
+    dormitory.save()
+    refund = services.cancel_booking(booked, actor=resident.user, now=NOW)
+    assert refund.amount == 50
+
+
+def test_cancel_after_cutoff_frees_slot_without_refund(booked, resident, other_resident, slot):
+    late = CUTOFF + timedelta(minutes=1)
+    assert services.cancel_booking(booked, actor=resident.user, now=late) is None
+    booked.refresh_from_db()
+    assert booked.status == Booking.Status.CANCELLED
+    assert not refunds().exists()
+    assert balance(resident) == 0
+    # Someone else can take the freed slot.
+    credit(other_resident, 50)
+    services.book_slots(other_resident, booked.machine, DAY, [slot], now=late)
+
+
+def test_cannot_cancel_after_start(booked, resident):
+    with pytest.raises(services.TooLateToCancel):
+        services.cancel_booking(booked, actor=resident.user, now=booked.starts_at)
+    booked.refresh_from_db()
+    assert booked.status == Booking.Status.ACTIVE
+
+
+def test_cannot_cancel_completed_booking(booked, resident):
+    booked.status = Booking.Status.COMPLETED
+    booked.save()
+    with pytest.raises(services.TooLateToCancel):
+        services.cancel_booking(booked, actor=resident.user, now=NOW)
+
+
+def test_no_double_refund(booked, resident):
+    services.cancel_booking(booked, actor=resident.user, now=NOW)
+    # Even with a stale copy that still says "active".
+    with pytest.raises(services.AlreadyCancelled):
+        services.cancel_booking(booked, actor=resident.user, now=NOW)
+    assert refunds().count() == 1
+    assert balance(resident) == 50
+
+
+def test_other_resident_cannot_cancel(booked, other_resident):
+    with pytest.raises(services.NotAllowed):
+        services.cancel_booking(booked, actor=other_resident.user, now=NOW)
+    booked.refresh_from_db()
+    assert booked.status == Booking.Status.ACTIVE
+
+
+def test_inactive_owner_cannot_cancel(booked, resident):
+    resident.user.is_active = False
+    resident.user.save()
+    with pytest.raises(services.NotAllowed):
+        services.cancel_booking(booked, actor=resident.user, now=NOW)
+
+
+@pytest.mark.parametrize("role", [roles.MANAGER, roles.ADMIN])
+def test_staff_of_same_dormitory_can_cancel(booked, dormitory, role):
+    staff = make_staff(dormitory, role, "staff")
+    refund = services.cancel_booking(booked, actor=staff, now=NOW)
+    assert refund.created_by == staff
+
+
+def test_staff_of_other_dormitory_cannot_cancel(booked, other_dormitory):
+    staff = make_staff(other_dormitory, roles.ADMIN, "foreign-admin")
+    with pytest.raises(services.NotAllowed):
+        services.cancel_booking(booked, actor=staff, now=NOW)
+
+
+def test_staff_profile_without_role_cannot_cancel(booked, dormitory):
+    user = User.objects.create_user(username="no-role", password="123456")
+    StaffProfile.objects.create(user=user, dormitory=dormitory)
+    with pytest.raises(services.NotAllowed):
+        services.cancel_booking(booked, actor=user, now=NOW)
+
+
+def test_cancel_group_cancels_future_slots(resident, machine, slot, slot_10, slot_12):
+    credit(resident, 150)
+    bookings = services.book_slots(resident, machine, DAY, [slot, slot_10, slot_12], now=NOW)
+    # 08:00 has started; 10:00 is past its cutoff; 12:00 is refunded.
+    now = datetime(2026, 10, 20, 5, 30, tzinfo=UTC)
+    cancelled = services.cancel_group(bookings[0].group_id, actor=resident.user, now=now)
+    assert [b.slot for b in cancelled] == [slot_10, slot_12]
+    statuses = {b.slot: b.status for b in Booking.objects.all()}
+    assert statuses == {
+        slot: Booking.Status.ACTIVE,
+        slot_10: Booking.Status.CANCELLED,
+        slot_12: Booking.Status.CANCELLED,
+    }
+    assert [r.booking.slot for r in refunds()] == [slot_12]
+    assert balance(resident) == 50
+
+
+def test_cancel_group_checks_permission(resident, other_resident, machine, slot):
+    credit(resident, 50)
+    [booking] = services.book_slots(resident, machine, DAY, [slot], now=NOW)
+    with pytest.raises(services.NotAllowed):
+        services.cancel_group(booking.group_id, actor=other_resident.user, now=NOW)
+    booking.refresh_from_db()
+    assert booking.status == Booking.Status.ACTIVE
