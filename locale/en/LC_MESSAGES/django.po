@@ -113,3 +113,30 @@ msgstr ""
 
 msgid "machines"
 msgstr ""
+
+msgid "user"
+msgstr ""
+
+msgid "student code"
+msgstr ""
+
+msgid "full name"
+msgstr ""
+
+msgid "room"
+msgstr ""
+
+msgid "language"
+msgstr ""
+
+msgid "resident"
+msgstr ""
+
+msgid "residents"
+msgstr ""
+
+msgid "staff profile"
+msgstr ""
+
+msgid "staff profiles"
+msgstr ""

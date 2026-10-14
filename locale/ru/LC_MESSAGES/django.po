@@ -114,3 +114,30 @@ msgstr "машина"
 
 msgid "machines"
 msgstr "машины"
+
+msgid "user"
+msgstr "пользователь"
+
+msgid "student code"
+msgstr "студенческий код"
+
+msgid "full name"
+msgstr "ФИО"
+
+msgid "room"
+msgstr "комната"
+
+msgid "language"
+msgstr "язык"
+
+msgid "resident"
+msgstr "жилец"
+
+msgid "residents"
+msgstr "жильцы"
+
+msgid "staff profile"
+msgstr "профиль сотрудника"
+
+msgid "staff profiles"
+msgstr "профили сотрудников"
