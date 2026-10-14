@@ -38,3 +38,78 @@ msgstr ""
 msgid "The availability grid will appear here."
 msgstr ""
 
+msgid "Dormitories"
+msgstr ""
+
+#, python-format
+msgid "Unknown timezone: %(value)s"
+msgstr ""
+
+msgid "name"
+msgstr ""
+
+msgid "slug"
+msgstr ""
+
+msgid "timezone"
+msgstr ""
+
+msgid "price per slot (RUB)"
+msgstr ""
+
+msgid "Whole rubles per machine per slot."
+msgstr ""
+
+msgid "cancellation cutoff (hours)"
+msgstr ""
+
+msgid "Cancelling at least this many hours before the start gives a refund."
+msgstr ""
+
+msgid "booking horizon (days)"
+msgstr ""
+
+msgid "How many days ahead residents can book."
+msgstr ""
+
+msgid "dormitory"
+msgstr ""
+
+msgid "dormitories"
+msgstr ""
+
+msgid "start time"
+msgstr ""
+
+msgid "Local time of the dormitory."
+msgstr ""
+
+msgid "duration (minutes)"
+msgstr ""
+
+msgid "active"
+msgstr ""
+
+msgid "time slot"
+msgstr ""
+
+msgid "time slots"
+msgstr ""
+
+msgid "A slot must end on the same day it starts."
+msgstr ""
+
+msgid "label"
+msgstr ""
+
+msgid "E.g. “Machine 1”."
+msgstr ""
+
+msgid "Inactive machines cannot be booked."
+msgstr ""
+
+msgid "machine"
+msgstr ""
+
+msgid "machines"
+msgstr ""

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     # Project apps
     "apps.core",
     "apps.accounts",
+    "apps.dorms",
 ]
 
 MIDDLEWARE = [

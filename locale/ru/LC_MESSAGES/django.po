@@ -37,3 +37,80 @@ msgstr "Забронировать стиральную машину"
 
 msgid "The availability grid will appear here."
 msgstr "Здесь появится сетка свободных слотов."
+
+msgid "Dormitories"
+msgstr "Общежития"
+
+#, python-format
+msgid "Unknown timezone: %(value)s"
+msgstr "Неизвестный часовой пояс: %(value)s"
+
+msgid "name"
+msgstr "название"
+
+msgid "slug"
+msgstr "короткое имя"
+
+msgid "timezone"
+msgstr "часовой пояс"
+
+msgid "price per slot (RUB)"
+msgstr "цена за слот (руб.)"
+
+msgid "Whole rubles per machine per slot."
+msgstr "Целые рубли за одну машину на один слот."
+
+msgid "cancellation cutoff (hours)"
+msgstr "срок отмены (часы)"
+
+msgid "Cancelling at least this many hours before the start gives a refund."
+msgstr ""
+"При отмене не позднее чем за столько часов до начала деньги возвращаются."
+
+msgid "booking horizon (days)"
+msgstr "горизонт бронирования (дни)"
+
+msgid "How many days ahead residents can book."
+msgstr "На сколько дней вперёд жильцы могут бронировать."
+
+msgid "dormitory"
+msgstr "общежитие"
+
+msgid "dormitories"
+msgstr "общежития"
+
+msgid "start time"
+msgstr "время начала"
+
+msgid "Local time of the dormitory."
+msgstr "Местное время общежития."
+
+msgid "duration (minutes)"
+msgstr "длительность (минуты)"
+
+msgid "active"
+msgstr "активно"
+
+msgid "time slot"
+msgstr "временной слот"
+
+msgid "time slots"
+msgstr "временные слоты"
+
+msgid "A slot must end on the same day it starts."
+msgstr "Слот должен заканчиваться в тот же день, когда начинается."
+
+msgid "label"
+msgstr "обозначение"
+
+msgid "E.g. “Machine 1”."
+msgstr "Например, «Машина 1»."
+
+msgid "Inactive machines cannot be booked."
+msgstr "Неактивные машины нельзя забронировать."
+
+msgid "machine"
+msgstr "машина"
+
+msgid "machines"
+msgstr "машины"
