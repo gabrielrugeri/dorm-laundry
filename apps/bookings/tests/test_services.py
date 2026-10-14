@@ -372,3 +372,57 @@ def test_cancel_group_checks_permission(resident, other_resident, machine, slot)
         services.cancel_group(booking.group_id, actor=other_resident.user, now=NOW)
     booking.refresh_from_db()
     assert booking.status == Booking.Status.ACTIVE
+
+
+# --- Several machines at once ------------------------------------------------------
+
+
+@pytest.fixture
+def machine2(dormitory):
+    return Machine.objects.create(dormitory=dormitory, number=2)
+
+
+def test_book_two_machines_for_two_slots(resident, machine, machine2, slot, slot_10):
+    credit(resident, 200)
+    groups = services.book_machines(resident, [machine2, machine], DAY, [slot, slot_10], now=NOW)
+    assert [g[0].machine for g in groups] == [machine, machine2]  # machine order
+    assert all(len(g) == 2 for g in groups)
+    # Each machine is its own group (own key, own cancel button).
+    assert len({b.group_id for g in groups for b in g}) == 2
+    assert balance(resident) == 0
+
+
+def test_several_machines_need_the_whole_amount(resident, machine, machine2, slot, slot_10):
+    credit(resident, 199)
+    with pytest.raises(services.InsufficientBalance):
+        services.book_machines(resident, [machine, machine2], DAY, [slot, slot_10], now=NOW)
+    assert not Booking.objects.exists()
+    assert balance(resident) == 199
+
+
+def test_several_machines_are_all_or_nothing(
+    resident, other_resident, machine, machine2, slot, slot_10
+):
+    credit(resident, 200)
+    credit(other_resident, 50)
+    services.book_slots(other_resident, machine2, DAY, [slot_10], now=NOW)
+    with pytest.raises(services.SlotUnavailable):
+        services.book_machines(resident, [machine, machine2], DAY, [slot, slot_10], now=NOW)
+    assert not Booking.objects.filter(resident=resident).exists()
+    assert balance(resident) == 200
+
+
+def test_same_machine_twice_is_booked_once(resident, machine, slot):
+    credit(resident, 100)
+    groups = services.book_machines(resident, [machine, machine], DAY, [slot], now=NOW)
+    assert len(groups) == 1
+    assert balance(resident) == 50
+
+
+def test_inactive_machine_in_the_list_books_nothing(resident, machine, machine2, slot):
+    credit(resident, 100)
+    machine2.active = False
+    machine2.save()
+    with pytest.raises(services.MachineUnavailable):
+        services.book_machines(resident, [machine, machine2], DAY, [slot], now=NOW)
+    assert not Booking.objects.exists()
