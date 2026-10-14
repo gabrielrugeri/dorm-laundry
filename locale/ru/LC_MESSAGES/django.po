@@ -637,10 +637,6 @@ msgid "Free only until %(time)s"
 msgstr "Свободна только до %(time)s"
 
 #, python-format
-msgid "Total: %(amount)s"
-msgstr "Итого: %(amount)s"
-
-#, python-format
 msgid "%(n)s slot"
 msgid_plural "%(n)s slots"
 msgstr[0] "%(n)s слот"
@@ -671,3 +667,6 @@ msgstr[0] "%(price)s за машину на %(n)s слот."
 msgstr[1] "%(price)s за машину на %(n)s слота."
 msgstr[2] "%(price)s за машину на %(n)s слотов."
 msgstr[3] "%(price)s за машину на %(n)s слота."
+
+msgid "Total"
+msgstr "Итого"

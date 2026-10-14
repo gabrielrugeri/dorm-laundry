@@ -610,10 +610,6 @@ msgid "Free only until %(time)s"
 msgstr ""
 
 #, python-format
-msgid "Total: %(amount)s"
-msgstr ""
-
-#, python-format
 msgid "%(n)s slot"
 msgid_plural "%(n)s slots"
 msgstr[0] ""
@@ -636,3 +632,6 @@ msgid "%(price)s per machine for %(n)s slot."
 msgid_plural "%(price)s per machine for %(n)s slots."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Total"
+msgstr ""

@@ -59,7 +59,7 @@
       </p>
       {# Filled in by the script below; without JavaScript the total is checked on submit. #}
       <p class="mb-4 font-medium" id="booking-total" hidden
-         data-price="{{ price_per_machine }}" data-template="{% translate 'Total: %(amount)s' %}" data-money="{{ 0|rub }}"></p>
+         data-price="{{ price_per_machine }}" data-label="{% translate 'Total' %}" data-money="{{ 0|rub }}"></p>
       <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Book" %}</button>
     </form>
     <script>
@@ -70,7 +70,7 @@
         function update() {
           var ticked = Array.prototype.filter.call(boxes, function (box) { return box.checked; }).length;
           var amount = total.dataset.money.replace("0", String(ticked * Number(total.dataset.price)));
-          total.textContent = total.dataset.template.replace("%(amount)s", amount);
+          total.textContent = total.dataset.label + ": " + amount;
           total.hidden = false;
         }
         boxes.forEach(function (box) { box.addEventListener("change", update); });

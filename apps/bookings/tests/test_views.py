@@ -263,6 +263,7 @@ def test_pages_are_translated_to_russian(logged_in, slots, machine, machine2, to
     assert "Машина 1" in page and "Машина 2" in page
     assert "08:00–12:00 · 2 слота" in " ".join(page.split())
     assert "100 ₽ за машину на 2 слота." in page
+    assert 'data-label="Итого"' in page  # running total label
 
 
 def test_dates_use_russian_genitive_month(logged_in, dormitory, slots, machine):
