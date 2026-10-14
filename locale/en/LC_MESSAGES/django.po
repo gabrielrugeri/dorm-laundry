@@ -197,3 +197,39 @@ msgstr ""
 
 msgid "Machine, time slot and resident must belong to the same dormitory."
 msgstr ""
+
+msgid "Ledger"
+msgstr ""
+
+msgid "credit"
+msgstr ""
+
+msgid "booking charge"
+msgstr ""
+
+msgid "refund"
+msgstr ""
+
+msgid "adjustment"
+msgstr ""
+
+msgid "amount (RUB)"
+msgstr ""
+
+msgid "kind"
+msgstr ""
+
+msgid "note"
+msgstr ""
+
+msgid "created by"
+msgstr ""
+
+msgid "Who recorded this entry (empty for automatic entries)."
+msgstr ""
+
+msgid "ledger entry"
+msgstr ""
+
+msgid "ledger entries"
+msgstr ""

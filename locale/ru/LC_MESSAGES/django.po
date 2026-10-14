@@ -198,3 +198,39 @@ msgstr "бронирования"
 
 msgid "Machine, time slot and resident must belong to the same dormitory."
 msgstr "Машина, слот и жилец должны относиться к одному общежитию."
+
+msgid "Ledger"
+msgstr "Журнал операций"
+
+msgid "credit"
+msgstr "пополнение"
+
+msgid "booking charge"
+msgstr "оплата бронирования"
+
+msgid "refund"
+msgstr "возврат"
+
+msgid "adjustment"
+msgstr "корректировка"
+
+msgid "amount (RUB)"
+msgstr "сумма (руб.)"
+
+msgid "kind"
+msgstr "тип"
+
+msgid "note"
+msgstr "примечание"
+
+msgid "created by"
+msgstr "кем создано"
+
+msgid "Who recorded this entry (empty for automatic entries)."
+msgstr "Кто внёс запись (пусто для автоматических записей)."
+
+msgid "ledger entry"
+msgstr "операция"
+
+msgid "ledger entries"
+msgstr "операции"
