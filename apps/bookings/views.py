@@ -52,7 +52,7 @@ def grid(request):
     day = _chosen_day(request, days)
     length = _chosen_length(request, dormitory)
     own = Booking.objects.filter(resident=resident, date=day).exclude(
-        status=Booking.Status.CANCELLED
+        status__in=Booking.CANCELLED_STATUSES
     )
     context = {
         "days": days,

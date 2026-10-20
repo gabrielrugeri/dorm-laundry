@@ -47,7 +47,7 @@ def day_rows(dormitory, day, now=None):
     now = now or timezone.now()
     bookings = (
         Booking.objects.filter(machine__dormitory=dormitory, date=day)
-        .exclude(status=Booking.Status.CANCELLED)
+        .exclude(status__in=Booking.CANCELLED_STATUSES)
         .select_related("resident")
     )
     groups = group_bookings(bookings)

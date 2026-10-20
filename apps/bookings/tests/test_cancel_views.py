@@ -120,3 +120,19 @@ def test_cancel_page_in_russian(logged_in, two_slot_group):
     assert "возврат 50 ₽" in html
     assert "Отменить и вернуть 100 ₽" in html
     assert "за 2 часа до начала" in html
+
+
+def test_resident_sees_why_the_administration_cancelled(logged_in, dormitory, two_slot_group):
+    from apps.accounts import roles
+    from apps.keylog.tests.test_services import make_staff
+
+    admin = make_staff(dormitory, "boss", role=roles.ADMIN)
+    services.cancel_group(two_slot_group[0].group_id, actor=admin, reason="Water pipe repair")
+    logged_in.cookies["django_language"] = "en"
+    html = logged_in.get(MINE).content.decode()
+    assert "Cancelled by the administration" in html
+    assert "Water pipe repair" in html
+    detail = logged_in.get(
+        reverse("bookings:detail", kwargs={"group_id": two_slot_group[0].group_id})
+    ).content.decode()
+    assert "Water pipe repair" in detail

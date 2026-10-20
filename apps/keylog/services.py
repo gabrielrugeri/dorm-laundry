@@ -59,7 +59,7 @@ def _locked_log(group_id, actor):
     first = bookings.select_for_update().order_by("starts_at").first()
     if first is None:
         raise NotAllowed
-    if not bookings.exclude(status=Booking.Status.CANCELLED).exists():
+    if not bookings.exclude(status__in=Booking.CANCELLED_STATUSES).exists():
         raise BookingCancelled
     log, _created = KeyLog.objects.get_or_create(booking=first)
     return log

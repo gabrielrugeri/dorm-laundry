@@ -698,3 +698,22 @@ msgstr ""
 
 msgid "audit log"
 msgstr ""
+
+msgid "reason for cancellation"
+msgstr ""
+
+msgid "Required when the administration cancels; shown to the resident."
+msgstr ""
+
+msgid "Please give a reason for the cancellation."
+msgstr ""
+
+msgid "Cancelled by the administration"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+msgctxt "booking status"
+msgid "cancelled by the administration"
+msgstr ""

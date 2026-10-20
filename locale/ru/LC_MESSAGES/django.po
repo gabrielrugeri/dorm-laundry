@@ -733,3 +733,22 @@ msgstr "запись журнала"
 
 msgid "audit log"
 msgstr "журнал действий"
+
+msgid "reason for cancellation"
+msgstr "причина отмены"
+
+msgid "Required when the administration cancels; shown to the resident."
+msgstr "Обязательна, если отменяет администрация; жилец её видит."
+
+msgid "Please give a reason for the cancellation."
+msgstr "Укажите причину отмены."
+
+msgid "Cancelled by the administration"
+msgstr "Отменено администрацией"
+
+msgid "Reason"
+msgstr "Причина"
+
+msgctxt "booking status"
+msgid "cancelled by the administration"
+msgstr "отменена администрацией"

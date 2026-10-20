@@ -12,6 +12,7 @@ from django.utils import translation
 
 from apps.accounts import roles
 from apps.accounts.models import StaffProfile, User
+from apps.audit.models import AuditEvent
 from apps.bookings import services
 from apps.bookings.models import Booking
 from apps.dorms.models import Machine, TimeSlot
@@ -331,8 +332,11 @@ def test_inactive_owner_cannot_cancel(booked, resident):
 @pytest.mark.parametrize("role", [roles.MANAGER, roles.ADMIN])
 def test_staff_of_same_dormitory_can_cancel(booked, dormitory, role):
     staff = make_staff(dormitory, role, "staff")
-    refund = services.cancel_booking(booked, actor=staff, now=NOW)
+    refund = services.cancel_booking(booked, actor=staff, reason="Pipe burst", now=NOW)
     assert refund.created_by == staff
+    booked.refresh_from_db()
+    assert booked.status == Booking.Status.CANCELLED_BY_ADMIN
+    assert booked.cancel_reason == "Pipe burst"
 
 
 def test_staff_of_other_dormitory_cannot_cancel(booked, other_dormitory):
@@ -426,3 +430,76 @@ def test_inactive_machine_in_the_list_books_nothing(resident, machine, machine2,
     with pytest.raises(services.MachineUnavailable):
         services.book_machines(resident, [machine, machine2], DAY, [slot], now=NOW)
     assert not Booking.objects.exists()
+
+
+# --- Staff cancellations (stage 1a) --------------------------------------------------
+
+
+def test_staff_must_give_a_reason(booked, dormitory):
+    staff = make_staff(dormitory, roles.ADMIN, "boss")
+    for reason in ("", "   "):
+        with pytest.raises(services.ReasonRequired):
+            services.cancel_booking(booked, actor=staff, reason=reason, now=NOW)
+    booked.refresh_from_db()
+    assert booked.status == Booking.Status.ACTIVE
+    assert not AuditEvent.objects.exists()
+
+
+def test_resident_cancellation_needs_no_reason_and_is_not_audited(booked, resident):
+    services.cancel_booking(booked, actor=resident.user, now=NOW)
+    booked.refresh_from_db()
+    assert booked.status == Booking.Status.CANCELLED
+    assert booked.cancel_reason == ""
+    assert not AuditEvent.objects.exists()
+
+
+def test_staff_cancellation_is_audited_once(booked, dormitory):
+    staff = make_staff(dormitory, roles.ADMIN, "boss")
+    services.cancel_booking(booked, actor=staff, reason="Flood", now=NOW)
+    event = AuditEvent.objects.get()
+    assert (event.action, event.actor, event.reason) == ("booking.cancel_by_staff", staff, "Flood")
+    assert event.before["status"] == "active"
+    assert event.after["status"] == "cancelled_by_admin"
+    assert event.after["refund_rub"] == 50
+    assert event.dormitory == dormitory
+
+
+def test_full_refund_ignores_the_cutoff(booked, dormitory, resident):
+    staff = make_staff(dormitory, roles.ADMIN, "boss")
+    late = booked.starts_at - timedelta(minutes=30)  # inside the 2-hour cutoff
+    assert services.cancel_booking(booked, actor=staff, reason="x", now=late) is None
+    credit(resident, 50)  # the first cancellation was (correctly) not refunded
+    booked2 = services.book_slots(resident, booked.machine, booked.date, [booked.slot], now=NOW)[0]
+    refund = services.cancel_booking(booked2, actor=staff, reason="x", full_refund=True, now=late)
+    assert refund.amount == 50
+    event = AuditEvent.objects.get(target_id=str(booked2.pk))
+    assert event.after["full_refund"] is True
+
+
+def test_managers_cannot_give_full_refunds(booked, dormitory):
+    manager = make_staff(dormitory, roles.MANAGER, "keys")
+    with pytest.raises(services.NotAllowed):
+        services.cancel_booking(booked, actor=manager, reason="x", full_refund=True, now=NOW)
+
+
+def test_admin_cancellation_frees_the_slot(booked, dormitory, other_resident):
+    staff = make_staff(dormitory, roles.ADMIN, "boss")
+    services.cancel_booking(booked, actor=staff, reason="x", now=NOW)
+    credit(other_resident, 50)
+    services.book_slots(other_resident, booked.machine, booked.date, [booked.slot], now=NOW)
+
+
+def test_admin_cancelled_booking_cannot_be_cancelled_again(booked, dormitory, resident):
+    staff = make_staff(dormitory, roles.ADMIN, "boss")
+    services.cancel_booking(booked, actor=staff, reason="x", now=NOW)
+    with pytest.raises(services.AlreadyCancelled):
+        services.cancel_booking(booked, actor=resident.user, now=NOW)
+
+
+def test_database_requires_reason_for_admin_cancellation(booked):
+    from django.db import IntegrityError, transaction
+
+    booked.status = Booking.Status.CANCELLED_BY_ADMIN
+    booked.cancelled_at = NOW
+    with pytest.raises(IntegrityError), transaction.atomic():
+        booked.save()

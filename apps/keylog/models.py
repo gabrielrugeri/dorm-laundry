@@ -49,7 +49,7 @@ class KeyLog(models.Model):
     def due_at(self):
         """End of the last non-cancelled slot in the booking's group."""
         group = Booking.objects.filter(group_id=self.booking.group_id).exclude(
-            status=Booking.Status.CANCELLED
+            status__in=Booking.CANCELLED_STATUSES
         )
         return group.aggregate(end=Max("ends_at"))["end"] or self.booking.ends_at
 
