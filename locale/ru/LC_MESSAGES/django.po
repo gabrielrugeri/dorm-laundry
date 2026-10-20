@@ -1195,3 +1195,185 @@ msgstr "Подробности для этого действия не запи�
 
 msgid "Search: name, reason or staff member"
 msgstr "Поиск: имя, причина или сотрудник"
+
+msgid "The file is too large (more than 1 MB)."
+msgstr "Файл слишком большой (больше 1 МБ)."
+
+msgid "The file could not be read. Save it as CSV from Excel and try again."
+msgstr ""
+"Не удалось прочитать файл. Сохраните его из Excel в формате CSV и попробуйте "
+"снова."
+
+msgid "The first row must name the columns: student code, full name and room."
+msgstr ""
+"В первой строке должны быть названия столбцов: студенческий код, ФИО и "
+"комната."
+
+msgid "The file is empty."
+msgstr "Файл пустой."
+
+msgid "The file has more than 5000 rows."
+msgstr "В файле больше 5000 строк."
+
+msgid "The file has no residents in it."
+msgstr "В файле нет жильцов."
+
+#, python-format
+msgid "%(field)s is missing"
+msgstr "не указано: %(field)s"
+
+#, python-format
+msgid "%(field)s is too long"
+msgstr "слишком длинное значение: %(field)s"
+
+#, python-format
+msgid "unknown language “%(value)s” (use ru or en)"
+msgstr "неизвестный язык «%(value)s» (укажите ru или en)"
+
+#, python-format
+msgid "the same student code is already on line %(line)s"
+msgstr "такой же студенческий код уже есть в строке %(line)s"
+
+msgid "Choose a file first."
+msgstr "Сначала выберите файл."
+
+msgid "The file is no longer available. Please choose it again."
+msgstr "Файл больше недоступен. Выберите его ещё раз."
+
+msgid "Import finished"
+msgstr "Импорт завершён"
+
+msgid ""
+"New residents log in with a personal link and choose their PIN. Download the "
+"links and give each resident their own. Each link works once and expires "
+"after 7 days."
+msgstr ""
+"Новые жильцы входят по личной ссылке и придумывают PIN-код. Скачайте ссылки и"
+" передайте каждому жильцу его собственную. Каждая ссылка работает один раз и "
+"действует 7 дней."
+
+msgid ""
+"The file contains links that let someone log in. Keep it private and delete "
+"it after handing out the links."
+msgstr ""
+"В файле ссылки, по которым можно войти. Не передавайте его другим и удалите "
+"после того, как раздадите ссылки."
+
+msgid "Check before importing"
+msgstr "Проверьте перед импортом"
+
+msgid "Choose another file"
+msgstr "Выбрать другой файл"
+
+msgid "Nothing has been changed yet."
+msgstr "Пока ничего не изменено."
+
+msgid "new"
+msgstr "новых"
+
+msgid "will change"
+msgstr "изменятся"
+
+msgid "no changes"
+msgstr "без изменений"
+
+msgid "with errors"
+msgstr "с ошибками"
+
+msgid ""
+"Rows with errors are skipped. Fix them in the file and import it again later."
+msgstr ""
+"Строки с ошибками будут пропущены. Исправьте их в файле и загрузите его ещё "
+"раз позже."
+
+msgid ""
+"There is nothing to import: everyone in the file is already here with the "
+"same details."
+msgstr "Импортировать нечего: все из файла уже есть, и данные совпадают."
+
+msgid "Rows with errors (will be skipped)"
+msgstr "Строки с ошибками (будут пропущены)"
+
+msgid "Will change"
+msgstr "Изменятся"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "New residents"
+msgstr "Новые жильцы"
+
+msgid "No changes"
+msgstr "Без изменений"
+
+msgid "Add residents from a file"
+msgstr "Добавить жильцов из файла"
+
+msgid ""
+"Save the list from Excel as CSV. The first row names the columns: student "
+"code, full name, room."
+msgstr ""
+"Сохраните список из Excel в формате CSV. В первой строке — названия столбцов:"
+" студенческий код, ФИО, комната."
+
+msgid "Download an example file"
+msgstr "Скачать пример файла"
+
+msgid ""
+"Nothing is changed yet: first you see what will happen, then you confirm."
+msgstr ""
+"Сначала ничего не меняется: вы увидите, что произойдёт, и только потом "
+"подтвердите."
+
+msgid "File"
+msgstr "Файл"
+
+msgid "Check the file"
+msgstr "Проверить файл"
+
+msgid "Add many residents from a file"
+msgstr "Добавить много жильцов из файла"
+
+#, python-format
+msgid "Line %(line)s"
+msgstr "Строка %(line)s"
+
+#, python-format
+msgid "Download %(n)s login link"
+msgid_plural "Download %(n)s login links"
+msgstr[0] "Скачать %(n)s ссылку для входа"
+msgstr[1] "Скачать %(n)s ссылки для входа"
+msgstr[2] "Скачать %(n)s ссылок для входа"
+msgstr[3] "Скачать %(n)s ссылки для входа"
+
+#, python-format
+msgid "Import %(n)s row"
+msgid_plural "Import %(n)s rows"
+msgstr[0] "Импортировать %(n)s строку"
+msgstr[1] "Импортировать %(n)s строки"
+msgstr[2] "Импортировать %(n)s строк"
+msgstr[3] "Импортировать %(n)s строки"
+
+#, python-format
+msgid "%(n)s resident updated"
+msgid_plural "%(n)s residents updated"
+msgstr[0] "Изменён %(n)s жилец"
+msgstr[1] "Изменено %(n)s жильца"
+msgstr[2] "Изменено %(n)s жильцов"
+msgstr[3] "Изменено %(n)s жильца"
+
+#, python-format
+msgid "%(n)s resident added"
+msgid_plural "%(n)s residents added"
+msgstr[0] "Добавлен %(n)s жилец"
+msgstr[1] "Добавлено %(n)s жильца"
+msgstr[2] "Добавлено %(n)s жильцов"
+msgstr[3] "Добавлено %(n)s жильца"
+
+#, python-format
+msgid "%(n)s row skipped because of errors"
+msgid_plural "%(n)s rows skipped because of errors"
+msgstr[0] "Пропущена %(n)s строка из-за ошибок"
+msgstr[1] "Пропущено %(n)s строки из-за ошибок"
+msgstr[2] "Пропущено %(n)s строк из-за ошибок"
+msgstr[3] "Пропущено %(n)s строки из-за ошибок"

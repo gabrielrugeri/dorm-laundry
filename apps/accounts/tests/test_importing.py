@@ -8,6 +8,15 @@ from apps.audit.models import AuditEvent
 from apps.keylog.tests.test_services import make_staff
 
 
+@pytest.fixture(autouse=True)
+def english():
+    """Messages are checked in English; the default language is Russian."""
+    from django.utils import translation
+
+    with translation.override("en"):
+        yield
+
+
 @pytest.fixture
 def boss(dormitory):
     return make_staff(dormitory, "boss", role=roles.ADMIN)

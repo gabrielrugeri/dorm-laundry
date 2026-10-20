@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Import finished" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-md rounded-lg bg-white p-4 shadow-sm">
+    <h1 class="mb-3 text-xl font-semibold">{% translate "Import finished" %}</h1>
+    <ul class="mb-4 space-y-1">
+      <li>{% blocktranslate count n=summary.created %}{{ n }} resident added{% plural %}{{ n }} residents added{% endblocktranslate %}</li>
+      <li>{% blocktranslate count n=summary.changed %}{{ n }} resident updated{% plural %}{{ n }} residents updated{% endblocktranslate %}</li>
+      {% if summary.skipped %}<li class="text-red-800">{% blocktranslate count n=summary.skipped %}{{ n }} row skipped because of errors{% plural %}{{ n }} rows skipped because of errors{% endblocktranslate %}</li>{% endif %}
+    </ul>
+
+    {% if new_residents %}
+      <p class="mb-3 text-slate-600">{% translate "New residents log in with a personal link and choose their PIN. Download the links and give each resident their own. Each link works once and expires after 7 days." %}</p>
+      <a href="{% url 'manage:resident_import_links' %}" class="block w-full rounded bg-blue-700 px-4 py-2 text-center font-medium text-white hover:bg-blue-800">
+        {% blocktranslate count n=new_residents|length %}Download {{ n }} login link{% plural %}Download {{ n }} login links{% endblocktranslate %}
+      </a>
+      <p class="mt-2 text-sm text-slate-600">{% translate "The file contains links that let someone log in. Keep it private and delete it after handing out the links." %}</p>
+    {% endif %}
+    <p class="mt-4"><a href="{% url 'manage:residents' %}" class="text-blue-700 underline">{% translate "Back to residents" %}</a></p>
+  </div>
+{% endblock %}

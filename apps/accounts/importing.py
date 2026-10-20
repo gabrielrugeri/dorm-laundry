@@ -78,6 +78,25 @@ class Preview:
     def to_apply(self):
         return [row for row in self.rows if row.status in (NEW, CHANGED)]
 
+    def _with(self, status):
+        return [row for row in self.rows if row.status == status]
+
+    @property
+    def new_rows(self):
+        return self._with(NEW)
+
+    @property
+    def changed_rows(self):
+        return self._with(CHANGED)
+
+    @property
+    def unchanged_rows(self):
+        return self._with(UNCHANGED)
+
+    @property
+    def error_rows(self):
+        return self._with(ERROR)
+
 
 def _decode(data):
     if len(data) > MAX_FILE_BYTES:
