@@ -635,3 +635,66 @@ msgstr[1] ""
 
 msgid "Total"
 msgstr ""
+
+msgid "Booking cancelled by staff"
+msgstr ""
+
+msgid "Manual ledger entry"
+msgstr ""
+
+msgid "Activation link created"
+msgstr ""
+
+msgid "PIN reset"
+msgstr ""
+
+msgid "Password changed"
+msgstr ""
+
+msgid "Created in Django admin"
+msgstr ""
+
+msgid "Changed in Django admin"
+msgstr ""
+
+msgid "Deleted in Django admin"
+msgstr ""
+
+msgid "Audit log"
+msgstr ""
+
+msgid "when"
+msgstr ""
+
+msgid "who"
+msgstr ""
+
+msgid "Empty for actions done by the system."
+msgstr ""
+
+msgid "action"
+msgstr ""
+
+msgid "object type"
+msgstr ""
+
+msgid "object id"
+msgstr ""
+
+msgid "object"
+msgstr ""
+
+msgid "before"
+msgstr ""
+
+msgid "after"
+msgstr ""
+
+msgid "reason"
+msgstr ""
+
+msgid "audit event"
+msgstr ""
+
+msgid "audit log"
+msgstr ""

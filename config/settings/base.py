@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "apps.bookings",
     "apps.ledger",
     "apps.keylog",
+    "apps.audit",
 ]
 
 MIDDLEWARE = [

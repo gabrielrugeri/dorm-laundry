@@ -670,3 +670,66 @@ msgstr[3] "%(price)s за машину на %(n)s слота."
 
 msgid "Total"
 msgstr "Итого"
+
+msgid "Booking cancelled by staff"
+msgstr "Бронирование отменено сотрудником"
+
+msgid "Manual ledger entry"
+msgstr "Ручная операция по балансу"
+
+msgid "Activation link created"
+msgstr "Создана ссылка для активации"
+
+msgid "PIN reset"
+msgstr "Сброс PIN-кода"
+
+msgid "Password changed"
+msgstr "Пароль изменён"
+
+msgid "Created in Django admin"
+msgstr "Создано в админке Django"
+
+msgid "Changed in Django admin"
+msgstr "Изменено в админке Django"
+
+msgid "Deleted in Django admin"
+msgstr "Удалено в админке Django"
+
+msgid "Audit log"
+msgstr "Журнал действий"
+
+msgid "when"
+msgstr "когда"
+
+msgid "who"
+msgstr "кто"
+
+msgid "Empty for actions done by the system."
+msgstr "Пусто для действий, выполненных системой."
+
+msgid "action"
+msgstr "действие"
+
+msgid "object type"
+msgstr "тип объекта"
+
+msgid "object id"
+msgstr "id объекта"
+
+msgid "object"
+msgstr "объект"
+
+msgid "before"
+msgstr "до"
+
+msgid "after"
+msgstr "после"
+
+msgid "reason"
+msgstr "причина"
+
+msgid "audit event"
+msgstr "запись журнала"
+
+msgid "audit log"
+msgstr "журнал действий"
