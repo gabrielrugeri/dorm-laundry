@@ -22,6 +22,7 @@ from django.utils import timezone
 
 from apps.accounts import roles
 from apps.accounts.models import Resident, StaffProfile, User
+from apps.bookings import services as booking_services
 from apps.bookings.models import Booking
 from apps.dorms.models import Dormitory, Machine, TimeSlot
 from apps.ledger.models import LedgerEntry
@@ -90,6 +91,7 @@ class Command(BaseCommand):
 
         if dorm_created:
             self._demo_bookings(dorm, slots, machines, residents, rng)
+            self._demo_admin_cancellation(dorm)
 
         self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
 
@@ -125,3 +127,21 @@ class Command(BaseCommand):
                         amount=-booking.price_rub,
                         booking=booking,
                     )
+
+    def _demo_admin_cancellation(self, dorm):
+        """One of tomorrow's bookings cancelled by the admin through the service,
+        so the demo shows the resident's notice, the refund and an audit event."""
+        tomorrow = timezone.localdate(timezone=dorm.tzinfo) + timedelta(days=1)
+        booking = (
+            Booking.objects.filter(machine__dormitory=dorm, date=tomorrow, status="active")
+            .order_by("starts_at")
+            .first()
+        )
+        if booking is None:
+            return
+        booking_services.cancel_booking(
+            booking,
+            actor=User.objects.get(username="admin"),
+            reason="Плановая проверка машины",
+            full_refund=True,
+        )

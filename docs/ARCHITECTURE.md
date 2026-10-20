@@ -41,7 +41,8 @@ Staff are scoped through `StaffProfile.dormitory`.
 
 | Rule | How |
 |---|---|
-| No double-booking | partial `UNIQUE(machine, date, slot) WHERE status <> 'cancelled'` |
+| No double-booking | partial `UNIQUE(machine, date, slot) WHERE status NOT IN ('cancelled', 'cancelled_by_admin')` |
+| Admin cancellations explain themselves | `CHECK`: `cancelled_by_admin` needs a non-empty `cancel_reason` |
 | No double charge / refund | `UNIQUE(booking, kind)` for `booking` and `refund` ledger entries |
 | Money signs make sense | `CHECK`: credit/refund > 0, booking < 0, adjustment ≠ 0 |
 | Only charges/refunds point to bookings | `CHECK` on `LedgerEntry.booking` |
@@ -50,6 +51,26 @@ Staff are scoped through `StaffProfile.dormitory`.
 
 Rows that other rows depend on are deleted with `PROTECT`. Deactivate them
 instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
+
+## Audit log and admin safety
+
+- `apps/audit`: every admin action is an `AuditEvent` (who, when, action code,
+  target, before/after JSON snapshots, reason, dormitory). Events are
+  append-only; the application never edits or deletes them (the only planned
+  exception is blanking personal data when a resident is anonymized).
+- Write paths call `apps.audit.services.record()` inside the same transaction
+  as the change, with `snapshot()` before and after. Snapshots never contain
+  passwords or PINs, and activation links are never stored.
+- Action codes and their translated names are in `apps/audit/actions.py`.
+- Django admin: bookings, the audit log and existing ledger entries are
+  read-only. Bookings are cancelled with the actions "Cancel with refund rule"
+  and "Cancel with full refund" (confirmation page, mandatory reason), which
+  call the booking service. Manual credits and adjustments go through
+  `apps.ledger.services.add_manual_entry` (mandatory note). Every other admin
+  edit, including inline rows, is recorded by the `AuditedAdmin` mixin.
+- `/manage/` (admin role only) is our own admin area; `/manage/audit/` shows
+  the dormitory's audit log with filters. Later stages add residents, imports,
+  machines, settings and receipts there (see `docs/plans/admin-and-payments.md`).
 
 ## Money
 
@@ -92,14 +113,18 @@ to residents.
   day must be within `booking_horizon_days` (today counts as day 1) and the
   first slot must not have started. `book_slots(resident, machine, day, slots)`
   is the same for one machine.
-- `cancel_booking(booking, actor=user)` cancels one slot. The owner can cancel,
-  and so can a manager or admin of the same dormitory. Cancelling at least
-  `cancellation_cutoff_hours` before the start refunds `price_rub`. Later
-  cancellations are allowed and free the machine, but are not refunded. A
-  booking that has started cannot be cancelled. Staff cannot override the
-  refund rule; corrections go through an `adjustment` ledger entry.
-- `cancel_group(group_id, actor=user)` cancels a group's slots that have not
+- `cancel_booking(booking, actor=user, reason="", full_refund=False)` cancels
+  one slot. The owner can cancel (status `cancelled`), and so can a manager or
+  admin of the same dormitory (status `cancelled_by_admin`, with a mandatory
+  `reason` that the resident sees, recorded in the audit log). Cancelling at
+  least `cancellation_cutoff_hours` before the start refunds `price_rub`;
+  later cancellations free the machine but are not refunded. Admins (not
+  managers) may pass `full_refund=True` to refund regardless of the cutoff. A
+  booking that has started cannot be cancelled.
+- `cancel_group(group_id, actor=user, …)` cancels a group's slots that have not
   started; each one follows the refund rule on its own.
+- Check "is this booking cancelled?" with `booking.is_cancelled` or
+  `status__in=Booking.CANCELLED_STATUSES`, never `status == "cancelled"`.
 - `refund_due(booking)` tells the UI whether cancelling now would be refunded.
 
 Ledger entries made because a resident booked or cancelled have

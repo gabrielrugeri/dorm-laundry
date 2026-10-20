@@ -19,14 +19,24 @@ class Booking(models.Model):
     booking may exist per (machine, date, slot). Completed bookings still
     occupy their slot.
 
+    A booking is cancelled either by its resident (`cancelled`) or by staff
+    (`cancelled_by_admin`, always with a reason). Both free the slot.
+
     Create and cancel bookings through the booking service (not by hand), so
-    the ledger and the dormitory checks stay consistent.
+    the ledger, the audit log and the dormitory checks stay consistent.
     """
 
     class Status(models.TextChoices):
         ACTIVE = "active", pgettext_lazy("booking status", "active")
         CANCELLED = "cancelled", pgettext_lazy("booking status", "cancelled")
+        CANCELLED_BY_ADMIN = (
+            "cancelled_by_admin",
+            pgettext_lazy("booking status", "cancelled by the administration"),
+        )
         COMPLETED = "completed", pgettext_lazy("booking status", "completed")
+
+    # Statuses that free the slot. Use this, never Status.CANCELLED alone.
+    CANCELLED_STATUSES = (Status.CANCELLED, Status.CANCELLED_BY_ADMIN)
 
     machine = models.ForeignKey(
         Machine, on_delete=models.PROTECT, related_name="bookings", verbose_name=_("machine")
@@ -39,7 +49,7 @@ class Booking(models.Model):
         Resident, on_delete=models.PROTECT, related_name="bookings", verbose_name=_("resident")
     )
     status = models.CharField(
-        _("status"), max_length=16, choices=Status.choices, default=Status.ACTIVE
+        _("status"), max_length=32, choices=Status.choices, default=Status.ACTIVE
     )
     group_id = models.UUIDField(
         _("group"),
@@ -55,6 +65,11 @@ class Booking(models.Model):
     ends_at = models.DateTimeField(_("ends at"), editable=False)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True)
     cancelled_at = models.DateTimeField(_("cancelled at"), null=True, blank=True)
+    cancel_reason = models.TextField(
+        _("reason for cancellation"),
+        blank=True,
+        help_text=_("Required when the administration cancels; shown to the resident."),
+    )
 
     class Meta:
         verbose_name = _("booking")
@@ -63,7 +78,7 @@ class Booking(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["machine", "date", "slot"],
-                condition=~models.Q(status="cancelled"),
+                condition=~models.Q(status__in=["cancelled", "cancelled_by_admin"]),
                 name="unique_occupied_machine_slot",
             ),
             models.CheckConstraint(
@@ -71,8 +86,13 @@ class Booking(models.Model):
                 name="booking_ends_after_start",
             ),
             models.CheckConstraint(
-                condition=~models.Q(status="cancelled") | models.Q(cancelled_at__isnull=False),
+                condition=~models.Q(status__in=["cancelled", "cancelled_by_admin"])
+                | models.Q(cancelled_at__isnull=False),
                 name="cancelled_booking_has_cancelled_at",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(status="cancelled_by_admin") | ~models.Q(cancel_reason=""),
+                name="admin_cancellation_has_reason",
             ),
         ]
         indexes = [
@@ -95,3 +115,7 @@ class Booking(models.Model):
             raise ValidationError(
                 _("Machine, time slot and resident must belong to the same dormitory.")
             )
+
+    @property
+    def is_cancelled(self):
+        return self.status in self.CANCELLED_STATUSES

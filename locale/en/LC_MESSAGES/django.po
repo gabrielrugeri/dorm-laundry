@@ -635,3 +635,168 @@ msgstr[1] ""
 
 msgid "Total"
 msgstr ""
+
+msgid "Booking cancelled by staff"
+msgstr ""
+
+msgid "Manual ledger entry"
+msgstr ""
+
+msgid "Activation link created"
+msgstr ""
+
+msgid "PIN reset"
+msgstr ""
+
+msgid "Password changed"
+msgstr ""
+
+msgid "Created in Django admin"
+msgstr ""
+
+msgid "Changed in Django admin"
+msgstr ""
+
+msgid "Deleted in Django admin"
+msgstr ""
+
+msgid "Audit log"
+msgstr ""
+
+msgid "when"
+msgstr ""
+
+msgid "who"
+msgstr ""
+
+msgid "Empty for actions done by the system."
+msgstr ""
+
+msgid "action"
+msgstr ""
+
+msgid "object type"
+msgstr ""
+
+msgid "object id"
+msgstr ""
+
+msgid "object"
+msgstr ""
+
+msgid "before"
+msgstr ""
+
+msgid "after"
+msgstr ""
+
+msgid "reason"
+msgstr ""
+
+msgid "audit event"
+msgstr ""
+
+msgid "audit log"
+msgstr ""
+
+msgid "reason for cancellation"
+msgstr ""
+
+msgid "Required when the administration cancels; shown to the resident."
+msgstr ""
+
+msgid "Please give a reason for the cancellation."
+msgstr ""
+
+msgid "Cancelled by the administration"
+msgstr ""
+
+msgid "Reason"
+msgstr ""
+
+msgctxt "booking status"
+msgid "cancelled by the administration"
+msgstr ""
+
+msgid "Cancel with full refund"
+msgstr ""
+
+msgid "Cancel with refund rule"
+msgstr ""
+
+msgid "A note is required for manual entries."
+msgstr ""
+
+msgid "These bookings will be cancelled. Residents see the reason you give."
+msgstr ""
+
+msgid "Refund"
+msgstr ""
+
+msgid "Reason (shown to the resident)"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Cancel these bookings"
+msgstr ""
+
+#, python-format
+msgid "%(count)s booking cancelled."
+msgid_plural "%(count)s bookings cancelled."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Management"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "All actions"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "System"
+msgstr ""
+
+msgid "Field"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "After"
+msgstr ""
+
+msgid "No field values recorded for this action."
+msgstr ""
+
+msgid "No events match these filters."
+msgstr ""
+
+msgid "Every admin action: who, when, what changed and why."
+msgstr ""
+
+msgid "Django admin"
+msgstr ""
+
+msgid ""
+"Raw data and booking cancellations. Bookings and money cannot be edited "
+"there."
+msgstr ""
+
+msgid "Search: object, reason or user"
+msgstr ""

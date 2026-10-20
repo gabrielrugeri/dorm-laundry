@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Management" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <h1 class="mb-3 text-xl font-semibold">{% translate "Management" %}</h1>
+  <ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+    <li>
+      <a href="{% url 'manage:audit' %}" class="block px-4 py-3 hover:bg-blue-50">
+        <span class="block font-medium">{% translate "Audit log" %}</span>
+        <span class="block text-sm text-slate-600">{% translate "Every admin action: who, when, what changed and why." %}</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'core:staff_home' %}" class="block px-4 py-3 hover:bg-blue-50">
+        <span class="block font-medium">{% translate "Today's key schedule" %}</span>
+      </a>
+    </li>
+    {% if user.is_staff %}
+      <li>
+        <a href="{% url 'admin:index' %}" class="block px-4 py-3 hover:bg-blue-50">
+          <span class="block font-medium">{% translate "Django admin" %}</span>
+          <span class="block text-sm text-slate-600">{% translate "Raw data and booking cancellations. Bookings and money cannot be edited there." %}</span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+{% endblock %}

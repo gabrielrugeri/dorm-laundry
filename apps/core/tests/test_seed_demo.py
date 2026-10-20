@@ -33,7 +33,7 @@ def test_seed_demo_ledger_is_consistent(db):
     for resident in Resident.objects.all():
         assert LedgerEntry.objects.balance(resident) >= 0
     for booking in Booking.objects.all():
-        assert booking.ledger_entries.get().amount == -booking.price_rub
+        assert booking.ledger_entries.get(kind="booking").amount == -booking.price_rub
 
 
 def test_seed_demo_roles(db):
@@ -55,3 +55,18 @@ def test_seed_demo_slots_run_from_10_to_midnight(db):
     assert [s.start_time.hour for s in active] == [10, 12, 14, 16, 18, 20, 22]
     assert str(active.last()) == "22:00–00:00"
     assert not TimeSlot.objects.get(start_time=time(8, 0)).active
+
+
+def test_seed_demo_has_an_audited_admin_cancellation(db):
+    from apps.audit.models import AuditEvent
+
+    call_command("seed_demo")
+    cancelled = Booking.objects.get(status=Booking.Status.CANCELLED_BY_ADMIN)
+    assert cancelled.cancel_reason
+    assert cancelled.ledger_entries.filter(kind="refund").exists()
+    assert (
+        AuditEvent.objects.filter(
+            action="booking.cancel_by_staff", target_id=str(cancelled.pk)
+        ).count()
+        == 1
+    )

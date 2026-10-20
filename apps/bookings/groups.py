@@ -17,7 +17,7 @@ class BookingGroup:
     def shown(self):
         """The slots to describe: the non-cancelled ones, or all if every slot
         was cancelled."""
-        kept = [b for b in self.bookings if b.status != Booking.Status.CANCELLED]
+        kept = [b for b in self.bookings if not b.is_cancelled]
         return kept or self.bookings
 
     @property
@@ -38,7 +38,15 @@ class BookingGroup:
 
     @property
     def is_cancelled(self):
-        return all(b.status == Booking.Status.CANCELLED for b in self.bookings)
+        return all(b.is_cancelled for b in self.bookings)
+
+    @property
+    def admin_reason(self):
+        """Why the administration cancelled (some of) these slots, if it did."""
+        for booking in self.bookings:
+            if booking.status == Booking.Status.CANCELLED_BY_ADMIN:
+                return booking.cancel_reason
+        return ""
 
     def active_bookings(self):
         return [b for b in self.bookings if b.status == Booking.Status.ACTIVE]

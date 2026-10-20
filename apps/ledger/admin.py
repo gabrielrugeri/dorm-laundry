@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import LedgerEntry
+from .services import add_manual_entry
 
 
 class LedgerEntryAdminForm(forms.ModelForm):
@@ -19,6 +21,12 @@ class LedgerEntryAdminForm(forms.ModelForm):
         model = LedgerEntry
         fields = ["resident", "kind", "amount", "note"]
 
+    def clean_note(self):
+        note = self.cleaned_data["note"].strip()
+        if not note:
+            raise forms.ValidationError(_("A note is required for manual entries."))
+        return note
+
 
 @admin.register(LedgerEntry)
 class LedgerEntryAdmin(admin.ModelAdmin):
@@ -29,8 +37,15 @@ class LedgerEntryAdmin(admin.ModelAdmin):
     raw_id_fields = ["resident"]
 
     def save_model(self, request, obj, form, change):
-        obj.created_by = request.user
-        super().save_model(request, obj, form, change)
+        """Saved through the ledger service, which also writes the audit event."""
+        entry = add_manual_entry(
+            actor=request.user,
+            resident=obj.resident,
+            kind=obj.kind,
+            amount=obj.amount,
+            note=obj.note,
+        )
+        obj.pk, obj.created_at, obj._state.adding = entry.pk, entry.created_at, False
 
     # Append-only: entries can be added and viewed, never changed or deleted.
     def has_change_permission(self, request, obj=None):

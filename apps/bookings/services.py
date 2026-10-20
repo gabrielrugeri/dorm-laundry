@@ -17,6 +17,7 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.accounts import roles
 from apps.accounts.models import Resident
+from apps.audit.services import record, snapshot
 from apps.ledger.models import LedgerEntry
 
 from .models import Booking
@@ -67,6 +68,10 @@ class TooLateToCancel(BookingError):
 
 class NotAllowed(BookingError):
     message = _("You are not allowed to change this booking.")
+
+
+class ReasonRequired(BookingError):
+    message = _("Please give a reason for the cancellation.")
 
 
 # --- Checks used by book_slots -------------------------------------------------
@@ -190,7 +195,7 @@ def _create_group(resident, machine, day, slots, price):
 def _any_slot_occupied(machine, day, slots):
     return (
         Booking.objects.filter(machine=machine, date=day, slot__in=slots)
-        .exclude(status=Booking.Status.CANCELLED)
+        .exclude(status__in=Booking.CANCELLED_STATUSES)
         .exists()
     )
 
@@ -210,15 +215,21 @@ def refund_due(booking, now=None):
     return now <= booking.starts_at - cutoff
 
 
-def cancel_booking(booking, *, actor, now=None):
+def cancel_booking(booking, *, actor, reason="", full_refund=False, now=None):
     """Cancel one booking (one slot) on behalf of `actor`, a User.
 
-    Allowed for the resident who owns the booking, and for managers and admins
-    of the booking's dormitory. Refunds the price paid if `refund_due()`.
+    The resident who owns the booking cancels it as `cancelled`. Staff
+    (managers and admins of the booking's dormitory) cancel it as
+    `cancelled_by_admin` and must give a `reason`, which the resident sees;
+    their cancellation is recorded in the audit log.
+
+    The price paid is refunded if `refund_due()`, or always with
+    `full_refund=True`, which only admins may use.
 
     Returns the refund LedgerEntry, or None if there was no refund.
     """
     now = now or timezone.now()
+    reason = reason.strip()
     with transaction.atomic():
         # Lock the booking so that two cancellations of the same booking run one after
         # the other: the second one sees it is already cancelled. UNIQUE(booking, kind)
@@ -229,33 +240,51 @@ def cancel_booking(booking, *, actor, now=None):
             .get(pk=booking.pk)
         )
         _check_can_change(actor, booking)
-        if booking.status == Booking.Status.CANCELLED:
+        by_staff = actor.pk != booking.resident.user_id
+        if by_staff and not reason:
+            raise ReasonRequired
+        if full_refund and not roles.has_role(actor, roles.ADMIN):
+            raise NotAllowed
+        if booking.is_cancelled:
             raise AlreadyCancelled
         if booking.status == Booking.Status.COMPLETED or booking.starts_at <= now:
             raise TooLateToCancel
 
-        booking.status = Booking.Status.CANCELLED
+        before = snapshot(booking)
+        booking.status = Booking.Status.CANCELLED_BY_ADMIN if by_staff else Booking.Status.CANCELLED
         booking.cancelled_at = now
-        booking.save(update_fields=["status", "cancelled_at"])
+        booking.cancel_reason = reason if by_staff else ""
+        booking.save(update_fields=["status", "cancelled_at", "cancel_reason"])
 
-        if not booking.price_rub or not refund_due(booking, now):
-            return None
-        # Automatic when residents cancel their own booking; otherwise record who did it.
-        created_by = None if actor.pk == booking.resident.user_id else actor
-        return LedgerEntry.objects.create(
-            resident=booking.resident,
-            amount=booking.price_rub,
-            kind=LedgerEntry.Kind.REFUND,
-            booking=booking,
-            created_by=created_by,
-        )
+        refund = None
+        if booking.price_rub and (full_refund or refund_due(booking, now)):
+            # Automatic when residents cancel their own booking; otherwise record who did it.
+            refund = LedgerEntry.objects.create(
+                resident=booking.resident,
+                amount=booking.price_rub,
+                kind=LedgerEntry.Kind.REFUND,
+                booking=booking,
+                created_by=actor if by_staff else None,
+            )
+        if by_staff:
+            after = snapshot(booking)
+            after.update(refund_rub=refund.amount if refund else 0, full_refund=full_refund)
+            record(
+                actor=actor,
+                action="booking.cancel_by_staff",
+                target=booking,
+                before=before,
+                after=after,
+                reason=reason,
+            )
+        return refund
 
 
-def cancel_group(group_id, *, actor, now=None):
+def cancel_group(group_id, *, actor, reason="", full_refund=False, now=None):
     """Cancel every booking of a group that has not started yet.
 
     Slots that already started (or were already cancelled) are left alone.
-    Each slot is refunded on its own, following `refund_due()`. Returns the
+    Each slot is refunded on its own (see cancel_booking). Returns the
     bookings that were cancelled.
     """
     now = now or timezone.now()
@@ -266,7 +295,7 @@ def cancel_group(group_id, *, actor, now=None):
             ).order_by("starts_at")
         )
         for booking in bookings:
-            cancel_booking(booking, actor=actor, now=now)
+            cancel_booking(booking, actor=actor, reason=reason, full_refund=full_refund, now=now)
     return bookings
 
 

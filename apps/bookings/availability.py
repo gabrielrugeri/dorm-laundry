@@ -30,7 +30,7 @@ def active_slots(dormitory):
 def occupied(machine_queryset, day):
     """Non-cancelled bookings for these machines on `day`."""
     return Booking.objects.filter(machine__in=machine_queryset, date=day).exclude(
-        status=Booking.Status.CANCELLED
+        status__in=Booking.CANCELLED_STATUSES
     )
 
 

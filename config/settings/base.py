@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     "apps.bookings",
     "apps.ledger",
     "apps.keylog",
+    "apps.audit",
+    "apps.manage",
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "apps.ledger.context_processors.resident_balance",
+                "apps.accounts.context_processors.user_roles",
             ],
         },
     },

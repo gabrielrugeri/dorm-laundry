@@ -670,3 +670,172 @@ msgstr[3] "%(price)s за машину на %(n)s слота."
 
 msgid "Total"
 msgstr "Итого"
+
+msgid "Booking cancelled by staff"
+msgstr "Бронирование отменено сотрудником"
+
+msgid "Manual ledger entry"
+msgstr "Ручная операция по балансу"
+
+msgid "Activation link created"
+msgstr "Создана ссылка для активации"
+
+msgid "PIN reset"
+msgstr "Сброс PIN-кода"
+
+msgid "Password changed"
+msgstr "Пароль изменён"
+
+msgid "Created in Django admin"
+msgstr "Создано в админке Django"
+
+msgid "Changed in Django admin"
+msgstr "Изменено в админке Django"
+
+msgid "Deleted in Django admin"
+msgstr "Удалено в админке Django"
+
+msgid "Audit log"
+msgstr "Журнал действий"
+
+msgid "when"
+msgstr "когда"
+
+msgid "who"
+msgstr "кто"
+
+msgid "Empty for actions done by the system."
+msgstr "Пусто для действий, выполненных системой."
+
+msgid "action"
+msgstr "действие"
+
+msgid "object type"
+msgstr "тип объекта"
+
+msgid "object id"
+msgstr "id объекта"
+
+msgid "object"
+msgstr "объект"
+
+msgid "before"
+msgstr "до"
+
+msgid "after"
+msgstr "после"
+
+msgid "reason"
+msgstr "причина"
+
+msgid "audit event"
+msgstr "запись журнала"
+
+msgid "audit log"
+msgstr "журнал действий"
+
+msgid "reason for cancellation"
+msgstr "причина отмены"
+
+msgid "Required when the administration cancels; shown to the resident."
+msgstr "Обязательна, если отменяет администрация; жилец её видит."
+
+msgid "Please give a reason for the cancellation."
+msgstr "Укажите причину отмены."
+
+msgid "Cancelled by the administration"
+msgstr "Отменено администрацией"
+
+msgid "Reason"
+msgstr "Причина"
+
+msgctxt "booking status"
+msgid "cancelled by the administration"
+msgstr "отменена администрацией"
+
+msgid "Cancel with full refund"
+msgstr "Отменить с полным возвратом"
+
+msgid "Cancel with refund rule"
+msgstr "Отменить по правилу возврата"
+
+msgid "A note is required for manual entries."
+msgstr "Для ручных операций нужно примечание."
+
+msgid "These bookings will be cancelled. Residents see the reason you give."
+msgstr "Эти бронирования будут отменены. Жильцы увидят указанную вами причину."
+
+msgid "Refund"
+msgstr "Возврат"
+
+msgid "Reason (shown to the resident)"
+msgstr "Причина (её увидит жилец)"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Cancel these bookings"
+msgstr "Отменить эти бронирования"
+
+#, python-format
+msgid "%(count)s booking cancelled."
+msgid_plural "%(count)s bookings cancelled."
+msgstr[0] "Отменено %(count)s бронирование."
+msgstr[1] "Отменено %(count)s бронирования."
+msgstr[2] "Отменено %(count)s бронирований."
+msgstr[3] "Отменено %(count)s бронирования."
+
+msgid "Management"
+msgstr "Управление"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "All actions"
+msgstr "Все действия"
+
+msgid "From"
+msgstr "С"
+
+msgid "To"
+msgstr "По"
+
+msgid "Filter"
+msgstr "Применить"
+
+msgid "System"
+msgstr "Система"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "Before"
+msgstr "Было"
+
+msgid "After"
+msgstr "Стало"
+
+msgid "No field values recorded for this action."
+msgstr "Для этого действия значения полей не записываются."
+
+msgid "No events match these filters."
+msgstr "Нет записей, подходящих под фильтры."
+
+msgid "Every admin action: who, when, what changed and why."
+msgstr "Все действия администрации: кто, когда, что изменилось и почему."
+
+msgid "Django admin"
+msgstr "Админка Django"
+
+msgid ""
+"Raw data and booking cancellations. Bookings and money cannot be edited "
+"there."
+msgstr ""
+"Исходные данные и отмена бронирований. Бронирования и деньги там изменить "
+"нельзя."
+
+msgid "Search: object, reason or user"
+msgstr "Поиск: объект, причина или пользователь"

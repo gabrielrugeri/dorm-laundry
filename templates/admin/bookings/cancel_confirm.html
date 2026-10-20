@@ -1,0 +1,33 @@
+{% extends "admin/base_site.html" %}
+{% load i18n money %}
+{% block content %}
+  <p>{% translate "These bookings will be cancelled. Residents see the reason you give." %}</p>
+  <table>
+    <thead>
+      <tr><th>{% translate "Booking" %}</th><th>{% translate "Resident" %}</th><th>{% translate "Status" %}</th><th>{% translate "Refund" %}</th></tr>
+    </thead>
+    <tbody>
+      {% for booking, refund in rows %}
+        <tr>
+          <td>{{ booking }}</td>
+          <td>{{ booking.resident }}</td>
+          <td>{{ booking.get_status_display }}</td>
+          <td>{% if refund %}{{ refund|rub }}{% else %}—{% endif %}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="{{ action }}">
+    {% for pk in selected %}<input type="hidden" name="_selected_action" value="{{ pk }}">{% endfor %}
+    <p>
+      <label for="id_reason"><strong>{% translate "Reason (shown to the resident)" %}</strong></label><br>
+      <textarea id="id_reason" name="reason" rows="3" cols="60" required>{{ reason }}</textarea>
+      {% if reason_missing %}<br><span class="errornote">{% translate "Please give a reason for the cancellation." %}</span>{% endif %}
+    </p>
+    <input type="hidden" name="confirm" value="yes">
+    <input type="submit" value="{% translate 'Cancel these bookings' %}">
+    <a href="{% url 'admin:bookings_booking_changelist' %}" class="button cancel-link">{% translate "Back" %}</a>
+  </form>
+{% endblock %}
