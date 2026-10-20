@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from apps.audit.admin_mixins import AuditedAdmin
+
 from .models import Dormitory, Machine, TimeSlot
 
 
@@ -14,7 +16,7 @@ class MachineInline(admin.TabularInline):
 
 
 @admin.register(Dormitory)
-class DormitoryAdmin(admin.ModelAdmin):
+class DormitoryAdmin(AuditedAdmin, admin.ModelAdmin):
     list_display = ["name", "slug", "timezone", "price_per_slot"]
     prepopulated_fields = {"slug": ["name"]}
     inlines = [TimeSlotInline, MachineInline]

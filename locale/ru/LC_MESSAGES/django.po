@@ -752,3 +752,35 @@ msgstr "Причина"
 msgctxt "booking status"
 msgid "cancelled by the administration"
 msgstr "отменена администрацией"
+
+msgid "Cancel with full refund"
+msgstr "Отменить с полным возвратом"
+
+msgid "Cancel with refund rule"
+msgstr "Отменить по правилу возврата"
+
+msgid "A note is required for manual entries."
+msgstr "Для ручных операций нужно примечание."
+
+msgid "These bookings will be cancelled. Residents see the reason you give."
+msgstr "Эти бронирования будут отменены. Жильцы увидят указанную вами причину."
+
+msgid "Refund"
+msgstr "Возврат"
+
+msgid "Reason (shown to the resident)"
+msgstr "Причина (её увидит жилец)"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Cancel these bookings"
+msgstr "Отменить эти бронирования"
+
+#, python-format
+msgid "%(count)s booking cancelled."
+msgid_plural "%(count)s bookings cancelled."
+msgstr[0] "Отменено %(count)s бронирование."
+msgstr[1] "Отменено %(count)s бронирования."
+msgstr[2] "Отменено %(count)s бронирований."
+msgstr[3] "Отменено %(count)s бронирования."

@@ -1,17 +1,30 @@
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.db import transaction
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext_lazy as _
+
+from apps.audit.admin_mixins import AuditedAdmin
+from apps.audit.services import record
 
 from .activation import activation_url
 from .models import Resident, StaffProfile, User
 
-admin.site.register(User, UserAdmin)
+
+@admin.register(User)
+class AuditedUserAdmin(AuditedAdmin, UserAdmin):
+    def user_change_password(self, request, id, form_url=""):
+        """Record that a password was changed; never what it was changed to."""
+        response = super().user_change_password(request, id, form_url)
+        if request.method == "POST" and response.status_code == 302:
+            user = self.get_object(request, id)
+            record(actor=request.user, action="user.password_change", target=user)
+        return response
 
 
 @admin.register(Resident)
-class ResidentAdmin(admin.ModelAdmin):
+class ResidentAdmin(AuditedAdmin, admin.ModelAdmin):
     list_display = ["full_name", "room", "student_code", "dormitory", "language", "has_pin"]
     list_filter = ["dormitory"]
     search_fields = ["full_name", "room", "student_code"]
@@ -25,14 +38,18 @@ class ResidentAdmin(admin.ModelAdmin):
 
     @admin.action(description=_("Create activation links"))
     def create_activation_links(self, request, queryset):
+        for resident in queryset:
+            record(actor=request.user, action="resident.activation_link", target=resident)
         return self._show_links(request, queryset, _("Activation links"))
 
     @admin.action(description=_("Reset PIN and create activation links"))
     def reset_pins(self, request, queryset):
         """The old PIN stops working at once and open sessions are logged out."""
-        for resident in queryset.select_related("user"):
-            resident.user.set_unusable_password()
-            resident.user.save(update_fields=["password"])
+        with transaction.atomic():
+            for resident in queryset.select_related("user"):
+                resident.user.set_unusable_password()
+                resident.user.save(update_fields=["password"])
+                record(actor=request.user, action="resident.pin_reset", target=resident)
         return self._show_links(request, queryset, _("PINs reset"))
 
     def _show_links(self, request, queryset, title):
@@ -51,7 +68,7 @@ class ResidentAdmin(admin.ModelAdmin):
 
 
 @admin.register(StaffProfile)
-class StaffProfileAdmin(admin.ModelAdmin):
+class StaffProfileAdmin(AuditedAdmin, admin.ModelAdmin):
     list_display = ["user", "dormitory"]
     list_filter = ["dormitory"]
     raw_id_fields = ["user"]

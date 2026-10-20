@@ -717,3 +717,33 @@ msgstr ""
 msgctxt "booking status"
 msgid "cancelled by the administration"
 msgstr ""
+
+msgid "Cancel with full refund"
+msgstr ""
+
+msgid "Cancel with refund rule"
+msgstr ""
+
+msgid "A note is required for manual entries."
+msgstr ""
+
+msgid "These bookings will be cancelled. Residents see the reason you give."
+msgstr ""
+
+msgid "Refund"
+msgstr ""
+
+msgid "Reason (shown to the resident)"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Cancel these bookings"
+msgstr ""
+
+#, python-format
+msgid "%(count)s booking cancelled."
+msgid_plural "%(count)s bookings cancelled."
+msgstr[0] ""
+msgstr[1] ""
