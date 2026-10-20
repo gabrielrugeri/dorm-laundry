@@ -15,7 +15,7 @@ Works in Russian and English, and loads nothing from third-party servers.
 > cancel, export bookings to their calendar and see their balance. Managers
 > record key hand-overs on the key schedule. Admins manage residents at
 > `/manage/residents/` (payments, balance corrections, login links, turning
-> access off, erasing personal data) and see every admin action in the change
+> access off, erasing personal data, importing a list from a CSV file) and see every admin action in the change
 > history at `/manage/history/`. The admin and payment features in
 > [docs/plans/admin-and-payments.md](docs/plans/admin-and-payments.md) are in
 > progress.
@@ -70,6 +70,14 @@ Admins manage residents at `/manage/residents/` (in Russian by default):
 
 If someone forgets their PIN: **More → Reset PIN** («Сбросить PIN-код»), then
 give them the new link.
+
+**Many residents at once:** on the resident list, **Add many residents from a
+file** («Добавить много жильцов из файла»). Save the list from Excel as CSV with
+the columns student code, full name and room. You first see a preview (new,
+will change, no changes, errors) and nothing changes until you press
+**Import**. Afterwards you can download the login links of the new residents
+as one file. Importing the same file again changes nothing. A fake example to
+try with the demo data: [docs/examples/residents-import-demo.csv](docs/examples/residents-import-demo.csv).
 
 ## Everyday commands
 

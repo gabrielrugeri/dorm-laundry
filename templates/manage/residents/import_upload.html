@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Add residents from a file" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:residents' %}" class="text-sm text-blue-700 underline">← {% translate "Residents" %}</a></p>
+  <div class="mx-auto max-w-md rounded-lg bg-white p-4 shadow-sm">
+    <h1 class="mb-2 text-xl font-semibold">{% translate "Add residents from a file" %}</h1>
+    <p class="mb-3 text-slate-600">{% translate "Save the list from Excel as CSV. The first row names the columns: student code, full name, room." %}</p>
+    <table class="mb-2 w-full text-left text-sm">
+      <thead class="text-slate-600"><tr><th class="font-normal">{% translate "Student code" %}</th><th class="font-normal">{% translate "Full name" %}</th><th class="font-normal">{% translate "Room" %}</th></tr></thead>
+      <tbody><tr><td>S12345</td><td>Ivanova Maria</td><td>214</td></tr></tbody>
+    </table>
+    <p class="mb-4 text-sm"><a href="{% url 'manage:resident_import_sample' %}" class="text-blue-700 underline">{% translate "Download an example file" %}</a></p>
+    <p class="mb-4 text-sm text-slate-600">{% translate "Nothing is changed yet: first you see what will happen, then you confirm." %}</p>
+
+    {% if error %}<div class="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800" role="alert">{{ error }}</div>{% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label for="import-file" class="mb-1 block text-sm font-medium">{% translate "File" %}</label>
+      <input id="import-file" type="file" name="file" accept=".csv,text/csv" required
+             class="mb-4 w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm">
+      <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Check the file" %}</button>
+    </form>
+  </div>
+{% endblock %}

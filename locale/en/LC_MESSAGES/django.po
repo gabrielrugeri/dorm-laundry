@@ -1143,3 +1143,160 @@ msgstr ""
 
 msgid "Search: name, reason or staff member"
 msgstr ""
+
+msgid "The file is too large (more than 1 MB)."
+msgstr ""
+
+msgid "The file could not be read. Save it as CSV from Excel and try again."
+msgstr ""
+
+msgid "The first row must name the columns: student code, full name and room."
+msgstr ""
+
+msgid "The file is empty."
+msgstr ""
+
+msgid "The file has more than 5000 rows."
+msgstr ""
+
+msgid "The file has no residents in it."
+msgstr ""
+
+#, python-format
+msgid "%(field)s is missing"
+msgstr ""
+
+#, python-format
+msgid "%(field)s is too long"
+msgstr ""
+
+#, python-format
+msgid "unknown language “%(value)s” (use ru or en)"
+msgstr ""
+
+#, python-format
+msgid "the same student code is already on line %(line)s"
+msgstr ""
+
+msgid "Choose a file first."
+msgstr ""
+
+msgid "The file is no longer available. Please choose it again."
+msgstr ""
+
+msgid "Import finished"
+msgstr ""
+
+msgid ""
+"New residents log in with a personal link and choose their PIN. Download the "
+"links and give each resident their own. Each link works once and expires "
+"after 7 days."
+msgstr ""
+
+msgid ""
+"The file contains links that let someone log in. Keep it private and delete "
+"it after handing out the links."
+msgstr ""
+
+msgid "Check before importing"
+msgstr ""
+
+msgid "Choose another file"
+msgstr ""
+
+msgid "Nothing has been changed yet."
+msgstr ""
+
+msgid "new"
+msgstr ""
+
+msgid "will change"
+msgstr ""
+
+msgid "no changes"
+msgstr ""
+
+msgid "with errors"
+msgstr ""
+
+msgid ""
+"Rows with errors are skipped. Fix them in the file and import it again later."
+msgstr ""
+
+msgid ""
+"There is nothing to import: everyone in the file is already here with the "
+"same details."
+msgstr ""
+
+msgid "Rows with errors (will be skipped)"
+msgstr ""
+
+msgid "Will change"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "New residents"
+msgstr ""
+
+msgid "No changes"
+msgstr ""
+
+msgid "Add residents from a file"
+msgstr ""
+
+msgid ""
+"Save the list from Excel as CSV. The first row names the columns: student "
+"code, full name, room."
+msgstr ""
+
+msgid "Download an example file"
+msgstr ""
+
+msgid ""
+"Nothing is changed yet: first you see what will happen, then you confirm."
+msgstr ""
+
+msgid "File"
+msgstr ""
+
+msgid "Check the file"
+msgstr ""
+
+msgid "Add many residents from a file"
+msgstr ""
+
+#, python-format
+msgid "Line %(line)s"
+msgstr ""
+
+#, python-format
+msgid "Download %(n)s login link"
+msgid_plural "Download %(n)s login links"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Import %(n)s row"
+msgid_plural "Import %(n)s rows"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(n)s resident updated"
+msgid_plural "%(n)s residents updated"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(n)s resident added"
+msgid_plural "%(n)s residents added"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(n)s row skipped because of errors"
+msgid_plural "%(n)s rows skipped because of errors"
+msgstr[0] ""
+msgstr[1] ""
