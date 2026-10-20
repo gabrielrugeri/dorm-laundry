@@ -91,6 +91,15 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
 - Login links (activation tokens) are shown once on the page and never
   stored. The payment history downloads as an Excel-friendly CSV with
   protection against formula injection.
+- CSV import (`apps/accounts/importing.py`, pages in `apps/manage/resident_import.py`):
+  `preview()` compares each row with the dormitory's residents by student
+  code (new / changed with before and after / unchanged / error) and writes
+  nothing; `apply()` repeats the comparison and, in one transaction, creates
+  and updates residents through the resident services, skipping error rows.
+  The previewed file stays in the admin's session (tied to their dormitory
+  and a one-time token) until it is confirmed. Excel files are read as UTF-8
+  (with or without BOM) or Windows-1251, separated by ";" or ",". Login links
+  for the new residents are generated when downloaded and never stored.
 - `apps/audit/display.py` shows audit snapshots in plain words (no field
   names, codes, ids or UTC times) on the change history page.
 
