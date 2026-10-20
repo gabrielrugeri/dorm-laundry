@@ -21,7 +21,7 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    "apps.core.admin_config.SuperuserAdminConfig",  # Django admin, superusers only
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",

@@ -22,7 +22,7 @@ parallel. Only the PWA may be built in a separate session.
 ## Stage 1a: audit log and admin-safe bookings
 
 - Append-only `AuditEvent` (who, when, action, target, before/after JSON,
-  reason, dormitory); admin-only view at `/manage/audit/`.
+  reason, dormitory); admin-only view at `/manage/history/`.
 - Bookings are read-only in Django admin. Actions through the booking service:
   "Cancel with refund rule" and "Cancel with full refund" (allowed outside
   maintenance), both with a mandatory reason and audited.

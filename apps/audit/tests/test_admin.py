@@ -154,7 +154,7 @@ def test_manual_ledger_entry_needs_a_note_and_is_audited(boss_client, boss, resi
     entry = LedgerEntry.objects.get()
     assert entry.created_by == boss
     event = AuditEvent.objects.get()
-    assert (event.action, event.reason) == ("ledger.manual_entry", "Cash at the desk")
+    assert (event.action, event.reason) == ("ledger.payment", "Cash at the desk")
 
 
 def test_machine_added_inline_is_audited(boss_client, dormitory):

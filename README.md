@@ -13,9 +13,10 @@ Works in Russian and English, and loads nothing from third-party servers.
 
 > Status: early development. Residents can log in, see free machines, book,
 > cancel, export bookings to their calendar and see their balance. Managers
-> record key hand-overs on the key schedule. Admins have an audit log of every
-> admin action at `/manage/audit/`; bookings can only be cancelled through the
-> booking service. The admin and payment features in
+> record key hand-overs on the key schedule. Admins manage residents at
+> `/manage/residents/` (payments, balance corrections, login links, turning
+> access off, erasing personal data) and see every admin action in the change
+> history at `/manage/history/`. The admin and payment features in
 > [docs/plans/admin-and-payments.md](docs/plans/admin-and-payments.md) are in
 > progress.
 
@@ -41,13 +42,15 @@ python manage.py seed_demo
 python manage.py runserver
 ```
 
-Then open <http://127.0.0.1:8000/>. The Django admin is at `/admin/`.
+Then open <http://127.0.0.1:8000/>. Dormitory admins work at `/manage/`.
+Django admin (`/admin/`) is for developers only: create a superuser with
+`python manage.py createsuperuser`.
 
 ### Demo accounts (fake data from `seed_demo`)
 
 | Login | Password | Role |
 |---|---|---|
-| `admin` | `SEED_DEMO_STAFF_PASSWORD` (default `demo-staff-password`) | admin (superuser) |
+| `admin` | `SEED_DEMO_STAFF_PASSWORD` (default `demo-staff-password`) | dormitory admin (`/manage/`) |
 | `manager` | same as above | key manager |
 | student code `D0001` … `D0020` | PIN `SEED_DEMO_RESIDENT_PIN` (default `123456`) | residents |
 
@@ -57,13 +60,16 @@ reachable by other people.
 
 ### Giving residents access
 
-Residents choose their own PIN through a one-time activation link:
+Admins manage residents at `/manage/residents/` (in Russian by default):
 
-1. In the admin, open **Residents**, select residents and run
-   **Create activation links** (or **Reset PIN and create activation links**
-   if someone forgot their PIN).
-2. Give each resident their own link. It works once and expires after 7 days.
+1. **Add a resident** (name, room, student code), or open an existing one.
+2. On the resident's page, open **More → Give a login link**
+   («Ещё → Выдать ссылку для входа»). Give the link to that resident only. It
+   works once and expires after 7 days; the link is shown once and never stored.
 3. The resident opens it, chooses a 6-digit PIN and is logged in.
+
+If someone forgets their PIN: **More → Reset PIN** («Сбросить PIN-код»), then
+give them the new link.
 
 ## Everyday commands
 

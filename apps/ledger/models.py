@@ -12,6 +12,23 @@ class LedgerEntryQuerySet(models.QuerySet):
         """Current balance in whole rubles: the sum of all the resident's entries."""
         return self.filter(resident=resident).aggregate(total=Sum("amount"))["total"] or 0
 
+    def debt_since(self, resident):
+        """When the resident's current debt began: the time of the entry that
+        took the balance below zero for the last time. None if not in debt."""
+        balance, since = 0, None
+        for amount, created_at in (
+            self.filter(resident=resident)
+            .order_by("created_at", "id")
+            .values_list("amount", "created_at")
+        ):
+            was_negative = balance < 0
+            balance += amount
+            if balance < 0 and not was_negative:
+                since = created_at
+            elif balance >= 0:
+                since = None
+        return since
+
 
 class LedgerEntry(models.Model):
     """One money movement on a resident's account, in whole rubles.
@@ -28,10 +45,11 @@ class LedgerEntry(models.Model):
     """
 
     class Kind(models.TextChoices):
-        CREDIT = "credit", _("credit")
-        BOOKING = "booking", _("booking charge")
+        # Labels are the plain words from docs/GLOSSARY.md.
+        CREDIT = "credit", _("payment received")
+        BOOKING = "booking", _("booking payment")
         REFUND = "refund", _("refund")
-        ADJUSTMENT = "adjustment", _("adjustment")
+        ADJUSTMENT = "adjustment", _("balance correction")
 
     resident = models.ForeignKey(
         Resident,

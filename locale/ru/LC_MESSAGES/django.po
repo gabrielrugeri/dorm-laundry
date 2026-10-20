@@ -193,17 +193,8 @@ msgstr "Машина, слот и жилец должны относиться �
 msgid "Ledger"
 msgstr "Журнал операций"
 
-msgid "credit"
-msgstr "пополнение"
-
-msgid "booking charge"
-msgstr "оплата бронирования"
-
 msgid "refund"
 msgstr "возврат"
-
-msgid "adjustment"
-msgstr "корректировка"
 
 msgid "amount (RUB)"
 msgstr "сумма (руб.)"
@@ -671,29 +662,11 @@ msgstr[3] "%(price)s за машину на %(n)s слота."
 msgid "Total"
 msgstr "Итого"
 
-msgid "Booking cancelled by staff"
-msgstr "Бронирование отменено сотрудником"
-
-msgid "Manual ledger entry"
-msgstr "Ручная операция по балансу"
-
-msgid "Activation link created"
-msgstr "Создана ссылка для активации"
-
 msgid "PIN reset"
 msgstr "Сброс PIN-кода"
 
 msgid "Password changed"
 msgstr "Пароль изменён"
-
-msgid "Created in Django admin"
-msgstr "Создано в админке Django"
-
-msgid "Changed in Django admin"
-msgstr "Изменено в админке Django"
-
-msgid "Deleted in Django admin"
-msgstr "Удалено в админке Django"
 
 msgid "Audit log"
 msgstr "Журнал действий"
@@ -809,33 +782,416 @@ msgstr "Применить"
 msgid "System"
 msgstr "Система"
 
-msgid "Field"
-msgstr "Поле"
-
 msgid "Before"
 msgstr "Было"
 
 msgid "After"
 msgstr "Стало"
 
-msgid "No field values recorded for this action."
-msgstr "Для этого действия значения полей не записываются."
-
 msgid "No events match these filters."
 msgstr "Нет записей, подходящих под фильтры."
 
-msgid "Every admin action: who, when, what changed and why."
-msgstr "Все действия администрации: кто, когда, что изменилось и почему."
+msgid "personal data erased at"
+msgstr "личные данные удалены"
 
-msgid "Django admin"
-msgstr "Админка Django"
+msgid "Set when the resident's name, room and code were erased."
+msgstr "Заполняется, когда имя, комната и код жильца удалены."
+
+msgid "Former resident"
+msgstr "Бывший жилец"
+
+msgid "This action is not possible."
+msgstr "Это действие невозможно."
+
+msgid "This resident owes money. Confirm that you have seen the debt."
+msgstr "У жильца долг. Подтвердите, что вы его видите."
+
+msgid "This resident has bookings or payments and cannot be deleted."
+msgstr "У жильца есть бронирования или платежи, его нельзя удалить."
+
+msgid "This resident's personal data has already been erased."
+msgstr "Личные данные этого жильца уже удалены."
+
+msgid "Booking cancelled by the administration"
+msgstr "Бронирование отменено администрацией"
+
+msgid "Payment recorded"
+msgstr "Оплата внесена"
+
+msgid "Balance corrected"
+msgstr "Баланс исправлен"
+
+msgid "Payment or balance correction"
+msgstr "Оплата или исправление баланса"
+
+msgid "Resident added"
+msgstr "Жилец добавлен"
+
+msgid "Resident details changed"
+msgstr "Данные жильца изменены"
+
+msgid "Access turned off"
+msgstr "Доступ отключён"
+
+msgid "Access turned back on"
+msgstr "Доступ возвращён"
+
+msgid "Personal data erased"
+msgstr "Личные данные удалены"
+
+msgid "Resident deleted"
+msgstr "Жилец удалён"
+
+msgid "Login link created"
+msgstr "Создана ссылка для входа"
+
+msgid "Added by a developer"
+msgstr "Добавлено разработчиком"
+
+msgid "Changed by a developer"
+msgstr "Изменено разработчиком"
+
+msgid "Deleted by a developer"
+msgstr "Удалено разработчиком"
+
+msgid "payment received"
+msgstr "оплата внесена"
+
+msgid "booking payment"
+msgstr "оплата бронирования"
+
+msgid "balance correction"
+msgstr "исправление баланса"
+
+msgctxt "change history"
+msgid "Change"
+msgstr "Изменение"
+
+msgid "Full name"
+msgstr "ФИО"
+
+msgid "The resident logs in with this code."
+msgstr "По этому коду жилец входит в систему."
+
+msgid "Another resident already has this student code."
+msgstr "У другого жильца уже есть такой студенческий код."
+
+msgid "Amount, ₽"
+msgstr "Сумма, ₽"
+
+msgid "Comment"
+msgstr "Комментарий"
+
+msgid "For example: cash, 15 October"
+msgstr "Например: наличными, 15 октября"
+
+msgid "Required. Saved in the resident's payment history."
+msgstr "Обязательно. Сохранится в истории платежей жильца."
+
+msgid "Change, ₽"
+msgstr "Изменение, ₽"
+
+msgid "Use a minus sign to reduce the balance, e.g. -50."
+msgstr "Чтобы уменьшить баланс, поставьте минус, например -50."
+
+msgid "Why"
+msgstr "Причина"
+
+msgid "Required. Explain the correction."
+msgstr "Обязательно. Объясните исправление."
+
+msgid "The change cannot be zero."
+msgstr "Изменение не может быть нулевым."
+
+msgid "Reason (the resident will see it)"
+msgstr "Причина (её увидит жилец)"
+
+msgid "Money"
+msgstr "Деньги"
+
+msgid "Usual rule (refund only if early enough)"
+msgstr "Обычное правило (возврат, только если отмена достаточно рано)"
+
+msgid "Full refund"
+msgstr "Полный возврат"
+
+msgid "I have seen that this resident owes money."
+msgstr "Я вижу, что у жильца есть долг."
+
+msgid "Resident added. Give them a login link so they can choose a PIN."
+msgstr ""
+"Жилец добавлен. Выдайте ему ссылку для входа, чтобы он придумал PIN-код."
+
+msgid "Add a resident"
+msgstr "Добавить жильца"
+
+msgid "Add resident"
+msgstr "Добавить"
+
+msgid "Details saved."
+msgstr "Данные сохранены."
+
+msgid "Change details"
+msgstr "Изменить данные"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Record a payment"
+msgstr "Внести оплату"
+
+msgid "Record payment"
+msgstr "Внести оплату"
+
+msgid "Payment recorded."
+msgstr "Оплата внесена."
+
+msgid "Correct the balance"
+msgstr "Исправить баланс"
+
+msgid "Save correction"
+msgstr "Сохранить исправление"
+
+msgid "Balance corrected."
+msgstr "Баланс исправлен."
+
+msgid "Reset PIN"
+msgstr "Сбросить PIN-код"
 
 msgid ""
-"Raw data and booking cancellations. Bookings and money cannot be edited "
-"there."
+"The current PIN stops working at once. You then get a login link to give to "
+"the resident."
 msgstr ""
-"Исходные данные и отмена бронирований. Бронирования и деньги там изменить "
-"нельзя."
+"Текущий PIN-код сразу перестанет работать. Затем вы получите ссылку для "
+"входа, которую нужно передать жильцу."
 
-msgid "Search: object, reason or user"
-msgstr "Поиск: объект, причина или пользователь"
+msgid "Turn off access"
+msgstr "Отключить доступ"
+
+msgid ""
+"The resident can no longer log in or book. Their history stays. You can turn "
+"access back on later."
+msgstr ""
+"Жилец больше не сможет входить и бронировать. История сохранится. Доступ "
+"можно вернуть позже."
+
+msgid "Access turned off."
+msgstr "Доступ отключён."
+
+msgid "Access turned back on."
+msgstr "Доступ возвращён."
+
+msgid "Erase personal data"
+msgstr "Удалить личные данные"
+
+msgid ""
+"Name, room and student code are erased everywhere, also in the change "
+"history, and access is turned off. Bookings and payments stay so the money "
+"still adds up. This cannot be undone."
+msgstr ""
+"Имя, комната и студенческий код будут удалены везде, в том числе в журнале "
+"изменений, а доступ отключён. Бронирования и платежи останутся, чтобы деньги "
+"сходились. Это нельзя отменить."
+
+msgid "Personal data erased."
+msgstr "Личные данные удалены."
+
+msgid "Resident deleted."
+msgstr "Жилец удалён."
+
+msgid "Delete resident"
+msgstr "Удалить жильца"
+
+msgid ""
+"This resident has no bookings or payments, so they can be deleted completely."
+" This cannot be undone."
+msgstr ""
+"У жильца нет бронирований и платежей, поэтому его можно удалить полностью. "
+"Это нельзя отменить."
+
+msgid "Booking cancelled. The resident sees your reason."
+msgstr "Бронирование отменено. Жилец увидит вашу причину."
+
+msgid "What"
+msgstr "Что"
+
+msgid "Balance after, ₽"
+msgstr "Баланс после, ₽"
+
+msgid "Residents"
+msgstr "Жильцы"
+
+msgid "Keys"
+msgstr "Ключи"
+
+msgid "Change history"
+msgstr "Журнал изменений"
+
+msgid "Usual rule"
+msgstr "Обычное правило"
+
+msgid "no refund (too close to the start)"
+msgstr "без возврата (слишком близко к началу)"
+
+msgid ""
+"The debt is not collected automatically. Make sure it is settled or written "
+"down before you continue."
+msgstr ""
+"Долг не взыскивается автоматически. Перед продолжением убедитесь, что он "
+"погашен или записан."
+
+msgid "Personal data erased. The payment history is kept."
+msgstr "Личные данные удалены. История платежей сохранена."
+
+msgid "Owes money."
+msgstr "Есть долг."
+
+msgid "No debt."
+msgstr "Долга нет."
+
+msgid "More"
+msgstr "Ещё"
+
+msgid "Give a login link"
+msgstr "Выдать ссылку для входа"
+
+msgid "Download payment history"
+msgstr "Скачать историю платежей"
+
+msgid "Turn access back on"
+msgstr "Вернуть доступ"
+
+msgid "Upcoming bookings"
+msgstr "Предстоящие бронирования"
+
+msgid "No upcoming bookings."
+msgstr "Предстоящих бронирований нет."
+
+msgid "Recent payments"
+msgstr "Последние оплаты"
+
+msgid "No payments yet."
+msgstr "Оплат пока нет."
+
+msgid "Full payment history"
+msgstr "Вся история платежей"
+
+msgid "Past bookings (90 days)"
+msgstr "Прошедшие бронирования (90 дней)"
+
+msgid "No past bookings."
+msgstr "Прошедших бронирований нет."
+
+msgid "Key hand-overs"
+msgstr "Выдача ключей"
+
+msgid "No key hand-overs yet."
+msgstr "Ключи ещё не выдавались."
+
+msgid "Balance now"
+msgstr "Баланс сейчас"
+
+msgid "Active"
+msgstr "Активные"
+
+msgid "Owe money"
+msgstr "С долгом"
+
+msgid "access turned off"
+msgstr "доступ отключён"
+
+msgid "owes money"
+msgstr "долг"
+
+msgid "Nobody found."
+msgstr "Никого не найдено."
+
+msgid "No residents here."
+msgstr "Здесь пока никого нет."
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Next"
+msgstr "Дальше"
+
+msgid "Login link"
+msgstr "Ссылка для входа"
+
+msgid "The PIN was reset."
+msgstr "PIN-код сброшен."
+
+msgid "Copy link"
+msgstr "Скопировать ссылку"
+
+msgid "This link is shown only now. If it gets lost, create a new one."
+msgstr ""
+"Ссылка показывается только сейчас. Если она потеряется, создайте новую."
+
+msgid "Copied"
+msgstr "Скопировано"
+
+msgid "Name, room or student code"
+msgstr "Имя, комната или студенческий код"
+
+msgid "Show"
+msgstr "Показать"
+
+#, python-format
+msgid "Full refund: %(amount)s back"
+msgstr "Полный возврат: вернётся %(amount)s"
+
+#, python-format
+msgid "This resident owes %(amount)s."
+msgstr "Долг жильца: %(amount)s."
+
+#, python-format
+msgid "%(amount)s back"
+msgstr "вернётся %(amount)s"
+
+#, python-format
+msgid "balance %(balance)s"
+msgstr "баланс %(balance)s"
+
+#, python-format
+msgid ""
+"Give this link to %(name)s only. It works once and expires after 7 days. They"
+" open it and choose a new PIN."
+msgstr ""
+"Передайте эту ссылку только жильцу %(name)s. Она работает один раз и "
+"действует 7 дней. Жилец откроет её и придумает новый PIN-код."
+
+#, python-format
+msgid "Room %(room)s"
+msgstr "Комната %(room)s"
+
+#, python-format
+msgid "Owes money since %(since)s."
+msgstr "Долг с %(since)s."
+
+msgid "Refunded"
+msgstr "Возвращено"
+
+msgid "Debt seen and confirmed"
+msgstr "Долг увиден и подтверждён"
+
+msgid "Role"
+msgstr "Роль"
+
+msgid "Key manager"
+msgstr "Выдача ключей"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "No details recorded for this action."
+msgstr "Подробности для этого действия не записываются."
+
+msgid "Search: name, reason or staff member"
+msgstr "Поиск: имя, причина или сотрудник"
