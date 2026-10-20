@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
+from django.contrib.auth.models import Group
 from django.db import transaction
 from django.template.response import TemplateResponse
 from django.utils.translation import gettext_lazy as _
@@ -10,6 +11,13 @@ from apps.audit.services import record
 
 from .activation import activation_url
 from .models import Resident, StaffProfile, User
+
+admin.site.unregister(Group)
+
+
+@admin.register(Group)
+class AuditedGroupAdmin(AuditedAdmin, GroupAdmin):
+    """Groups are the roles (resident, manager, admin); changes are audited."""
 
 
 @admin.register(User)

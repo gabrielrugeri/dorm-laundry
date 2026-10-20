@@ -198,3 +198,32 @@ def test_audit_log_is_read_only_in_admin(boss_client, boss):
     assert boss_client.get(reverse("admin:audit_auditevent_add")).status_code == 403
     delete_url = reverse("admin:audit_auditevent_delete", args=[event.pk])
     assert boss_client.post(delete_url, {"post": "yes"}).status_code == 403
+
+
+def test_role_changes_are_in_the_audit_event(boss_client, resident):
+    """A user's groups (roles) are saved after the user; the event must see them."""
+    manager_group = Group.objects.get(name=roles.MANAGER)
+    url = reverse("admin:accounts_user_change", args=[resident.user.pk])
+    page = boss_client.get(url)
+    data = {
+        key: value
+        for key, value in page.context["adminform"].form.initial.items()
+        if value is not None and key not in ("groups", "user_permissions", "password")
+    }
+    data.update(
+        groups=[manager_group.pk],
+        is_active="on",
+        date_joined_0="2026-01-01",
+        date_joined_1="00:00:00",
+    )
+    response = boss_client.post(url, data)
+    assert response.status_code == 302, response.context["adminform"].form.errors
+    event = AuditEvent.objects.get(action="admin.change", target_type="accounts.User")
+    assert event.after["groups"] == [str(manager_group)]
+    assert event.before["groups"] == [roles.RESIDENT]
+
+
+def test_group_admin_is_audited(boss_client):
+    url = reverse("admin:auth_group_add")
+    assert boss_client.post(url, {"name": "night-shift"}).status_code == 302
+    assert AuditEvent.objects.filter(action="admin.add", target_type="auth.Group").exists()

@@ -19,13 +19,19 @@ def _before(obj):
 
 class AuditedAdmin:
     def save_model(self, request, obj, form, change):
-        before = _before(obj) if change else None
+        # Remember the old values; the event is written in save_related, after
+        # many-to-many fields (e.g. a user's groups, which are their roles) are saved.
+        obj._audit_before = _before(obj) if change else None
         super().save_model(request, obj, form, change)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        obj = form.instance
         record(
             actor=request.user,
             action="admin.change" if change else "admin.add",
             target=obj,
-            before=before,
+            before=getattr(obj, "_audit_before", None),
             after=snapshot(obj),
         )
 
