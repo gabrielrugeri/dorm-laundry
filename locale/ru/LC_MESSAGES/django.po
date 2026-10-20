@@ -193,17 +193,8 @@ msgstr "Машина, слот и жилец должны относиться �
 msgid "Ledger"
 msgstr "Журнал операций"
 
-msgid "credit"
-msgstr "пополнение"
-
-msgid "booking charge"
-msgstr "оплата бронирования"
-
 msgid "refund"
 msgstr "возврат"
-
-msgid "adjustment"
-msgstr "корректировка"
 
 msgid "amount (RUB)"
 msgstr "сумма (руб.)"
@@ -671,29 +662,11 @@ msgstr[3] "%(price)s за машину на %(n)s слота."
 msgid "Total"
 msgstr "Итого"
 
-msgid "Booking cancelled by staff"
-msgstr "Бронирование отменено сотрудником"
-
-msgid "Manual ledger entry"
-msgstr "Ручная операция по балансу"
-
-msgid "Activation link created"
-msgstr "Создана ссылка для активации"
-
 msgid "PIN reset"
 msgstr "Сброс PIN-кода"
 
 msgid "Password changed"
 msgstr "Пароль изменён"
-
-msgid "Created in Django admin"
-msgstr "Создано в админке Django"
-
-msgid "Changed in Django admin"
-msgstr "Изменено в админке Django"
-
-msgid "Deleted in Django admin"
-msgstr "Удалено в админке Django"
 
 msgid "Audit log"
 msgstr "Журнал действий"
@@ -839,3 +812,79 @@ msgstr ""
 
 msgid "Search: object, reason or user"
 msgstr "Поиск: объект, причина или пользователь"
+
+msgid "personal data erased at"
+msgstr "личные данные удалены"
+
+msgid "Set when the resident's name, room and code were erased."
+msgstr "Заполняется, когда имя, комната и код жильца удалены."
+
+msgid "Former resident"
+msgstr "Бывший жилец"
+
+msgid "This action is not possible."
+msgstr "Это действие невозможно."
+
+msgid "This resident owes money. Confirm that you have seen the debt."
+msgstr "У жильца долг. Подтвердите, что вы его видите."
+
+msgid "This resident has bookings or payments and cannot be deleted."
+msgstr "У жильца есть бронирования или платежи, его нельзя удалить."
+
+msgid "This resident's personal data has already been erased."
+msgstr "Личные данные этого жильца уже удалены."
+
+msgid "Booking cancelled by the administration"
+msgstr "Бронирование отменено администрацией"
+
+msgid "Payment recorded"
+msgstr "Оплата внесена"
+
+msgid "Balance corrected"
+msgstr "Баланс исправлен"
+
+msgid "Payment or balance correction"
+msgstr "Оплата или исправление баланса"
+
+msgid "Resident added"
+msgstr "Жилец добавлен"
+
+msgid "Resident details changed"
+msgstr "Данные жильца изменены"
+
+msgid "Access turned off"
+msgstr "Доступ отключён"
+
+msgid "Access turned back on"
+msgstr "Доступ возвращён"
+
+msgid "Personal data erased"
+msgstr "Личные данные удалены"
+
+msgid "Resident deleted"
+msgstr "Жилец удалён"
+
+msgid "Login link created"
+msgstr "Создана ссылка для входа"
+
+msgid "Added by a developer"
+msgstr "Добавлено разработчиком"
+
+msgid "Changed by a developer"
+msgstr "Изменено разработчиком"
+
+msgid "Deleted by a developer"
+msgstr "Удалено разработчиком"
+
+msgid "payment received"
+msgstr "оплата внесена"
+
+msgid "booking payment"
+msgstr "оплата бронирования"
+
+msgid "balance correction"
+msgstr "исправление баланса"
+
+msgctxt "change history"
+msgid "Change"
+msgstr "Изменение"

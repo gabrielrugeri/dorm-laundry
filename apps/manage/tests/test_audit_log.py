@@ -55,7 +55,7 @@ def test_audit_log_shows_changes(boss_client, room_change):
     response = boss_client.get(AUDIT)
     assert list(response.context["page"]) == [room_change]
     html = response.content.decode()
-    assert "Changed in Django admin" in html
+    assert "Changed by a developer" in html
     assert "Moved rooms" in html
     assert "305" in html and "101" in html
 
@@ -73,10 +73,8 @@ def test_own_staff_events_without_dormitory_are_shown(boss_client, boss):
 
 
 def test_filters(boss_client, boss, room_change):
-    other = record(actor=boss, action="ledger.manual_entry", reason="Cash")
-    assert list(boss_client.get(AUDIT, {"action": "ledger.manual_entry"}).context["page"]) == [
-        other
-    ]
+    other = record(actor=boss, action="ledger.payment", reason="Cash")
+    assert list(boss_client.get(AUDIT, {"action": "ledger.payment"}).context["page"]) == [other]
     assert list(boss_client.get(AUDIT, {"q": "moved"}).context["page"]) == [room_change]
     assert (
         list(boss_client.get(AUDIT, {"from": "2000-01-01", "to": "2000-01-02"}).context["page"])

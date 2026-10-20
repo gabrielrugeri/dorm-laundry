@@ -192,16 +192,7 @@ msgstr ""
 msgid "Ledger"
 msgstr ""
 
-msgid "credit"
-msgstr ""
-
-msgid "booking charge"
-msgstr ""
-
 msgid "refund"
-msgstr ""
-
-msgid "adjustment"
 msgstr ""
 
 msgid "amount (RUB)"
@@ -636,28 +627,10 @@ msgstr[1] ""
 msgid "Total"
 msgstr ""
 
-msgid "Booking cancelled by staff"
-msgstr ""
-
-msgid "Manual ledger entry"
-msgstr ""
-
-msgid "Activation link created"
-msgstr ""
-
 msgid "PIN reset"
 msgstr ""
 
 msgid "Password changed"
-msgstr ""
-
-msgid "Created in Django admin"
-msgstr ""
-
-msgid "Changed in Django admin"
-msgstr ""
-
-msgid "Deleted in Django admin"
 msgstr ""
 
 msgid "Audit log"
@@ -799,4 +772,80 @@ msgid ""
 msgstr ""
 
 msgid "Search: object, reason or user"
+msgstr ""
+
+msgid "personal data erased at"
+msgstr ""
+
+msgid "Set when the resident's name, room and code were erased."
+msgstr ""
+
+msgid "Former resident"
+msgstr ""
+
+msgid "This action is not possible."
+msgstr ""
+
+msgid "This resident owes money. Confirm that you have seen the debt."
+msgstr ""
+
+msgid "This resident has bookings or payments and cannot be deleted."
+msgstr ""
+
+msgid "This resident's personal data has already been erased."
+msgstr ""
+
+msgid "Booking cancelled by the administration"
+msgstr ""
+
+msgid "Payment recorded"
+msgstr ""
+
+msgid "Balance corrected"
+msgstr ""
+
+msgid "Payment or balance correction"
+msgstr ""
+
+msgid "Resident added"
+msgstr ""
+
+msgid "Resident details changed"
+msgstr ""
+
+msgid "Access turned off"
+msgstr ""
+
+msgid "Access turned back on"
+msgstr ""
+
+msgid "Personal data erased"
+msgstr ""
+
+msgid "Resident deleted"
+msgstr ""
+
+msgid "Login link created"
+msgstr ""
+
+msgid "Added by a developer"
+msgstr ""
+
+msgid "Changed by a developer"
+msgstr ""
+
+msgid "Deleted by a developer"
+msgstr ""
+
+msgid "payment received"
+msgstr ""
+
+msgid "booking payment"
+msgstr ""
+
+msgid "balance correction"
+msgstr ""
+
+msgctxt "change history"
+msgid "Change"
 msgstr ""

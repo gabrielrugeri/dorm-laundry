@@ -22,7 +22,7 @@ def add_manual_entry(*, actor, resident, kind, amount, note):
         )
         record(
             actor=actor,
-            action="ledger.manual_entry",
+            action="ledger.payment" if kind == LedgerEntry.Kind.CREDIT else "ledger.correction",
             target=entry,
             after=snapshot(entry),
             reason=note,

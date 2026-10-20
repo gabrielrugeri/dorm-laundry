@@ -37,6 +37,12 @@ class Resident(models.Model):
     language = models.CharField(
         _("language"), max_length=8, choices=settings.LANGUAGES, default="ru"
     )
+    anonymized_at = models.DateTimeField(
+        _("personal data erased at"),
+        null=True,
+        blank=True,
+        help_text=_("Set when the resident's name, room and code were erased."),
+    )
 
     class Meta:
         verbose_name = _("resident")
@@ -49,7 +55,13 @@ class Resident(models.Model):
         ]
 
     def __str__(self):
+        if self.is_anonymized:
+            return str(_("Former resident"))
         return f"{self.full_name} ({self.room})"
+
+    @property
+    def is_anonymized(self):
+        return self.anonymized_at is not None
 
 
 class StaffProfile(models.Model):
