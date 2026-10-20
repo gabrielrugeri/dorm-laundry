@@ -3,6 +3,7 @@ from zoneinfo import ZoneInfo, available_timezones
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 
@@ -99,10 +100,14 @@ class TimeSlot(models.Model):
 
 
 class Machine(models.Model):
+    """A washing machine. Residents see it as "Machine 3" in their language."""
+
     dormitory = models.ForeignKey(
         Dormitory, on_delete=models.PROTECT, related_name="machines", verbose_name=_("dormitory")
     )
-    label = models.CharField(_("label"), max_length=50, help_text=_("E.g. “Machine 1”."))
+    number = models.PositiveSmallIntegerField(
+        _("number"), help_text=_("Shown as “Machine 3” in the selected language.")
+    )
     active = models.BooleanField(
         _("active"), default=True, help_text=_("Inactive machines cannot be booked.")
     )
@@ -110,12 +115,17 @@ class Machine(models.Model):
     class Meta:
         verbose_name = _("machine")
         verbose_name_plural = _("machines")
-        ordering = ["dormitory", "label"]
+        ordering = ["dormitory", "number"]
         constraints = [
             models.UniqueConstraint(
-                fields=["dormitory", "label"], name="unique_machine_label_per_dormitory"
+                fields=["dormitory", "number"], name="unique_machine_number_per_dormitory"
             ),
         ]
 
     def __str__(self):
-        return self.label
+        return self.name
+
+    @property
+    def name(self):
+        """ "Machine 3" / "Машина 3", in the language of the current request."""
+        return gettext("Machine %(number)s") % {"number": self.number}

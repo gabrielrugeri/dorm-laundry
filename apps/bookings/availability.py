@@ -1,5 +1,5 @@
-"""Read-only questions the booking screens ask: which days can be booked, how
-many machines are free per slot, and how long a machine stays free.
+"""Read-only questions the booking screens ask: which days can be booked,
+where a machine is free for N slots in a row, and why a machine is not.
 
 Privacy: these functions return counts, machines and the asking resident's
 own bookings only, never other residents' bookings.
@@ -8,7 +8,6 @@ own bookings only, never other residents' bookings.
 from dataclasses import dataclass
 from datetime import timedelta
 
-from django.db.models import Count
 from django.utils import timezone
 
 from .models import Booking
@@ -35,50 +34,10 @@ def occupied(machine_queryset, day):
     )
 
 
-@dataclass
-class SlotAvailability:
-    slot: object
-    starts_at: object
-    free: int
-    total: int
-    mine: bool
-    started: bool
-    finished: bool
-
-    @property
-    def bookable(self):
-        return self.free > 0 and not self.started
-
-
-def day_availability(dormitory, resident, day, now=None):
-    """One SlotAvailability per active slot of `day`, in time order."""
-    now = now or timezone.now()
-    machines = dormitory.machines.filter(active=True)
-    total = machines.count()
-    taken = occupied(machines, day)
-    counts = dict(taken.values_list("slot").annotate(n=Count("pk")))
-    mine = set(taken.filter(resident=resident).values_list("slot", flat=True))
-    rows = []
-    for slot in active_slots(dormitory):
-        starts_at, ends_at = slot.bounds(day)
-        rows.append(
-            SlotAvailability(
-                slot=slot,
-                starts_at=starts_at,
-                free=total - counts.get(slot.pk, 0),
-                total=total,
-                mine=slot.pk in mine,
-                started=starts_at <= now,
-                finished=ends_at <= now,
-            )
-        )
-    return rows
-
-
-def following_slots(dormitory, first_slot):
+def following_slots(dormitory, first_slot, slots=None):
     """`first_slot` and the active slots right after it, without gaps: the
     slots that could be booked together starting at `first_slot`."""
-    slots = active_slots(dormitory)
+    slots = slots if slots is not None else active_slots(dormitory)
     run = slots[slots.index(first_slot) :]
     for n, (earlier, later) in enumerate(zip(run, run[1:], strict=False), start=1):
         if earlier.end_time != later.start_time:
@@ -86,22 +45,92 @@ def following_slots(dormitory, first_slot):
     return run
 
 
-def free_runs(dormitory, day, first_slot):
-    """For each active machine free at `first_slot`: how many consecutive slots
-    (starting at `first_slot`) it stays free.
+def max_length(dormitory):
+    """The longest run of back-to-back active slots in a day: the most slots
+    one booking can take."""
+    slots = active_slots(dormitory)
+    return max((len(following_slots(dormitory, s, slots)) for s in slots), default=0)
 
-    Returns ([(machine, count), ...], slots), where `slots` are the slots that
-    could follow `first_slot` (see following_slots)."""
-    slots = following_slots(dormitory, first_slot)
-    machines = list(dormitory.machines.filter(active=True).order_by("label"))
-    taken = set(occupied(machines, day).filter(slot__in=slots).values_list("machine_id", "slot_id"))
-    runs = []
+
+def slot_hours(dormitory):
+    """Hours per slot if every active slot has the same length, else None."""
+    durations = {s.duration_minutes for s in active_slots(dormitory)}
+    if len(durations) == 1:
+        minutes = durations.pop()
+        return minutes // 60 if minutes % 60 == 0 else minutes / 60
+    return None
+
+
+@dataclass
+class StartOption:
+    """A start time where at least one machine is free for `length` slots."""
+
+    slot: object
+    slots: list  # the `length` slots booked together
+    free: int
+
+    @property
+    def end_time(self):
+        return self.slots[-1].end_time
+
+
+def start_options(dormitory, day, length, now=None):
+    """Start times on `day` where at least one active machine is free for
+    `length` consecutive slots, and how many machines are. Started slots and
+    runs that would not fit before the day ends are left out."""
+    now = now or timezone.now()
+    machines = list(dormitory.machines.filter(active=True))
+    taken = set(occupied(machines, day).values_list("machine_id", "slot_id"))
+    slots = active_slots(dormitory)
+    options = []
+    for slot in slots:
+        run = following_slots(dormitory, slot, slots)[:length]
+        if len(run) < length or slot.bounds(day)[0] <= now:
+            continue
+        free = sum(all((m.pk, s.pk) not in taken for s in run) for m in machines)
+        if free:
+            options.append(StartOption(slot, run, free))
+    return options
+
+
+# Why a machine cannot be booked for the chosen slots.
+FREE = "free"
+BOOKED = "booked"
+FREE_UNTIL = "free_until"
+OUT_OF_SERVICE = "out_of_service"
+
+
+@dataclass
+class MachineChoice:
+    machine: object
+    state: str
+    free_until: object = None  # end time of the last free slot, for FREE_UNTIL
+
+    @property
+    def available(self):
+        return self.state == FREE
+
+
+def machine_choices(dormitory, day, run):
+    """Every machine of the dormitory (active or not), and whether it is free
+    for all slots in `run`. Machines free at the start but not for the whole
+    run say until when they are free."""
+    machines = list(dormitory.machines.order_by("number"))
+    taken = set(occupied(machines, day).filter(slot__in=run).values_list("machine_id", "slot_id"))
+    choices = []
     for machine in machines:
-        count = 0
-        for slot in slots:
+        if not machine.active:
+            choices.append(MachineChoice(machine, OUT_OF_SERVICE))
+            continue
+        free_count = 0
+        for slot in run:
             if (machine.pk, slot.pk) in taken:
                 break
-            count += 1
-        if count:
-            runs.append((machine, count))
-    return runs, slots
+            free_count += 1
+        if free_count == len(run):
+            choices.append(MachineChoice(machine, FREE))
+        elif free_count == 0:
+            choices.append(MachineChoice(machine, BOOKED))
+        else:
+            choices.append(MachineChoice(machine, FREE_UNTIL, run[free_count - 1].end_time))
+    return choices

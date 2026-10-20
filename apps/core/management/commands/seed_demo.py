@@ -8,7 +8,7 @@ All names, rooms and codes are invented. Never put real personal data here.
 Logins (passwords come from env vars, see .env.example):
     admin    / SEED_DEMO_STAFF_PASSWORD   superuser, Django admin
     manager  / SEED_DEMO_STAFF_PASSWORD   key manager
-    demo-D0001 … demo-D0020 / SEED_DEMO_RESIDENT_PIN
+    student code D0001 … D0020 / SEED_DEMO_RESIDENT_PIN   residents
 """
 
 import os
@@ -28,7 +28,8 @@ from apps.ledger.models import LedgerEntry
 
 FIRST_NAMES = ["Ivan", "Anna", "Pyotr", "Olga", "Sergei", "Maria", "Dmitri", "Elena", "Pavel"]
 LAST_NAMES = ["Testov", "Primerova", "Demin", "Fakeova", "Obraztsov", "Vymyslova", "Shablonov"]
-SLOT_HOURS = [8, 10, 12, 14, 16, 18, 20]  # Placeholder until the dormitory confirms its hours.
+# Two-hour slots from 10:00; the last one ends at midnight.
+SLOT_HOURS = [10, 12, 14, 16, 18, 20, 22]
 MACHINE_COUNT = 6
 RESIDENT_COUNT = 20
 
@@ -43,14 +44,18 @@ class Command(BaseCommand):
         resident_pin = os.environ.get("SEED_DEMO_RESIDENT_PIN", "123456")
 
         dorm, dorm_created = Dormitory.objects.get_or_create(
-            slug="demo", defaults={"name": "Demo Dormitory No. 1"}
+            slug="demo", defaults={"name": "Общежитие № 1"}
         )
         slots = [
-            TimeSlot.objects.get_or_create(dormitory=dorm, start_time=time(hour, 0))[0]
+            TimeSlot.objects.update_or_create(
+                dormitory=dorm, start_time=time(hour, 0), defaults={"active": True}
+            )[0]
             for hour in SLOT_HOURS
         ]
+        # Slots from older demo data stay (bookings point to them) but are switched off.
+        dorm.time_slots.exclude(pk__in=[slot.pk for slot in slots]).update(active=False)
         machines = [
-            Machine.objects.get_or_create(dormitory=dorm, label=f"Machine {n}")[0]
+            Machine.objects.get_or_create(dormitory=dorm, number=n)[0]
             for n in range(1, MACHINE_COUNT + 1)
         ]
 
@@ -80,7 +85,6 @@ class Command(BaseCommand):
                     resident=resident,
                     kind=LedgerEntry.Kind.CREDIT,
                     amount=rng.choice([100, 200, 300, 500]),
-                    note="Demo top-up",
                 )
             residents.append(resident)
 

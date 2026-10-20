@@ -25,7 +25,7 @@ def slot(dormitory):
 
 @pytest.fixture
 def machine(dormitory):
-    return Machine.objects.create(dormitory=dormitory, label="Machine 1")
+    return Machine.objects.create(dormitory=dormitory, number=1)
 
 
 def make_resident(dormitory, code, name="Test Resident", room="101"):

@@ -96,12 +96,6 @@ msgstr ""
 msgid "A slot must end on the same day it starts."
 msgstr ""
 
-msgid "label"
-msgstr ""
-
-msgid "E.g. “Machine 1”."
-msgstr ""
-
 msgid "Inactive machines cannot be booked."
 msgstr ""
 
@@ -382,12 +376,6 @@ msgstr ""
 msgid "You are not allowed to change this booking."
 msgstr ""
 
-msgid "Machine"
-msgstr ""
-
-msgid "How long"
-msgstr ""
-
 msgid "Your booking is confirmed."
 msgstr ""
 
@@ -398,25 +386,10 @@ msgstr ""
 msgid "Today"
 msgstr ""
 
-msgid "Yours"
-msgstr ""
-
-msgid "Started"
-msgstr ""
-
-msgid "Fully booked"
-msgstr ""
-
-msgid "No time slots are set up yet."
-msgstr ""
-
 msgid "Book"
 msgstr ""
 
 msgid "Back to the schedule"
-msgstr ""
-
-msgid "All machines are booked for this time slot."
 msgstr ""
 
 msgid "Booking"
@@ -439,32 +412,6 @@ msgstr ""
 
 msgid "Days"
 msgstr ""
-
-#, python-format
-msgid "Starting at %(slot)s"
-msgstr ""
-
-#, python-format
-msgid "%(price)s per slot. Your balance: %(balance)s."
-msgstr ""
-
-#, python-format
-msgid "%(free)s of %(total)s free"
-msgid_plural "%(free)s of %(total)s free"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-format
-msgid "%(n)s slot (%(span)s)"
-msgid_plural "%(n)s slots (%(span)s)"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-format
-msgid "%(machine)s is free for only %(free)s slot from this time."
-msgid_plural "%(machine)s is free for only %(free)s slots from this time."
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "This booking can no longer be cancelled."
 msgstr ""
@@ -547,9 +494,6 @@ msgstr ""
 msgid "Pages"
 msgstr ""
 
-msgid "Finished"
-msgstr ""
-
 msgid "This key action is not possible."
 msgstr ""
 
@@ -616,4 +560,78 @@ msgstr ""
 
 #, python-format
 msgid "taken %(time)s"
+msgstr ""
+
+#, python-format
+msgid "Machine %(number)s"
+msgstr ""
+
+msgid "number"
+msgstr ""
+
+msgid "Shown as “Machine 3” in the selected language."
+msgstr ""
+
+msgid "Machines"
+msgstr ""
+
+msgid "Choose at least one machine."
+msgstr ""
+
+msgid "There are not enough time slots left in the day."
+msgstr ""
+
+msgid "How long?"
+msgstr ""
+
+msgid "Your bookings this day:"
+msgstr ""
+
+msgid "Out of service"
+msgstr ""
+
+msgid "Your bookings"
+msgstr ""
+
+msgctxt "machine state"
+msgid "Booked"
+msgstr ""
+
+#, python-format
+msgid "%(hours)s h"
+msgstr ""
+
+#, python-format
+msgid "Your balance: %(balance)s."
+msgstr ""
+
+#, python-format
+msgid "Free only until %(time)s"
+msgstr ""
+
+#, python-format
+msgid "%(n)s slot"
+msgid_plural "%(n)s slots"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(free)s machine free"
+msgid_plural "%(free)s machines free"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "No machine is free for %(n)s slot in a row on this day."
+msgid_plural "No machine is free for %(n)s slots in a row on this day."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(price)s per machine for %(n)s slot."
+msgid_plural "%(price)s per machine for %(n)s slots."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Total"
 msgstr ""

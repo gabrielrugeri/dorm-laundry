@@ -46,7 +46,7 @@ def test_slot_can_be_rebooked_after_cancellation(make_booking, other_resident):
 
 def test_other_machine_same_slot_is_fine(make_booking, dormitory):
     make_booking()
-    make_booking(machine=Machine.objects.create(dormitory=dormitory, label="Machine 2"))
+    make_booking(machine=Machine.objects.create(dormitory=dormitory, number=2))
 
 
 def test_cancelled_booking_needs_cancelled_at(make_booking):
@@ -57,7 +57,7 @@ def test_cancelled_booking_needs_cancelled_at(make_booking):
 
 
 def test_clean_rejects_mixed_dormitories(make_booking, other_dormitory):
-    foreign_machine = Machine.objects.create(dormitory=other_dormitory, label="Elsewhere")
+    foreign_machine = Machine.objects.create(dormitory=other_dormitory, number=9)
     booking = make_booking()
     booking.machine = foreign_machine
     with pytest.raises(ValidationError):
