@@ -98,7 +98,9 @@ def test_example_import_file_matches_the_demo_data(db):
     from apps.dorms.models import Dormitory
 
     call_command("seed_demo")
-    data = (Path(__file__).resolve().parents[3] / "docs/examples/residents-import-demo.csv").read_bytes()
+    data = (
+        Path(__file__).resolve().parents[3] / "docs/examples/residents-import-demo.csv"
+    ).read_bytes()
     result = importing.preview(Dormitory.objects.get(slug="demo"), data)
     assert [row.status for row in result.rows] == [
         "unchanged",
