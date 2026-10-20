@@ -16,7 +16,7 @@ def test_seed_demo_creates_data_and_is_idempotent(db):
         Booking.objects.count(),
         LedgerEntry.objects.count(),
     )
-    assert counts[:3] == (20, 6, 7)
+    assert counts[:3] == (21, 6, 7)  # 20 demo residents + 1 just added
 
     call_command("seed_demo")
     assert counts == (
@@ -30,8 +30,12 @@ def test_seed_demo_creates_data_and_is_idempotent(db):
 
 def test_seed_demo_ledger_is_consistent(db):
     call_command("seed_demo")
-    for resident in Resident.objects.all():
-        assert LedgerEntry.objects.balance(resident) >= 0
+    debts = sorted(
+        LedgerEntry.objects.balance(r)
+        for r in Resident.objects.all()
+        if LedgerEntry.objects.balance(r) < 0
+    )
+    assert debts == [-150, -80]  # the two demo debtors, nobody else
     for booking in Booking.objects.all():
         assert booking.ledger_entries.get(kind="booking").amount == -booking.price_rub
 
@@ -40,7 +44,7 @@ def test_seed_demo_roles(db):
     call_command("seed_demo")
     assert roles.has_role(User.objects.get(username="manager"), roles.MANAGER)
     assert roles.has_role(User.objects.get(username="admin"), roles.ADMIN)
-    assert roles.has_role(Resident.objects.first().user, roles.RESIDENT)
+    assert roles.has_role(Resident.objects.get(student_code="D0001").user, roles.RESIDENT)
 
 
 def test_seed_demo_slots_run_from_10_to_midnight(db):
@@ -70,3 +74,16 @@ def test_seed_demo_has_an_audited_admin_cancellation(db):
         ).count()
         == 1
     )
+
+
+def test_seed_demo_covers_every_resident_state(db):
+    from apps.accounts import services
+
+    call_command("seed_demo")
+    residents = Resident.objects.all()
+    assert residents.filter(user__is_active=False, anonymized_at__isnull=True).count() == 1
+    assert residents.filter(anonymized_at__isnull=False).count() == 1
+    fresh = residents.get(student_code="D0021")
+    assert not services.has_history(fresh) and not fresh.user.has_usable_password()
+    # Payments carry a comment, as the admin screens require.
+    assert not LedgerEntry.objects.filter(kind="credit", note="").exists()

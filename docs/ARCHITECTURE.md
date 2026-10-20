@@ -72,6 +72,28 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   the dormitory's audit log with filters. Later stages add residents, imports,
   machines, settings and receipts there (see `docs/plans/admin-and-payments.md`).
 
+## Residents in the admin area
+
+- `/manage/residents/`: list with search (name, room, student code) and filters
+  (active, owe money, access turned off). `/manage/residents/<id>/`: the
+  profile, built to answer "is this resident in good standing?" (balance,
+  debt since, upcoming bookings, recent payments; full history collapsed).
+- Actions call `apps/accounts/services.py` (create, update, deactivate,
+  reactivate, anonymize, delete) and `apps/ledger/services.py`
+  (`add_manual_entry`: payments and balance corrections, note required).
+  Each writes its audit event in the same transaction.
+- Residents with history (bookings or money) are never deleted; access is
+  turned off, or personal data is erased (`anonymize`): name, room and code
+  are blanked, also in old audit snapshots (ids and amounts kept), access and
+  PIN are turned off, and bookings and money stay. Turning off or erasing a
+  resident in debt needs an explicit confirmation; the debt is recorded in
+  the audit event.
+- Login links (activation tokens) are shown once on the page and never
+  stored. The payment history downloads as an Excel-friendly CSV with
+  protection against formula injection.
+- `apps/audit/display.py` shows audit snapshots in plain words (no field
+  names, codes, ids or UTC times) on the change history page.
+
 ## Money
 
 - Amounts are whole rubles (`int`).

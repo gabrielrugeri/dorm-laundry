@@ -21,10 +21,12 @@ from django.db import transaction
 from django.utils import timezone
 
 from apps.accounts import roles
+from apps.accounts import services as resident_services
 from apps.accounts.models import Resident, StaffProfile, User
 from apps.bookings import services as booking_services
 from apps.bookings.models import Booking
 from apps.dorms.models import Dormitory, Machine, TimeSlot
+from apps.ledger import services as ledger_services
 from apps.ledger.models import LedgerEntry
 
 FIRST_NAMES = ["Ivan", "Anna", "Pyotr", "Olga", "Sergei", "Maria", "Dmitri", "Elena", "Pavel"]
@@ -32,6 +34,8 @@ LAST_NAMES = ["Testov", "Primerova", "Demin", "Fakeova", "Obraztsov", "Vymyslova
 # Two-hour slots from 10:00; the last one ends at midnight.
 SLOT_HOURS = [10, 12, 14, 16, 18, 20, 22]
 MACHINE_COUNT = 6
+# Comments an admin types when recording a payment (fake, in Russian like the real ones).
+PAYMENT_NOTES = ["Наличными на вахте", "Перевод на карту", "Наличными"]
 RESIDENT_COUNT = 20
 
 
@@ -63,6 +67,12 @@ class Command(BaseCommand):
         self._staff_user("admin", roles.ADMIN, dorm, staff_password)
         self._staff_user("manager", roles.MANAGER, dorm, staff_password)
 
+        if not dorm_created:
+            # Demo residents exist already. Some were erased or changed on purpose,
+            # so looking them up again by code would create duplicates.
+            self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
+            return
+
         resident_group = Group.objects.get(name=roles.RESIDENT)
         residents = []
         for n in range(1, RESIDENT_COUNT + 1):
@@ -82,16 +92,19 @@ class Command(BaseCommand):
                 },
             )
             if created:
-                LedgerEntry.objects.create(
+                # Recorded by the admin like a real cash payment at the desk.
+                ledger_services.add_manual_entry(
+                    actor=User.objects.get(username="admin"),
                     resident=resident,
                     kind=LedgerEntry.Kind.CREDIT,
                     amount=rng.choice([100, 200, 300, 500]),
+                    note=rng.choice(PAYMENT_NOTES),
                 )
             residents.append(resident)
 
-        if dorm_created:
-            self._demo_bookings(dorm, slots, machines, residents, rng)
-            self._demo_admin_cancellation(dorm)
+        self._demo_bookings(dorm, slots, machines, residents, rng)
+        self._demo_admin_cancellation(dorm)
+        self._demo_resident_states(dorm, residents)
 
         self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
 
@@ -145,4 +158,28 @@ class Command(BaseCommand):
             actor=User.objects.get(username="admin"),
             reason="Плановая проверка машины",
             full_refund=True,
+        )
+
+    def _demo_resident_states(self, dorm, residents):
+        """Residents in every state the admin screens show: two in debt, one
+        with access turned off, one whose personal data was erased, and one
+        just added (no history, no PIN yet)."""
+        admin = User.objects.get(username="admin")
+        for resident, debt in ((residents[3], 80), (residents[6], 150)):
+            balance = LedgerEntry.objects.balance(resident)
+            ledger_services.add_manual_entry(
+                actor=admin,
+                resident=resident,
+                kind=LedgerEntry.Kind.ADJUSTMENT,
+                amount=-(balance + debt),
+                note="Перевод не дошёл, оплата отменена",
+            )
+        resident_services.deactivate(actor=admin, resident=residents[18], reason="Выехал на лето")
+        resident_services.anonymize(actor=admin, resident=residents[19], confirm_debt=True)
+        resident_services.create_resident(
+            actor=admin,
+            dormitory=dorm,
+            full_name="Svetlana Novikova",
+            room="118",
+            student_code="D0021",
         )
