@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{% translate "Residents" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="mb-3 flex items-center justify-between gap-3">
+    <h1 class="text-xl font-semibold">{% translate "Residents" %}</h1>
+    <a href="{% url 'manage:resident_add' %}" class="rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Add a resident" %}</a>
+  </div>
+
+  <form method="get" class="mb-3">
+    <input type="hidden" name="show" value="{{ show }}">
+    <label class="sr-only" for="resident-search">{% translate "Search" %}</label>
+    <input id="resident-search" type="search" name="q" value="{{ query }}"
+           placeholder="{% translate 'Name, room or student code' %}"
+           class="w-full rounded border border-slate-300 bg-white px-3 py-2">
+  </form>
+
+  <nav class="mb-3 flex gap-2 text-sm" aria-label="{% translate 'Show' %}">
+    <a href="?show=active{% if query %}&q={{ query|urlencode }}{% endif %}" class="rounded-full border px-3 py-1.5 {% if show == 'active' %}border-blue-700 bg-blue-50 font-medium text-blue-800{% else %}border-slate-300 bg-white{% endif %}">{% translate "Active" %}</a>
+    <a href="?show=debt{% if query %}&q={{ query|urlencode }}{% endif %}" class="rounded-full border px-3 py-1.5 {% if show == 'debt' %}border-red-700 bg-red-50 font-medium text-red-800{% else %}border-slate-300 bg-white{% endif %}">{% translate "Owe money" %}</a>
+    <a href="?show=off{% if query %}&q={{ query|urlencode }}{% endif %}" class="rounded-full border px-3 py-1.5 {% if show == 'off' %}border-slate-700 bg-slate-100 font-medium{% else %}border-slate-300 bg-white{% endif %}">{% translate "Access turned off" %}</a>
+  </nav>
+
+  <ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+    {% for resident in page %}
+      <li>
+        <a href="{% url 'manage:resident' pk=resident.pk %}" class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-blue-50">
+          <span class="min-w-0">
+            <span class="block truncate font-medium">{% if resident.is_anonymized %}{% translate "Former resident" %}{% else %}{{ resident.full_name }}{% endif %}</span>
+            <span class="block text-sm text-slate-600">
+              {% if resident.room %}{% blocktranslate with room=resident.room %}Room {{ room }}{% endblocktranslate %}{% endif %}
+              {% if not resident.user.is_active %} · {% translate "access turned off" %}{% endif %}
+            </span>
+          </span>
+          <span class="shrink-0 text-right font-medium {% if resident.balance < 0 %}text-red-700{% else %}text-slate-800{% endif %}">
+            {{ resident.balance|rub }}
+            {% if resident.balance < 0 %}<span class="block text-xs font-normal">{% translate "owes money" %}</span>{% endif %}
+          </span>
+        </a>
+      </li>
+    {% empty %}
+      <li class="px-4 py-3 text-slate-600">{% if query %}{% translate "Nobody found." %}{% else %}{% translate "No residents here." %}{% endif %}</li>
+    {% endfor %}
+  </ul>
+
+  {% if page.has_other_pages %}
+    <nav class="mt-4 flex justify-between text-sm" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a href="?show={{ show }}&q={{ query|urlencode }}&page={{ page.previous_page_number }}" class="text-blue-700 underline">← {% translate "Previous" %}</a>{% else %}<span></span>{% endif %}
+      {% if page.has_next %}<a href="?show={{ show }}&q={{ query|urlencode }}&page={{ page.next_page_number }}" class="text-blue-700 underline">{% translate "Next" %} →</a>{% endif %}
+    </nav>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{{ title }} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:resident' pk=resident.pk %}" class="text-sm text-blue-700 underline">← {% if resident.is_anonymized %}{% translate "Former resident" %}{% else %}{{ resident.full_name }}{% endif %}</a></p>
+  <div class="mx-auto max-w-md rounded-lg bg-white p-4 shadow-sm">
+    <h1 class="mb-1 text-xl font-semibold">{{ title }}</h1>
+    <p class="mb-3 text-slate-600">{% if not resident.is_anonymized %}{{ resident.full_name }}, {% blocktranslate with room=resident.room %}room {{ room }}{% endblocktranslate %}{% endif %}</p>
+    <p class="mb-4">{{ text }}</p>
+
+    {% if debt_form %}
+      <div class="mb-4 rounded-lg border-2 border-red-600 bg-red-50 p-3 text-red-900" role="alert">
+        <p class="text-lg font-semibold">{% blocktranslate with amount=owed|rub %}This resident owes {{ amount }}.{% endblocktranslate %}</p>
+        <p class="text-sm">{% translate "The debt is not collected automatically. Make sure it is settled or written down before you continue." %}</p>
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+      {% if debt_form %}
+        <label class="mb-4 flex items-start gap-2">
+          <input type="checkbox" name="confirm_debt" class="mt-1" {% if debt_form.confirm_debt.value %}checked{% endif %}>
+          <span>{{ debt_form.confirm_debt.label }}</span>
+        </label>
+        {% for error in debt_form.confirm_debt.errors %}<p class="mb-3 text-sm text-red-700">{{ error }}</p>{% endfor %}
+      {% endif %}
+      <div class="flex flex-wrap gap-3">
+        <button type="submit" class="rounded px-4 py-2 font-medium text-white {% if danger %}bg-red-700 hover:bg-red-800{% else %}bg-blue-700 hover:bg-blue-800{% endif %}">{{ submit }}</button>
+        <a href="{% url 'manage:resident' pk=resident.pk %}" class="rounded px-4 py-2 text-slate-700 underline">{% translate "Back" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

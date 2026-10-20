@@ -6,7 +6,7 @@ from datetime import date
 
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from apps.accounts import roles
 from apps.accounts.decorators import role_required
@@ -20,7 +20,8 @@ EVENTS_PER_PAGE = 50
 
 @admin_required
 def index(request):
-    return render(request, "manage/index.html")
+    """The admin area starts on the resident list."""
+    return redirect("manage:residents")
 
 
 def _date(value):

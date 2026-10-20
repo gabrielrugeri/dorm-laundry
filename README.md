@@ -14,7 +14,7 @@ Works in Russian and English, and loads nothing from third-party servers.
 > Status: early development. Residents can log in, see free machines, book,
 > cancel, export bookings to their calendar and see their balance. Managers
 > record key hand-overs on the key schedule. Admins have an audit log of every
-> admin action at `/manage/audit/`; bookings can only be cancelled through the
+> admin action at `/manage/history/`; bookings can only be cancelled through the
 > booking service. The admin and payment features in
 > [docs/plans/admin-and-payments.md](docs/plans/admin-and-payments.md) are in
 > progress.

@@ -10,6 +10,7 @@ from apps.audit.services import record, snapshot
 from apps.keylog.tests.test_services import make_staff
 
 INDEX = reverse("manage:index")
+RESIDENTS = reverse("manage:residents")
 AUDIT = reverse("manage:audit")
 
 
@@ -40,7 +41,7 @@ def room_change(boss, resident):
     )
 
 
-@pytest.mark.parametrize("url", [INDEX, AUDIT])
+@pytest.mark.parametrize("url", [RESIDENTS, AUDIT])
 def test_admins_only(client, dormitory, resident, url):
     assert client.get(url).status_code == 302  # anonymous: to login
     client.force_login(resident.user)
@@ -91,5 +92,10 @@ def test_staff_page_links_admins_to_management(boss_client):
 
 def test_admin_area_loads_nothing_from_third_party_hosts(boss_client, room_change):
     external = re.compile(r'(?:src|href)\s*=\s*["\'](?:https?:)?//', re.IGNORECASE)
-    for url in (INDEX, AUDIT):
+    for url in (RESIDENTS, AUDIT):
         assert not external.search(boss_client.get(url).content.decode())
+
+
+def test_manage_starts_on_the_resident_list(boss_client):
+    response = boss_client.get(INDEX)
+    assert response.status_code == 302 and response.url == RESIDENTS

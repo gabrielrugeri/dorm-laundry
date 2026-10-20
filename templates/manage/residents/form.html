@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{{ title }} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2">
+    {% if resident %}
+      <a href="{% url 'manage:resident' pk=resident.pk %}" class="text-sm text-blue-700 underline">← {{ resident.full_name }}</a>
+    {% else %}
+      <a href="{% url 'manage:residents' %}" class="text-sm text-blue-700 underline">← {% translate "Residents" %}</a>
+    {% endif %}
+  </p>
+  <div class="mx-auto max-w-md rounded-lg bg-white p-4 shadow-sm">
+    <h1 class="mb-1 text-xl font-semibold">{{ title }}</h1>
+    {% if resident %}<p class="mb-1 text-slate-600">{{ resident.full_name }}, {% blocktranslate with room=resident.room %}room {{ room }}{% endblocktranslate %}</p>{% endif %}
+    {% if balance is not None %}<p class="mb-4 text-slate-600">{% translate "Balance now" %}: <strong class="{% if balance < 0 %}text-red-700{% endif %}">{{ balance|rub }}</strong></p>{% endif %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "accounts/_form_fields.html" %}
+      <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{{ submit }}</button>
+    </form>
+  </div>
+{% endblock %}

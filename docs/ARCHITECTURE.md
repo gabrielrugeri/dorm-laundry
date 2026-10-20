@@ -68,7 +68,7 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   call the booking service. Manual credits and adjustments go through
   `apps.ledger.services.add_manual_entry` (mandatory note). Every other admin
   edit, including inline rows, is recorded by the `AuditedAdmin` mixin.
-- `/manage/` (admin role only) is our own admin area; `/manage/audit/` shows
+- `/manage/` (admin role only) is our own admin area; `/manage/history/` shows
   the dormitory's audit log with filters. Later stages add residents, imports,
   machines, settings and receipts there (see `docs/plans/admin-and-payments.md`).
 
