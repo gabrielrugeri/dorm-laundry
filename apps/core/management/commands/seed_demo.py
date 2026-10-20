@@ -6,7 +6,7 @@ Safe to run more than once: existing demo objects are reused, not duplicated.
 All names, rooms and codes are invented. Never put real personal data here.
 
 Logins (passwords come from env vars, see .env.example):
-    admin    / SEED_DEMO_STAFF_PASSWORD   superuser, Django admin
+    admin    / SEED_DEMO_STAFF_PASSWORD   dormitory admin (/manage/)
     manager  / SEED_DEMO_STAFF_PASSWORD   key manager
     student code D0001 … D0020 / SEED_DEMO_RESIDENT_PIN   residents
 """
@@ -60,7 +60,7 @@ class Command(BaseCommand):
             for n in range(1, MACHINE_COUNT + 1)
         ]
 
-        self._staff_user("admin", roles.ADMIN, dorm, staff_password, superuser=True)
+        self._staff_user("admin", roles.ADMIN, dorm, staff_password)
         self._staff_user("manager", roles.MANAGER, dorm, staff_password)
 
         resident_group = Group.objects.get(name=roles.RESIDENT)
@@ -95,14 +95,15 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
 
-    def _staff_user(self, username, role, dorm, password, superuser=False):
-        user, created = User.objects.get_or_create(
-            username=username, defaults={"is_staff": superuser, "is_superuser": superuser}
-        )
+    def _staff_user(self, username, role, dorm, password):
+        """A dormitory staff account. Not a superuser: Django admin is for
+        developers only (create one with `manage.py createsuperuser`)."""
+        user, created = User.objects.get_or_create(username=username)
         if created:
             user.set_password(password)
-            user.save()
             user.groups.add(Group.objects.get(name=role))
+        user.is_staff = user.is_superuser = False
+        user.save()
         StaffProfile.objects.get_or_create(user=user, defaults={"dormitory": dorm})
 
     def _demo_bookings(self, dorm, slots, machines, residents, rng):

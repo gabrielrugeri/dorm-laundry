@@ -41,13 +41,15 @@ python manage.py seed_demo
 python manage.py runserver
 ```
 
-Then open <http://127.0.0.1:8000/>. The Django admin is at `/admin/`.
+Then open <http://127.0.0.1:8000/>. Dormitory admins work at `/manage/`.
+Django admin (`/admin/`) is for developers only: create a superuser with
+`python manage.py createsuperuser`.
 
 ### Demo accounts (fake data from `seed_demo`)
 
 | Login | Password | Role |
 |---|---|---|
-| `admin` | `SEED_DEMO_STAFF_PASSWORD` (default `demo-staff-password`) | admin (superuser) |
+| `admin` | `SEED_DEMO_STAFF_PASSWORD` (default `demo-staff-password`) | dormitory admin (`/manage/`) |
 | `manager` | same as above | key manager |
 | student code `D0001` … `D0020` | PIN `SEED_DEMO_RESIDENT_PIN` (default `123456`) | residents |
 

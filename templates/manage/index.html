@@ -15,7 +15,7 @@
         <span class="block font-medium">{% translate "Today's key schedule" %}</span>
       </a>
     </li>
-    {% if user.is_staff %}
+    {% if user.is_superuser %}
       <li>
         <a href="{% url 'admin:index' %}" class="block px-4 py-3 hover:bg-blue-50">
           <span class="block font-medium">{% translate "Django admin" %}</span>
