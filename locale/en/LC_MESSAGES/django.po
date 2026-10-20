@@ -745,33 +745,13 @@ msgstr ""
 msgid "System"
 msgstr ""
 
-msgid "Field"
-msgstr ""
-
 msgid "Before"
 msgstr ""
 
 msgid "After"
 msgstr ""
 
-msgid "No field values recorded for this action."
-msgstr ""
-
 msgid "No events match these filters."
-msgstr ""
-
-msgid "Every admin action: who, when, what changed and why."
-msgstr ""
-
-msgid "Django admin"
-msgstr ""
-
-msgid ""
-"Raw data and booking cancellations. Bookings and money cannot be edited "
-"there."
-msgstr ""
-
-msgid "Search: object, reason or user"
 msgstr ""
 
 msgid "personal data erased at"
@@ -1135,4 +1115,31 @@ msgstr ""
 
 #, python-format
 msgid "Owes money since %(since)s."
+msgstr ""
+
+msgid "Refunded"
+msgstr ""
+
+msgid "Debt seen and confirmed"
+msgstr ""
+
+msgid "Role"
+msgstr ""
+
+msgid "Key manager"
+msgstr ""
+
+msgid "Administrator"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "No details recorded for this action."
+msgstr ""
+
+msgid "Search: name, reason or staff member"
 msgstr ""

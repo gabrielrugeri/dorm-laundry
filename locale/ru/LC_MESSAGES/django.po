@@ -782,36 +782,14 @@ msgstr "Применить"
 msgid "System"
 msgstr "Система"
 
-msgid "Field"
-msgstr "Поле"
-
 msgid "Before"
 msgstr "Было"
 
 msgid "After"
 msgstr "Стало"
 
-msgid "No field values recorded for this action."
-msgstr "Для этого действия значения полей не записываются."
-
 msgid "No events match these filters."
 msgstr "Нет записей, подходящих под фильтры."
-
-msgid "Every admin action: who, when, what changed and why."
-msgstr "Все действия администрации: кто, когда, что изменилось и почему."
-
-msgid "Django admin"
-msgstr "Админка Django"
-
-msgid ""
-"Raw data and booking cancellations. Bookings and money cannot be edited "
-"there."
-msgstr ""
-"Исходные данные и отмена бронирований. Бронирования и деньги там изменить "
-"нельзя."
-
-msgid "Search: object, reason or user"
-msgstr "Поиск: объект, причина или пользователь"
 
 msgid "personal data erased at"
 msgstr "личные данные удалены"
@@ -1190,3 +1168,30 @@ msgstr "Комната %(room)s"
 #, python-format
 msgid "Owes money since %(since)s."
 msgstr "Долг с %(since)s."
+
+msgid "Refunded"
+msgstr "Возвращено"
+
+msgid "Debt seen and confirmed"
+msgstr "Долг увиден и подтверждён"
+
+msgid "Role"
+msgstr "Роль"
+
+msgid "Key manager"
+msgstr "Выдача ключей"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "No details recorded for this action."
+msgstr "Подробности для этого действия не записываются."
+
+msgid "Search: name, reason or staff member"
+msgstr "Поиск: имя, причина или сотрудник"

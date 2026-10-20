@@ -2,6 +2,7 @@ import uuid
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import formats
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
 
@@ -101,7 +102,7 @@ class Booking(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.machine} {self.date} {self.slot}"
+        return f"{self.machine}, {formats.date_format(self.date, 'j E')}, {self.slot}"
 
     def save(self, *args, **kwargs):
         self.starts_at, self.ends_at = self.slot.bounds(self.date)
