@@ -784,3 +784,58 @@ msgstr[0] "Отменено %(count)s бронирование."
 msgstr[1] "Отменено %(count)s бронирования."
 msgstr[2] "Отменено %(count)s бронирований."
 msgstr[3] "Отменено %(count)s бронирования."
+
+msgid "Management"
+msgstr "Управление"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Action"
+msgstr "Действие"
+
+msgid "All actions"
+msgstr "Все действия"
+
+msgid "From"
+msgstr "С"
+
+msgid "To"
+msgstr "По"
+
+msgid "Filter"
+msgstr "Применить"
+
+msgid "System"
+msgstr "Система"
+
+msgid "Field"
+msgstr "Поле"
+
+msgid "Before"
+msgstr "Было"
+
+msgid "After"
+msgstr "Стало"
+
+msgid "No field values recorded for this action."
+msgstr "Для этого действия значения полей не записываются."
+
+msgid "No events match these filters."
+msgstr "Нет записей, подходящих под фильтры."
+
+msgid "Every admin action: who, when, what changed and why."
+msgstr "Все действия администрации: кто, когда, что изменилось и почему."
+
+msgid "Django admin"
+msgstr "Админка Django"
+
+msgid ""
+"Raw data and booking cancellations. Bookings and money cannot be edited "
+"there."
+msgstr ""
+"Исходные данные и отмена бронирований. Бронирования и деньги там изменить "
+"нельзя."
+
+msgid "Search: object, reason or user"
+msgstr "Поиск: объект, причина или пользователь"

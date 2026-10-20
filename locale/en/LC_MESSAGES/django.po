@@ -747,3 +747,56 @@ msgid "%(count)s booking cancelled."
 msgid_plural "%(count)s bookings cancelled."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Management"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Action"
+msgstr ""
+
+msgid "All actions"
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "System"
+msgstr ""
+
+msgid "Field"
+msgstr ""
+
+msgid "Before"
+msgstr ""
+
+msgid "After"
+msgstr ""
+
+msgid "No field values recorded for this action."
+msgstr ""
+
+msgid "No events match these filters."
+msgstr ""
+
+msgid "Every admin action: who, when, what changed and why."
+msgstr ""
+
+msgid "Django admin"
+msgstr ""
+
+msgid ""
+"Raw data and booking cancellations. Bookings and money cannot be edited "
+"there."
+msgstr ""
+
+msgid "Search: object, reason or user"
+msgstr ""
