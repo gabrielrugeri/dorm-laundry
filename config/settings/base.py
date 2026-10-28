@@ -143,3 +143,7 @@ DEMO_MODE = env.bool("DEMO_MODE", default=False)
 # limit (nginx client_max_body_size) must use the same value. The admin-editable
 # file size setting can never be above it.
 MAX_UPLOAD_BYTES_HARD = env.int("MAX_UPLOAD_BYTES_HARD", default=20 * 1024 * 1024)
+
+# True only in config/settings/prod.py (and modules built on it). Guards
+# commands that must behave differently on a real server, e.g. seed_demo.
+IS_PRODUCTION = False

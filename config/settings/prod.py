@@ -17,6 +17,7 @@ if not DEMO_MODE and not PILOT_READY:
     )
 
 DEBUG = False
+IS_PRODUCTION = True
 
 # We run behind a reverse proxy (e.g. nginx) that terminates HTTPS.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

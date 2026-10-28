@@ -5,6 +5,10 @@
 Safe to run more than once: existing demo objects are reused, not duplicated.
 All names, rooms and codes are invented. Never put real personal data here.
 
+On a production server (Railway demo) it refuses to run unless DEMO_MODE is
+on, and it requires SEED_DEMO_STAFF_PASSWORD and SEED_DEMO_RESIDENT_PIN to be
+set to non-default values, because the defaults are published in the README.
+
 Logins (passwords come from env vars, see .env.example):
     admin    / SEED_DEMO_STAFF_PASSWORD   dormitory admin (/manage/)
     manager  / SEED_DEMO_STAFF_PASSWORD   key manager
@@ -15,8 +19,9 @@ import os
 import random
 from datetime import time, timedelta
 
+from django.conf import settings
 from django.contrib.auth.models import Group
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
@@ -37,6 +42,9 @@ MACHINE_COUNT = 6
 # Comments an admin types when recording a payment (fake, in Russian like the real ones).
 PAYMENT_NOTES = ["Наличными на вахте", "Перевод на карту", "Наличными"]
 RESIDENT_COUNT = 20
+# Published in the README for local development; never accepted on a server.
+DEFAULT_STAFF_PASSWORD = "demo-staff-password"
+DEFAULT_RESIDENT_PIN = "123456"
 
 
 class Command(BaseCommand):
@@ -45,8 +53,16 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         rng = random.Random(42)  # Same data every time.
-        staff_password = os.environ.get("SEED_DEMO_STAFF_PASSWORD", "demo-staff-password")
-        resident_pin = os.environ.get("SEED_DEMO_RESIDENT_PIN", "123456")
+        staff_password = os.environ.get("SEED_DEMO_STAFF_PASSWORD", DEFAULT_STAFF_PASSWORD)
+        resident_pin = os.environ.get("SEED_DEMO_RESIDENT_PIN", DEFAULT_RESIDENT_PIN)
+        if settings.IS_PRODUCTION:
+            if not settings.DEMO_MODE:
+                raise CommandError("Refusing to add fake demo data: DEMO_MODE is not true.")
+            if staff_password == DEFAULT_STAFF_PASSWORD or resident_pin == DEFAULT_RESIDENT_PIN:
+                raise CommandError(
+                    "Set SEED_DEMO_STAFF_PASSWORD and SEED_DEMO_RESIDENT_PIN to your own values "
+                    "first: the defaults are published in the README."
+                )
 
         dorm, dorm_created = Dormitory.objects.get_or_create(
             slug="demo", defaults={"name": "Общежитие № 1"}
