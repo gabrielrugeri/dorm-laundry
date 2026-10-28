@@ -278,6 +278,33 @@ of the group's last non-cancelled slot.
 - Pages use the system font stack, so no font files are needed.
 - WhiteNoise serves static files in production.
 
+## Deployment readiness
+
+Provider-neutral pieces every deployment uses (targets and gates are in
+`docs/plans/admin-and-payments.md`):
+
+- **`DEMO_MODE`**: a banner on every page («Демо: все имена и данные здесь
+  вымышленные»), `<meta name="robots" content="noindex">`, an `X-Robots-Tag`
+  header and a `robots.txt` that disallows everything.
+- **Start guard**: `config/settings/prod.py` raises at startup when
+  `DEMO_MODE=false` and `PILOT_READY` is not `true`, so an instance without the
+  demo banner cannot start before the pilot gate is passed.
+- **`/healthz`**: 200 when the app and the database answer, 503 otherwise; no
+  login, exempt from the HTTPS redirect (platform health checks may use HTTP).
+- **Shared cache** in production: `DatabaseCache` in PostgreSQL (run
+  `manage.py createcachetable` on deploy), so the login lockout counts
+  failures across all server workers.
+- **Request size**: `RequestSizeLimitMiddleware` answers 413 above
+  `MAX_UPLOAD_BYTES_HARD` (default 20 MB); the web server limit must match.
+- **Content-Security-Policy** (`SecurityHeadersMiddleware`): `default-src
+  'self'` and scripts and styles only from our own static files, so the
+  browser itself blocks anything from another domain (hard rule 1). Templates
+  must not contain inline scripts or `on…=` handlers (a test checks this);
+  behaviour lives in `static/js/app.js` and is wired with `data-*` attributes.
+  Django admin (superusers only) is allowed inline styles.
+- `DJANGO_READ_DOT_ENV=false` makes settings ignore a local `.env` file
+  (servers use real environment variables).
+
 ## Translations
 
 - Default language is Russian; English is the alternative. The language is
