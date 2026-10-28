@@ -8,7 +8,7 @@
     </thead>
     <tbody>
       {% for resident, url in links %}
-        <tr><td>{{ resident.full_name }}</td><td>{{ resident.room }}</td><td><input type="text" readonly value="{{ url }}" size="80" onclick="this.select()"></td></tr>
+        <tr><td>{{ resident.full_name }}</td><td>{{ resident.room }}</td><td><input type="text" readonly value="{{ url }}" size="80"></td></tr>
       {% endfor %}
     </tbody>
   </table>

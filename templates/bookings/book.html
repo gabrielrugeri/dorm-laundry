@@ -57,25 +57,10 @@
         {% blocktranslate with price=price_per_machine|rub count n=length %}{{ price }} per machine for {{ n }} slot.{% plural %}{{ price }} per machine for {{ n }} slots.{% endblocktranslate %}
         {% blocktranslate with balance=balance|rub %}Your balance: {{ balance }}.{% endblocktranslate %}
       </p>
-      {# Filled in by the script below; without JavaScript the total is checked on submit. #}
+      {# Filled in by static/js/app.js; without JavaScript the total is checked on submit. #}
       <p class="mb-4 font-medium" id="booking-total" hidden
          data-price="{{ price_per_machine }}" data-label="{% translate 'Total' %}" data-money="{{ 0|rub }}"></p>
       <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Book" %}</button>
     </form>
-    <script>
-      // Running total: price per machine × number of ticked machines.
-      (function () {
-        var total = document.getElementById("booking-total");
-        var boxes = document.querySelectorAll("input[data-machine]");
-        function update() {
-          var ticked = Array.prototype.filter.call(boxes, function (box) { return box.checked; }).length;
-          var amount = total.dataset.money.replace("0", String(ticked * Number(total.dataset.price)));
-          total.textContent = total.dataset.label + ": " + amount;
-          total.hidden = false;
-        }
-        boxes.forEach(function (box) { box.addEventListener("change", update); });
-        update();
-      })();
-    </script>
   {% endif %}
 {% endblock %}

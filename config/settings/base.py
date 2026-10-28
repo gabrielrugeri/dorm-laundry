@@ -13,7 +13,10 @@ from django.utils.translation import gettext_lazy as _
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 env = environ.Env()
-environ.Env.read_env(BASE_DIR / ".env")
+# Local development reads a .env file; set DJANGO_READ_DOT_ENV=false to ignore
+# it (servers set real environment variables; tests must not depend on it).
+if env.bool("DJANGO_READ_DOT_ENV", default=True):
+    environ.Env.read_env(BASE_DIR / ".env")
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env.bool("DJANGO_DEBUG", default=False)
@@ -40,7 +43,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "apps.core.middleware.RequestSizeLimitMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "apps.core.middleware.SecurityHeadersMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -67,6 +72,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "apps.ledger.context_processors.resident_balance",
                 "apps.accounts.context_processors.user_roles",
+                "apps.core.context_processors.demo_mode",
             ],
         },
     },
@@ -127,3 +133,13 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# Demo instance (fake data only): shows a banner on every page and asks search
+# engines not to index the site. Production refuses to start with
+# DEMO_MODE=false unless PILOT_READY=true (see config/settings/prod.py).
+DEMO_MODE = env.bool("DEMO_MODE", default=False)
+
+# Largest request body accepted, in bytes (uploads included). The web server's
+# limit (nginx client_max_body_size) must use the same value. The admin-editable
+# file size setting can never be above it.
+MAX_UPLOAD_BYTES_HARD = env.int("MAX_UPLOAD_BYTES_HARD", default=20 * 1024 * 1024)

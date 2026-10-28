@@ -4,9 +4,10 @@ This records the plan approved by the product owner, so later stages and other
 contributors can follow it. Each stage is one branch and one pull request from
 `main`; the next stage starts after the previous one is merged.
 
-**Order:** 1a → 1b → 1c → *deployment plan* → 2 → 3 → 4 → 5. Stages 2 and 3
-both change `book_machines` and the booking model, so they never run in
-parallel. Only the PWA may be built in a separate session.
+**Order:** 1a → 1b → 1c → *deployment (demo)* → 2 → 3 → 4 → 5, then the
+*pilot deployment* before any real resident data. Stages 2 and 3 both change
+`book_machines` and the booking model, so they never run in parallel. Only the
+PWA may be built in a separate session.
 
 ## Rules for every stage
 
@@ -54,12 +55,72 @@ before/after per field with name changes highlighted. Nothing is written until
 confirmed; then one transaction, one audit event per change. Idempotent on the
 student code. Bulk activation links, exportable.
 
-## Deployment plan (after 1c is merged)
+## Deployment (approved 2026-10-28)
 
-Feature work pauses for a deployment proposal: Russian VPS, PostgreSQL, HTTPS,
-nightly backups including the private media directory, web server body-size
-limit equal to the file-size hard ceiling. Goal: a demo instance with fake data
-tested from the dormitory network.
+Two targets:
+
+- **Demo (fake data only): Railway**, on the generated `*.up.railway.app`
+  domain. Hosted outside Russia: it may be unreachable from some Russian
+  networks and must never hold real resident data. Always `DEMO_MODE=true`.
+- **Pilot (real data): a Russian VPS** (Timeweb Cloud or Selectel) or the
+  university's servers, to be decided with the administration. nginx +
+  gunicorn (systemd) + PostgreSQL, Let's Encrypt, nightly encrypted off-site
+  backups including the private media directory, nginx `client_max_body_size`
+  equal to `MAX_UPLOAD_BYTES_HARD`. Not urgent.
+
+Order:
+
+1. **PR `chore/deploy`** (provider-neutral): shared database cache in
+   production, `/healthz`, `DEMO_MODE` banner and noindex, request size limit
+   `MAX_UPLOAD_BYTES_HARD`, no inline scripts and a strict CSP
+   (`default-src 'self'`), the start guard below, tests.
+2. **PR `chore/railway-demo`**: build (pinned requirements, Tailwind, compiled
+   translations, collectstatic), pre-deploy (`migrate`, `createcachetable`),
+   gunicorn on `$PORT`, Railway settings from env, health check on `/healthz`,
+   an idempotent one-off `seed_demo`, and `docs/DEPLOY-RAILWAY.md` (a
+   click-by-click guide with a check after each section).
+3. The product owner deploys with the guide and runs the dorm network
+   checklist (below). It decides whether the Railway demo can be shown to the
+   administration.
+4. Stage 2.
+5. Before the pilot, in its own PR: the VPS files (nginx config, systemd unit,
+   deploy/backup/restore scripts, backup timer) and `docs/DEPLOYMENT.md`.
+
+### Readiness gates
+
+- **Demo gate (fake data):** HTTPS, the app, PostgreSQL, database cache, CSP,
+  `DEMO_MODE` banner and noindex, `/healthz`.
+- **Pilot gate (before ANY real resident data):** Russian hosting; off-site
+  encrypted backups with a completed restore test; monitoring and alerts; a
+  second person with server access; the receipt retention decision; 152-FZ
+  formalities confirmed by the administration; `manage.py check --deploy`
+  clean.
+- **Enforced in code:** production settings refuse to start with
+  `DEMO_MODE=false` unless `PILOT_READY=true` is set explicitly, so the gate
+  cannot be skipped by accident.
+
+### Dorm network checklist
+
+On 2–3 different phones over the dormitory Wi-Fi without VPN, then on mobile
+data: the site opens over HTTPS without warnings; a resident logs in, books
+two machines and cancels; the manager takes and returns a key; an admin
+records a payment, imports the example CSV and opens the change history; the
+browser's network tab shows requests to our own domain only; pages load
+quickly.
+
+### Notes for the pilot runbook
+
+- E-mail alerts through a Russian mail provider's SMTP with authentication,
+  not sent directly from the VPS; configurable and testable.
+- Uptime checks: an external checker outside Russia may raise false alarms;
+  prefer one with nodes in Russia.
+
+### Pending policy decisions (administration)
+
+- 152-FZ formalities for real resident data (the university is the operator).
+- Retention of receipt files (proposed: 12 months after upload).
+- Debt settlement when a resident leaves.
+- Hosting for the pilot (Russian VPS or university servers) and the domain.
 
 ## Stage 2: machine maintenance and archiving
 
