@@ -304,6 +304,13 @@ Provider-neutral pieces every deployment uses (targets and gates are in
   Django admin (superusers only) is allowed inline styles.
 - `DJANGO_READ_DOT_ENV=false` makes settings ignore a local `.env` file
   (servers use real environment variables).
+- **Railway demo** (`Dockerfile`, `gunicorn.conf.py`,
+  `config/settings/railway.py`, guide in `docs/DEPLOY-RAILWAY.md`): CSS,
+  translations and static files are built into the image; `manage.py
+  predeploy` runs migrate, createcachetable and (demo only) the idempotent
+  `seed_demo`. The Railway settings refuse to start without `DEMO_MODE=true`,
+  and `seed_demo` on a server refuses the demo passwords published in the
+  README. CI builds and smoke-tests the image.
 
 ## Translations
 

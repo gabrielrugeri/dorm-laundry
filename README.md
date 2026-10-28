@@ -79,6 +79,16 @@ will change, no changes, errors) and nothing changes until you press
 as one file. Importing the same file again changes nothing. A fake example to
 try with the demo data: [docs/examples/residents-import-demo.csv](docs/examples/residents-import-demo.csv).
 
+## Deployment
+
+- **Public demo (fake data only):** Railway, step by step in
+  [docs/DEPLOY-RAILWAY.md](docs/DEPLOY-RAILWAY.md). Always `DEMO_MODE=true`;
+  hosted outside Russia, so it may be unreachable from some Russian networks.
+- **Pilot (real data):** Russian hosting, only after every item of the pilot
+  gate in [docs/plans/admin-and-payments.md](docs/plans/admin-and-payments.md)
+  is done. Production settings refuse to start with `DEMO_MODE=false` unless
+  `PILOT_READY=true`.
+
 ## Everyday commands
 
 | Task | Command |
