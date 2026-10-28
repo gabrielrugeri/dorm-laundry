@@ -1300,3 +1300,7 @@ msgid "%(n)s row skipped because of errors"
 msgid_plural "%(n)s rows skipped because of errors"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid ""
+"Demo: all names and data here are made up. Do not enter real personal data."
+msgstr ""

@@ -10,11 +10,10 @@
       {% blocktranslate with name=resident.full_name %}Give this link to {{ name }} only. It works once and expires after 7 days. They open it and choose a new PIN.{% endblocktranslate %}
     </p>
     <label for="login-link" class="sr-only">{% translate "Login link" %}</label>
-    <input id="login-link" type="text" readonly value="{{ link }}" onclick="this.select()"
+    <input id="login-link" type="text" readonly value="{{ link }}" data-select-on-click
            class="mb-3 w-full rounded border border-slate-300 bg-slate-50 px-3 py-2 text-sm">
     <button type="button" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800"
-            data-copied="{% translate 'Copied' %}"
-            onclick="var b=this;navigator.clipboard.writeText(document.getElementById('login-link').value).then(function(){b.textContent=b.dataset.copied;})">
+            data-copy-target="login-link" data-copied="{% translate 'Copied' %}">
       {% translate "Copy link" %}
     </button>
     <p class="mt-3 text-sm text-slate-600">{% translate "This link is shown only now. If it gets lost, create a new one." %}</p>

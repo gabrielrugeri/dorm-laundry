@@ -5,13 +5,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{% translate "Dorm Laundry" %}{% endblock %}</title>
-  {# Everything is served from our own server: no CDNs or third-party scripts. #}
+  {% if demo_mode %}<meta name="robots" content="noindex, nofollow">{% endif %}
+  {# Everything is served from our own server: no CDNs, no inline scripts (CSP). #}
+  {# htmx must not add its own <style> tag, which the CSP would block. #}
+  <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <script src="{% static 'vendor/htmx/htmx.min.js' %}" defer></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
   {% block head %}{% endblock %}
 </head>
 {# htmx sends the CSRF token with every request it makes. #}
 <body class="min-h-screen bg-slate-50 text-slate-900 font-sans" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  {% if demo_mode %}
+    <div class="bg-amber-400 px-4 py-2 text-center text-sm font-medium text-amber-950" role="note">
+      {% translate "Demo: all names and data here are made up. Do not enter real personal data." %}
+    </div>
+  {% endif %}
   <header class="flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-sm">
     <a href="{% url 'core:home' %}" class="font-semibold">{% translate "Dorm Laundry" %}</a>
     <div class="flex items-center gap-3">
