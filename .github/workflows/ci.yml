@@ -69,3 +69,39 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y gettext
       - run: python manage.py compilemessages
       - run: pytest
+
+  docker:
+    name: Demo image (Railway)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build the image
+        run: docker build -t dorm-laundry-demo .
+      - name: Start it like Railway does (pre-deploy, then gunicorn on $PORT)
+        run: |
+          docker run -d --name app -p 8080:8080 \
+            -e PORT=8080 -e DEMO_MODE=true \
+            -e DJANGO_SECRET_KEY="ci-only-$(openssl rand -hex 32)" \
+            -e DATABASE_URL=sqlite:////tmp/ci.sqlite3 \
+            -e RAILWAY_PUBLIC_DOMAIN=ci.example.org \
+            -e SEED_DEMO_STAFF_PASSWORD=ci-only-staff-password \
+            -e SEED_DEMO_RESIDENT_PIN=482913 \
+            dorm-laundry-demo sh -c "python manage.py predeploy && gunicorn config.wsgi"
+      - name: Health check answers (as Railway's checker)
+        run: |
+          for i in $(seq 1 30); do
+            curl -fsS -H "Host: healthcheck.railway.app" http://localhost:8080/healthz && exit 0
+            sleep 2
+          done
+          docker logs app; exit 1
+      - name: Pages, static files and deploy checks
+        run: |
+          page=$(curl -fsS -H "Host: ci.example.org" -H "X-Forwarded-Proto: https" http://localhost:8080/account/login/)
+          echo "$page" | grep -q 'Демо: все имена и данные здесь вымышленные'
+          css=$(echo "$page" | grep -o '/static/css/app\.[a-f0-9]*\.css' | head -1)
+          test -n "$css"
+          curl -fsS -o /dev/null -H "Host: ci.example.org" -H "X-Forwarded-Proto: https" "http://localhost:8080$css"
+          docker exec app python manage.py check --deploy --fail-level ERROR
+      - name: Container logs
+        if: always()
+        run: docker logs app || true

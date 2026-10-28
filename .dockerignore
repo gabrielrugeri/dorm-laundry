@@ -1,0 +1,18 @@
+# Never copy local secrets, databases or build leftovers into the image.
+.env
+.env.*
+!.env.example
+db.sqlite3*
+.venv/
+venv/
+bin/
+staticfiles/
+static/css/app.css
+locale/*/LC_MESSAGES/*.mo
+.git/
+.github/
+.claude/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
