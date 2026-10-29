@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Change money and receipt rules" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:settings' %}" class="text-sm text-link underline">← {% translate "Money and receipts" %}</a></p>
+  <div class="mx-auto max-w-md rounded-lg bg-surface p-4 shadow-sm">
+    <h1 class="mb-1 text-xl font-semibold">{% translate "Change money and receipt rules" %}</h1>
+    <p class="mb-4 text-sm text-muted">{% translate "These numbers affect every resident. Change them only when the administration has decided so." %}</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="mb-4 rounded border border-danger-line bg-danger-soft p-3 text-sm text-danger" role="alert">
+          {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      {% if big %}
+        {# Extra confirmation for changes of more than 10 times, to or from zero, or to "no limit". #}
+        <div class="mb-4 rounded-lg border-2 border-warning-line bg-warning-soft p-3" role="alert">
+          <p class="mb-2 font-semibold">{% translate "These values change a lot:" %}</p>
+          <ul class="mb-3 space-y-1 text-sm">
+            {% for label, old, new in big %}<li>{{ label }}: {{ old }} → <strong>{{ new }}</strong></li>{% endfor %}
+          </ul>
+          <label class="flex items-start gap-2">
+            <input type="checkbox" name="confirm_big" class="mt-1">
+            <span>{% translate "Yes, I have checked these values and want to save them." %}</span>
+          </label>
+        </div>
+      {% endif %}
+
+      {% for field in form %}
+        {% if field.name != "confirm_big" %}
+          <div class="mb-4">
+            <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<p class="mt-1 text-xs text-muted">{{ field.help_text }}</p>{% endif %}
+            {% for error in field.errors %}<p class="mt-1 text-sm text-danger">{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+
+      <div class="flex flex-wrap gap-3">
+        <button type="submit" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Save" %}</button>
+        <a href="{% url 'manage:settings' %}" class="rounded px-4 py-2 text-ink-soft underline">{% translate "Back" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

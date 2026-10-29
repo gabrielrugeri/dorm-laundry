@@ -161,3 +161,42 @@ class Machine(models.Model):
     def name(self):
         """ "Machine 3" / "Машина 3", in the language of the current request."""
         return gettext("Machine %(number)s") % {"number": self.number}
+
+
+class GlobalSettings(models.Model):
+    """Money and upload rules for every dormitory: a single row.
+
+    Change these only through apps/dorms/rules.py (`change_settings`), which
+    checks sensible bounds and records the change in the history. Changes are
+    never retroactive. Read the credit limit through `credit_limit_for()`, so
+    a per-dormitory or per-resident override can be added later in one place.
+    """
+
+    credit_limit = models.PositiveIntegerField(
+        _("how far a resident may go into debt (RUB)"),
+        null=True,
+        blank=True,
+        default=100,
+        help_text=_("0: no debt allowed. Empty: no limit."),
+    )
+    max_receipt_amount = models.PositiveIntegerField(
+        _("largest amount on one receipt (RUB)"), default=2000
+    )
+    max_credit_per_30_days = models.PositiveIntegerField(
+        _("most money credited to one resident in 30 days (RUB)"), default=5000
+    )
+    max_uploads_per_day = models.PositiveSmallIntegerField(
+        _("receipts one resident may send per day"), default=3
+    )
+    max_upload_mb = models.PositiveSmallIntegerField(_("largest receipt file (MB)"), default=10)
+    updated_at = models.DateTimeField(_("changed at"), auto_now=True)
+
+    class Meta:
+        verbose_name = _("money and upload rules")
+        verbose_name_plural = _("money and upload rules")
+        constraints = [
+            models.CheckConstraint(condition=models.Q(id=1), name="global_settings_single_row"),
+        ]
+
+    def __str__(self):
+        return str(_("Money and upload rules"))

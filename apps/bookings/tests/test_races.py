@@ -77,9 +77,22 @@ def test_two_residents_race_for_the_same_slot(resident, other_resident, machine,
 
 
 @pytest.mark.parametrize("attempt", range(5))
-def test_one_resident_cannot_spend_balance_twice(resident, machine, slot, dormitory, attempt):
+@pytest.mark.parametrize(
+    ("balance", "credit_limit"),
+    [(50, 0), (0, 50)],
+    ids=["no-debt-allowed", "credit-limit-reached"],
+)
+def test_one_resident_cannot_spend_balance_twice(
+    resident, machine, slot, dormitory, attempt, balance, credit_limit
+):
+    """Money for exactly one 50 RUB booking (own balance, or the credit
+    limit): two bookings at the same moment, exactly one succeeds."""
+    from apps.dorms.models import GlobalSettings
+
+    GlobalSettings.objects.update_or_create(pk=1, defaults={"credit_limit": credit_limit})
     slot_10 = TimeSlot.objects.create(dormitory=dormitory, start_time=time(10, 0))
-    credit(resident, 50)
+    if balance:
+        credit(resident, balance)
 
     results = run_at_once(
         lambda: services.book_slots(resident, machine, DAY, [slot], now=NOW),
@@ -90,7 +103,7 @@ def test_one_resident_cannot_spend_balance_twice(resident, machine, slot, dormit
     losers = [r for r in results if isinstance(r, services.InsufficientBalance)]
     assert (len(winners), len(losers)) == (1, 1), results
     assert Booking.objects.count() == 1
-    assert LedgerEntry.objects.balance(resident) == 0
+    assert LedgerEntry.objects.balance(resident) == balance - 50
 
 
 @pytest.mark.parametrize("attempt", range(5))

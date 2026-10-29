@@ -121,6 +121,32 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   `adjustment` entry.
 - `Booking.price_rub` keeps the price that was charged, so a refund returns
   exactly that amount even if the price changes later.
+- **Credit limit:** a booking is allowed while the balance stays at or above
+  minus the limit (`apps/bookings/services.can_afford`, checked inside the
+  booking transaction with the resident's row locked). Default 100 ₽; 0 means
+  no debt; empty means no limit. Each resident has their own limit, never
+  pooled by room. Read it through `apps/dorms/rules.credit_limit_for()`, the
+  one place for a future per-dormitory or per-resident override.
+
+## Money and upload rules (sensitive settings)
+
+- One `dorms.GlobalSettings` row (created by a migration) holds the credit
+  limit, the largest amount per receipt (2000 ₽), the most money credited to
+  one resident in 30 days (5000 ₽), receipts per resident per day (3) and the
+  largest receipt file (10 MB, never above `MAX_UPLOAD_BYTES_HARD`). The last
+  four are used from Stage 4 (receipts).
+- `/manage/settings/` («Настройки») shows them in plain words with their
+  history. Changing them (`apps/dorms/rules.change_settings`) needs the
+  admin's own password and a reason, refuses values outside sensible bounds
+  (`rules.bounds()`), and asks for an extra tick when a value changes more
+  than 10 times either way, goes to or from zero, or becomes "no limit". The
+  change is an audit event with old and new values. Nothing is recalculated
+  retroactively. The row is read-only in `/admin/`.
+- The rules are global: with several dormitories, any dormitory's admin
+  changes them for all. Per-dormitory overrides are a later decision.
+- **Debts report:** «С долгом» on the resident list sorts by the biggest debt,
+  shows when each current debt began (`LedgerEntry.objects.debt_since`) and
+  the number of residents in debt with the total owed.
 
 ## Time
 

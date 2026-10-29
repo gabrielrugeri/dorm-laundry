@@ -11,6 +11,7 @@ from django.utils.translation import ngettext
 
 from apps.accounts.decorators import resident_required
 from apps.dorms.models import TimeSlot
+from apps.dorms.rules import credit_limit_for
 from apps.ledger.models import LedgerEntry
 
 from . import availability, calendar, ics, services
@@ -109,7 +110,11 @@ def book(request, day, slot_id):
             ids = "&".join(f"g={group[0].group_id}" for group in groups)
             return redirect(f"{reverse('bookings:confirmed')}?{ids}")
 
-    context.update(form=form, balance=LedgerEntry.objects.balance(resident))
+    context.update(
+        form=form,
+        balance=LedgerEntry.objects.balance(resident),
+        credit_limit=credit_limit_for(resident),
+    )
     return render(request, "bookings/book.html", context)
 
 

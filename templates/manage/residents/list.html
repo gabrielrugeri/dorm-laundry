@@ -24,6 +24,11 @@
     <a href="?show=off{% if query %}&q={{ query|urlencode }}{% endif %}&sort={{ sort }}" class="rounded-full border px-3 py-1.5 {% if show == 'off' %}border-ink-soft bg-subtle font-medium{% else %}border-line-strong bg-surface{% endif %}">{% translate "Access turned off" %}</a>
   </nav>
 
+  {% if debts %}
+    <p class="mb-3 rounded-lg border border-danger-line bg-danger-soft px-4 py-3 text-danger" role="status">
+      {% blocktranslate count count=debts.count with total=debts.total|rub %}{{ count }} resident owes {{ total }} in total.{% plural %}{{ count }} residents owe {{ total }} in total.{% endblocktranslate %}
+    </p>
+  {% endif %}
   <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
     {# Column headers: click to sort, click again for the other direction. #}
     <li class="flex gap-4 bg-subtle px-4 py-2 text-sm text-ink-soft" aria-label="{% translate 'Sort by' %}">
@@ -41,6 +46,7 @@
             <span class="block text-sm text-muted">
               {% if resident.room %}{% blocktranslate with room=resident.room %}Room {{ room }}{% endblocktranslate %}{% endif %}
               {% if not resident.user.is_active %} · {% translate "access turned off" %}{% endif %}
+              {% if resident.debt_since %} · {% blocktranslate with day=resident.debt_since|date:"j E" %}owes since {{ day }}{% endblocktranslate %}{% endif %}
             </span>
           </span>
           <span class="shrink-0 text-right font-medium {% if resident.balance < 0 %}text-danger{% else %}text-ink{% endif %}">

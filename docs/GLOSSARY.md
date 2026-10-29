@@ -10,6 +10,8 @@ English) words on the right, and add new concepts here when you add a screen.
 | Ledger, ledger entries, statement | История платежей | Payment history |
 | Balance (sum of the ledger) | Баланс | Balance |
 | Negative balance | Долг | Debt |
+| Credit limit | Можно уйти в минус до | May go into debt up to |
+| Sensitive settings (GlobalSettings) | Настройки → Оплата и чеки | Settings → Money and receipts |
 | Manual money change (one screen) | Изменить баланс | Change balance |
 | Credit (manual, after a payment) | Поступила оплата (тип) / Оплата внесена (в истории) | Payment received |
 | Negative credit | Оплата отменена | Payment taken back |
