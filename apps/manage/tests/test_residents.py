@@ -395,3 +395,14 @@ def test_admin_pages_are_in_russian_by_default(client, boss, resident):
     erase = client.get(url("resident_erase", resident)).content.decode()
     assert "Имя, комната и студенческий код будут удалены везде" in erase
     assert "Долг жильца: 40" in erase
+
+
+def test_debts_report_biggest_debt_first_with_start_date(boss_client, resident, other_resident):
+    owe(resident, 30)
+    owe(other_resident, 150)
+    response = boss_client.get(LIST, {"show": "debt"})
+    assert [r.pk for r in response.context["page"]] == [other_resident.pk, resident.pk]
+    assert response.context["debts"] == {"count": 2, "total": 180}
+    html = response.content.decode()
+    assert "2 residents owe 180 RUB in total." in html
+    assert "owes since" in html

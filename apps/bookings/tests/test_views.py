@@ -282,3 +282,9 @@ def test_dates_use_russian_genitive_month(logged_in, dormitory, slots, machine):
     assert genitive != nominative  # every Russian month has a different genitive
     assert genitive in html
     assert nominative not in html
+
+
+def test_booking_page_tells_the_credit_limit(logged_in, slots, tomorrow):
+    logged_in.cookies["django_language"] = "en"
+    html = logged_in.get(book_url(tomorrow, slots[0])).content.decode()
+    assert "You may go into debt up to 100 RUB." in html
