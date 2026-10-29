@@ -79,6 +79,11 @@ Rules for money and receipts (how far residents may go into debt, receipt
 limits): **Settings** («Настройки»); changing them asks for your password and a
 reason. **Owe money** («С долгом») on the resident list is the debts report.
 
+Residents top up themselves: they pay the administration (details on **How
+to pay** / «Как оплатить», filled in under **Settings**) and send the receipt
+(«Отправить чек»); the balance is topped up at once and admins review
+receipts later.
+
 Money: **Change balance** («Изменить баланс») on the resident's page records a
 payment received or a correction, adding or subtracting, with a preview of the
 new balance.

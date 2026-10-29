@@ -11,6 +11,10 @@ English) words on the right, and add new concepts here when you add a screen.
 | Balance (sum of the ledger) | Баланс | Balance |
 | Negative balance | Долг | Debt |
 | Credit limit | Можно уйти в минус до | May go into debt up to |
+| Receipt (upload) | Чек / Отправить чек | Receipt / Send a receipt |
+| Receipt credited / voided | Зачислен / Аннулирован | Credited / Voided |
+| Payment details | Реквизиты для оплаты / Как оплатить | Payment details / How to pay |
+| Payment purpose | Назначение платежа | Payment purpose |
 | Sensitive settings (GlobalSettings) | Настройки → Оплата и чеки | Settings → Money and receipts |
 | Manual money change (one screen) | Изменить баланс | Change balance |
 | Credit (manual, after a payment) | Поступила оплата (тип) / Оплата внесена (в истории) | Payment received |

@@ -25,6 +25,8 @@ def qr_image(request):
     details = PaymentDetails.objects.filter(dormitory=dormitory).first() if dormitory else None
     if details is None or not details.qr_image:
         raise Http404
+    if not details.qr_image.storage.exists(details.qr_image.name):
+        raise Http404
     response = FileResponse(details.qr_image.open("rb"), content_type="image/png")
     response["X-Content-Type-Options"] = "nosniff"
     response["Cache-Control"] = "private, max-age=300"

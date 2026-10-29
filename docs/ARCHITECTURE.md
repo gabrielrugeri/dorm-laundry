@@ -144,6 +144,35 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   retroactively. The row is read-only in `/admin/`.
 - The rules are global: with several dormitories, any dormitory's admin
   changes them for all. Per-dormitory overrides are a later decision.
+- **Receipts (Stage 4, trust by default)** (`apps/receipts`): a resident
+  sends the amount and a PDF or picture on `/balance/receipt/`; a receipt
+  that passes the checks credits the amount at once. One transaction, with
+  the resident's row locked so limits cannot be raced: `Receipt` (status
+  `credited`), one credit `LedgerEntry` linked to it (`UNIQUE(receipt, kind)`,
+  and only credits may link a receipt), and an audit event. Checks: amount
+  per receipt, the 30-day cap on money from receipts (voided ones do not
+  count), receipts per local day (accepted ones only), file size, and the
+  same file for anyone (`UNIQUE(sha256)` of the original bytes). A refused
+  receipt is recorded in the history after the rollback.
+- **Receipt files** (`apps/receipts/files.py`): the type comes from the
+  first bytes (PDF, JPEG, PNG, WebP; HEIC refused with a hint); pictures are
+  saved again with Pillow, turned upright, without EXIF (location, camera).
+  Files live in `PRIVATE_MEDIA_ROOT` under random names, never at a public
+  URL; `/receipts/<id>/file/` sends them as an attachment with `nosniff` to
+  the resident who sent them or an admin of their dormitory. Everyone else,
+  managers included, gets 404. A receipt refers to the resident by id only;
+  its fingerprint stays even if the file is deleted later, so duplicates
+  stay blocked. Nothing is deleted automatically yet (retention is a pending
+  policy decision). Voiding and the admin's receipt review are Stage 5.
+- **How to pay** (`apps/payments`): `PaymentDetails` per dormitory
+  (recipient, bank, SBP phone, https payment link, SBP QR picture, optional
+  BIK, account and INN, payment purpose prefix). Typos are caught: the INN
+  check digits and the account's control key against the BIK. Editing on
+  `/manage/settings/payments/` is a sensitive setting (password, reason,
+  history). Residents see `/how-to-pay/` with copy buttons and their own
+  purpose, «Стирка, комн. 301-2, код 00111598» (only their own room and
+  code). Nothing about any bank is hard-coded; the demo uses obviously fake
+  details.
 - **Debts report:** «С долгом» on the resident list sorts by the biggest debt,
   shows when each current debt began (`LedgerEntry.objects.debt_since`) and
   the number of residents in debt with the total owed.

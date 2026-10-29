@@ -491,13 +491,6 @@ msgstr "Баланс"
 msgid "Current balance"
 msgstr "Текущий баланс"
 
-msgid ""
-"To top up, pay the dormitory administration. They add the money to your "
-"balance."
-msgstr ""
-"Чтобы пополнить баланс, внесите оплату администрации общежития — деньги "
-"зачислят на ваш баланс."
-
 msgid "History"
 msgstr "История"
 
@@ -1742,3 +1735,317 @@ msgstr[3] "%(count)s жильца должны всего %(total)s."
 #: templates/manage/settings.html:7
 msgid "Change the rules"
 msgstr "Изменить правила"
+
+msgid "Payment details changed"
+msgstr "Изменены реквизиты для оплаты"
+
+msgid "Receipt sent, balance topped up"
+msgstr "Отправлен чек, баланс пополнен"
+
+msgid "Receipt refused"
+msgstr "Чек не принят"
+
+msgid "Why it was refused"
+msgstr "Почему не принят"
+
+msgid "receipt"
+msgstr "чек"
+
+msgid "The receipt this payment came from, if a resident sent one."
+msgstr "Чек, по которому пришла эта оплата, если жилец его отправил."
+
+msgid "Only if the bank gave you a link for payments."
+msgstr "Только если банк дал ссылку для оплаты."
+
+msgid "A picture of the SBP QR code, if the bank gave you one."
+msgstr "Картинка с QR-кодом СБП, если банк его дал."
+
+msgid "Remove the QR code"
+msgstr "Убрать QR-код"
+
+msgid "The link must start with https://."
+msgstr "Ссылка должна начинаться с https://."
+
+msgid "Enter the bank's BIK to check the account number."
+msgstr "Укажите БИК банка, чтобы проверить номер счёта."
+
+msgid ""
+"Give at least one way to pay: an SBP phone number, a link, a QR code or an "
+"account."
+msgstr ""
+"Укажите хотя бы один способ оплаты: телефон для СБП, ссылку, QR-код или счёт."
+
+msgid "Payment details saved. Residents see them now."
+msgstr "Реквизиты сохранены. Жильцы уже их видят."
+
+msgid "How to pay"
+msgstr "Как оплатить"
+
+msgid "Recipient"
+msgstr "Получатель"
+
+msgid "Bank"
+msgstr "Банк"
+
+msgid "Phone number for SBP"
+msgstr "Телефон для СБП"
+
+msgid "Payment link from the bank"
+msgstr "Ссылка для оплаты от банка"
+
+msgid "SBP QR code from the bank"
+msgstr "QR-код СБП от банка"
+
+msgid "BIK"
+msgstr "БИК"
+
+msgid "Account number"
+msgstr "Номер счёта"
+
+msgid "Recipient's INN"
+msgstr "ИНН получателя"
+
+msgid "Start of the payment purpose"
+msgstr "Начало назначения платежа"
+
+msgid "Residents see e.g. “Стирка, комн. 301-2, код 00111598”."
+msgstr "Жильцы увидят, например, «Стирка, комн. 301-2, код 00111598»."
+
+msgid "payment details"
+msgstr "реквизиты для оплаты"
+
+msgid "SBP QR code changed"
+msgstr "Изменён QR-код СБП"
+
+msgid "The picture is too large (2 MB at most)."
+msgstr "Картинка слишком большая (не больше 2 МБ)."
+
+msgid "Send the QR code as a PNG or JPEG picture."
+msgstr "Загрузите QR-код картинкой PNG или JPEG."
+
+msgid "This picture cannot be read."
+msgstr "Эту картинку не удаётся прочитать."
+
+msgid "Enter a Russian phone number, e.g. +7 900 123-45-67."
+msgstr "Укажите российский номер телефона, например +7 900 123-45-67."
+
+msgid "The BIK has 9 digits."
+msgstr "В БИК 9 цифр."
+
+msgid "The INN has 10 or 12 digits."
+msgstr "В ИНН 10 или 12 цифр."
+
+msgid "This INN has a typo: its check digit does not match."
+msgstr "В ИНН опечатка: контрольная цифра не сходится."
+
+msgid "The account number has 20 digits."
+msgstr "В номере счёта 20 цифр."
+
+msgid "The account number does not match the BIK. Check both for a typo."
+msgstr "Номер счёта не сходится с БИК. Проверьте оба на опечатки."
+
+msgid "Receipts"
+msgstr "Чеки"
+
+msgid ""
+"This picture cannot be read. Take a screenshot of the receipt and send that."
+msgstr ""
+"Эту картинку не удаётся прочитать. Сделайте скриншот чека и отправьте его."
+
+msgid "The file is too large. The largest allowed is %(mb)s MB."
+msgstr "Файл слишком большой. Можно не больше %(mb)s МБ."
+
+msgid "The file is too large."
+msgstr "Файл слишком большой."
+
+msgid ""
+"iPhone photos in HEIC format cannot be accepted. Take a screenshot of the "
+"receipt, or send it as PDF or JPEG."
+msgstr ""
+"Фото iPhone в формате HEIC не принимаются. Сделайте скриншот чека или "
+"отправьте его в PDF или JPEG."
+
+msgid "Send a PDF file or a picture (JPEG, PNG or WebP)."
+msgstr "Отправьте файл PDF или картинку (JPEG, PNG или WebP)."
+
+msgid "Amount on the receipt, ₽"
+msgstr "Сумма в чеке, ₽"
+
+msgid "Whole rubles, exactly as on the receipt."
+msgstr "В целых рублях, точно как в чеке."
+
+msgid "Receipt"
+msgstr "Чек"
+
+msgid "A screenshot or a PDF from your bank app."
+msgstr "Скриншот или PDF из приложения банка."
+
+msgid "credited"
+msgstr "зачислен"
+
+msgid "voided"
+msgstr "аннулирован"
+
+msgid "file fingerprint"
+msgstr "отпечаток файла"
+
+msgid "file"
+msgstr "файл"
+
+msgid "file type"
+msgstr "тип файла"
+
+msgid "file size (bytes)"
+msgstr "размер файла (байт)"
+
+msgid "sent at"
+msgstr "отправлен"
+
+msgid "receipts"
+msgstr "чеки"
+
+msgid "Receipt no. %(number)s"
+msgstr "Чек № %(number)s"
+
+msgid "Enter the amount in whole rubles."
+msgstr "Укажите сумму в целых рублях."
+
+msgid ""
+"One receipt can be for at most %(max)s RUB. For more, ask the administration."
+msgstr ""
+"Один чек — не больше %(max)s ₽. Если больше, обратитесь к администрации."
+
+msgid "You have already sent %(count)s receipts today. Try again tomorrow."
+msgstr ""
+"Сегодня вы уже отправили наибольшее число чеков (%(count)s). Попробуйте "
+"завтра."
+
+msgid ""
+"Receipts can top up at most %(max)s RUB in 30 days. For more, ask the "
+"administration."
+msgstr ""
+"По чекам можно пополнить не больше %(max)s ₽ за 30 дней. Если больше, "
+"обратитесь к администрации."
+
+msgid "This receipt has already been sent. Each receipt can be used only once."
+msgstr ""
+"Этот чек уже отправляли. Каждый чек можно использовать только один раз."
+
+msgid "Thank you! Your balance was topped up by %(amount)s."
+msgstr "Спасибо! Баланс пополнен на %(amount)s."
+
+msgid ""
+"To top up: pay the administration, then send the receipt. The money appears "
+"at once."
+msgstr ""
+"Чтобы пополнить: оплатите администрации и отправьте чек. Деньги появятся "
+"сразу."
+
+msgid "Send a receipt"
+msgstr "Отправить чек"
+
+msgid "How residents pay"
+msgstr "Как жильцы оплачивают"
+
+msgid ""
+"Copy these details exactly from what the administration's bank gave you. "
+"Residents will send money to them."
+msgstr ""
+"Перепишите реквизиты точно так, как их дал банк администрации. Жильцы будут "
+"переводить деньги по ним."
+
+msgid "A QR code is saved. Choose a file only to replace it."
+msgstr "QR-код уже сохранён. Выберите файл, только чтобы заменить его."
+
+msgid "Sent with a receipt"
+msgstr "Пришло по чеку"
+
+msgid "Change payment details"
+msgstr "Изменить реквизиты"
+
+msgid "Add payment details"
+msgstr "Добавить реквизиты"
+
+msgid "SBP"
+msgstr "СБП"
+
+msgid "Not filled in yet: residents do not know where to pay."
+msgstr "Пока не заполнено: жильцы не знают, куда платить."
+
+msgid "Copy"
+msgstr "Скопировать"
+
+msgid ""
+"The administration has not given payment details yet. Ask them how to pay."
+msgstr "Администрация пока не указала реквизиты. Спросите у неё, как оплатить."
+
+msgid "Pay from your bank app using the details below."
+msgstr "Оплатите в приложении банка по реквизитам ниже."
+
+msgid ""
+"Copy the payment purpose into the transfer, so the administration knows it is"
+" you."
+msgstr ""
+"Скопируйте назначение платежа в перевод, чтобы администрация знала, что это "
+"вы."
+
+msgid ""
+"Then <strong>send the receipt</strong>: your balance is topped up at once."
+msgstr "Потом <strong>отправьте чек</strong>: баланс пополнится сразу."
+
+msgid "Payment purpose"
+msgstr "Назначение платежа"
+
+msgid "Phone number for SBP (fast payments)"
+msgstr "Телефон для СБП (быстрые платежи)"
+
+msgid "Pay with the bank's link"
+msgstr "Оплатить по ссылке банка"
+
+msgid "SBP QR code for paying"
+msgstr "QR-код СБП для оплаты"
+
+msgid "Scan it in your bank app."
+msgstr "Отсканируйте его в приложении банка."
+
+msgid "Full bank details"
+msgstr "Полные реквизиты"
+
+msgid "I have paid: send the receipt"
+msgstr "Оплачено: отправить чек"
+
+msgid ""
+"Paid the administration? Send the receipt: your balance is topped up at once."
+" The administration checks receipts later."
+msgstr ""
+"Оплатили администрации? Отправьте чек: баланс пополнится сразу. Администрация"
+" проверяет чеки потом."
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid ""
+"Sending a receipt you did not pay, or one that is not yours, is fraud. Every "
+"receipt is checked."
+msgstr ""
+"Отправить чек, который вы не оплачивали или который не ваш, — мошенничество. "
+"Каждый чек проверяется."
+
+msgid "You have sent the most receipts allowed for today. Try again tomorrow."
+msgstr ""
+"Сегодня вы уже отправили наибольшее разрешённое число чеков. Попробуйте "
+"завтра."
+
+msgid "Up to %(max)s per receipt"
+msgstr "До %(max)s за один чек"
+
+msgid "files up to %(mb)s MB"
+msgstr "файлы до %(mb)s МБ"
+
+#: templates/receipts/new.html:18
+msgid "You can send %(left)s more receipt today."
+msgid_plural "You can send %(left)s more receipts today."
+msgstr[0] "Сегодня можно отправить ещё %(left)s чек."
+msgstr[1] "Сегодня можно отправить ещё %(left)s чека."
+msgstr[2] "Сегодня можно отправить ещё %(left)s чеков."
+msgstr[3] "Сегодня можно отправить ещё %(left)s чека."

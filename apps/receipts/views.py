@@ -65,6 +65,9 @@ def file(request, pk):
     )
     if not (is_owner or is_admin) or not receipt.file:
         raise Http404
+    if not receipt.file.storage.exists(receipt.file.name):
+        # Deleted for retention, or lost (e.g. the demo's disk is wiped on redeploy).
+        raise Http404
     extension = receipt.file.name.rsplit(".", 1)[-1]
     response = FileResponse(
         receipt.file.open("rb"),

@@ -217,3 +217,10 @@ def test_private_files_have_no_public_url(resident):
     receipt = submit(resident)
     with pytest.raises(ValueError):
         receipt.file.url  # noqa: B018
+
+
+def test_missing_file_is_not_found_not_an_error(client, resident):
+    receipt = submit(resident)
+    receipt.file.storage.delete(receipt.file.name)
+    client.force_login(resident.user)
+    assert client.get(reverse("receipts:file", kwargs={"pk": receipt.pk})).status_code == 404
