@@ -1,0 +1,40 @@
+{% load i18n %}
+{# How to install the app on the home screen. Hidden by default; static/js/app.js shows the one variant that fits the phone, never when the app is already installed, and remembers "Got it". #}
+<section id="install-guide" hidden class="mb-4 rounded-lg border border-accent bg-accent-soft p-4" aria-labelledby="install-guide-title">
+  <div class="mb-2 flex items-start justify-between gap-3">
+    <h2 id="install-guide-title" class="font-semibold">{% translate "Put the app on your home screen" %}</h2>
+    <button type="button" data-install-dismiss class="shrink-0 text-sm text-link underline">{% translate "Got it" %}</button>
+  </div>
+
+  <div data-install-variant="ios" hidden>
+    <ol class="space-y-2">
+      <li class="flex items-center gap-2">
+        <span>1.</span>
+        <span>{% translate "Tap Share" %}</span>
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-link"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M5 11v9h14v-9"/></svg>
+        <span class="text-sm text-muted">{% translate "(at the bottom of Safari)" %}</span>
+      </li>
+      <li class="flex items-center gap-2">
+        <span>2.</span>
+        <span>{% translate "Choose “Add to Home Screen”" %}</span>
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-link"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>
+      </li>
+      <li class="flex items-center gap-2"><span>3.</span><span>{% translate "Tap “Add”. The app appears among your other apps." %}</span></li>
+    </ol>
+  </div>
+
+  <div data-install-variant="android" hidden>
+    <p class="mb-3">{% translate "Install the app: it opens like any other app, without the browser bar." %}</p>
+    <button type="button" data-install-button class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Install" %}</button>
+  </div>
+
+  <div data-install-variant="in-app" hidden>
+    <p class="mb-2">{% translate "This page is open inside another app (for example Telegram or Instagram). It cannot be installed from here." %}</p>
+    <p class="mb-3">{% translate "Open it in Safari (iPhone) or Chrome (Android): tap the menu (⋯ or ⋮) and choose “Open in browser”. Or copy the link:" %}</p>
+    <label for="install-link" class="sr-only">{% translate "Link" %}</label>
+    <input id="install-link" type="text" readonly value="{{ request.scheme }}://{{ request.get_host }}/" data-select-on-click
+           class="mb-2 w-full rounded border border-line-strong bg-surface px-3 py-2 text-sm">
+    <button type="button" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong"
+            data-copy-target="install-link" data-copied="{% translate 'Copied' %}">{% translate "Copy link" %}</button>
+  </div>
+</section>

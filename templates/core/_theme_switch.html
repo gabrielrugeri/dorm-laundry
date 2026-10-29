@@ -1,0 +1,13 @@
+{% load i18n %}
+{# Light / dark / like the phone. Saved for the user (and in a cookie); applied by the server, so the page never flashes. #}
+<form action="{% url 'accounts:set_theme' %}" method="post" class="flex items-center gap-2 text-sm">
+  {% csrf_token %}
+  <input name="next" type="hidden" value="{{ request.get_full_path }}">
+  <label for="theme-select">{% translate "Colours" %}</label>
+  <select id="theme-select" name="theme" data-autosubmit class="rounded border border-line-strong bg-surface px-2 py-1">
+    <option value="system"{% if theme != "light" and theme != "dark" %} selected{% endif %}>{% translate "Like the phone" %}</option>
+    <option value="light"{% if theme == "light" %} selected{% endif %}>{% translate "Light" %}</option>
+    <option value="dark"{% if theme == "dark" %} selected{% endif %}>{% translate "Dark" %}</option>
+  </select>
+  <noscript><button type="submit">{% translate "Change" %}</button></noscript>
+</form>

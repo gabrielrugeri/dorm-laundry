@@ -2,18 +2,18 @@
 {% load i18n audit %}
 {% block title %}{% translate "Audit log" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <p class="mb-2"><a href="{% url 'manage:index' %}" class="text-sm text-blue-700 underline">← {% translate "Management" %}</a></p>
+  <p class="mb-2"><a href="{% url 'manage:index' %}" class="text-sm text-link underline">← {% translate "Management" %}</a></p>
   <h1 class="mb-3 text-xl font-semibold">{% translate "Audit log" %}</h1>
 
-  <form method="get" class="mb-4 grid grid-cols-2 gap-2 rounded-lg bg-white p-3 text-sm shadow-sm sm:grid-cols-4">
+  <form method="get" class="mb-4 grid grid-cols-2 gap-2 rounded-lg bg-surface p-3 text-sm shadow-sm sm:grid-cols-4">
     <label class="col-span-2 sm:col-span-4">
       <span class="sr-only">{% translate "Search" %}</span>
       <input type="search" name="q" value="{{ filters.q }}" placeholder="{% translate 'Search: name, reason or staff member' %}"
-             class="w-full rounded border border-slate-300 px-3 py-2">
+             class="w-full rounded border border-line-strong px-3 py-2">
     </label>
     <label class="col-span-2">
-      <span class="block text-slate-600">{% translate "Action" %}</span>
-      <select name="action" class="w-full rounded border border-slate-300 bg-white px-2 py-2">
+      <span class="block text-muted">{% translate "Action" %}</span>
+      <select name="action" class="w-full rounded border border-line-strong bg-surface px-2 py-2">
         <option value="">{% translate "All actions" %}</option>
         {% for code, name in actions %}
           <option value="{{ code }}"{% if code == filters.action %} selected{% endif %}>{{ name }}</option>
@@ -21,40 +21,40 @@
       </select>
     </label>
     <label>
-      <span class="block text-slate-600">{% translate "From" %}</span>
-      <input type="date" name="from" value="{{ filters.from }}" class="w-full rounded border border-slate-300 px-2 py-2">
+      <span class="block text-muted">{% translate "From" %}</span>
+      <input type="date" name="from" value="{{ filters.from }}" class="w-full rounded border border-line-strong px-2 py-2">
     </label>
     <label>
-      <span class="block text-slate-600">{% translate "To" %}</span>
-      <input type="date" name="to" value="{{ filters.to }}" class="w-full rounded border border-slate-300 px-2 py-2">
+      <span class="block text-muted">{% translate "To" %}</span>
+      <input type="date" name="to" value="{{ filters.to }}" class="w-full rounded border border-line-strong px-2 py-2">
     </label>
-    <button type="submit" class="col-span-2 rounded bg-blue-700 px-4 py-2 font-medium text-white sm:col-span-4">{% translate "Filter" %}</button>
+    <button type="submit" class="col-span-2 rounded bg-accent px-4 py-2 font-medium text-on-accent sm:col-span-4">{% translate "Filter" %}</button>
   </form>
 
-  <ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+  <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
     {% for event in page %}
       <li class="px-4 py-3">
         <details>
           <summary class="cursor-pointer list-none">
             <span class="flex flex-wrap justify-between gap-x-3">
               <span class="font-medium">{{ event.action|action_label }}</span>
-              <span class="text-sm text-slate-600">{{ event.created_at|date:"j E Y, H:i" }}</span>
+              <span class="text-sm text-muted">{{ event.created_at|date:"j E Y, H:i" }}</span>
             </span>
-            {% if event.target_repr %}<span class="block text-sm text-slate-700">{{ event.target_repr }}</span>{% endif %}
-            <span class="block text-sm text-slate-600">
+            {% if event.target_repr %}<span class="block text-sm text-ink-soft">{{ event.target_repr }}</span>{% endif %}
+            <span class="block text-sm text-muted">
               {% if event.actor %}{{ event.actor.get_username }}{% else %}{% translate "System" %}{% endif %}{% if event.reason %} · {{ event.reason }}{% endif %}
             </span>
           </summary>
           {% with rows=event|plain_changes %}
           {% if rows %}
             <table class="mt-2 w-full table-fixed text-left text-sm">
-              <thead class="text-slate-600">
+              <thead class="text-muted">
                 <tr><th class="w-1/3 font-normal">{% translate "What" %}</th><th class="font-normal">{% translate "Before" %}</th><th class="font-normal">{% translate "After" %}</th></tr>
               </thead>
               <tbody>
                 {% for label, old, new in rows %}
                   <tr class="align-top">
-                    <td class="break-words pr-2 text-slate-600">{{ label }}</td>
+                    <td class="break-words pr-2 text-muted">{{ label }}</td>
                     <td class="break-words pr-2">{{ old }}</td>
                     <td class="break-words">{{ new }}</td>
                   </tr>
@@ -62,20 +62,20 @@
               </tbody>
             </table>
           {% else %}
-            <p class="mt-2 text-sm text-slate-600">{% translate "No details recorded for this action." %}</p>
+            <p class="mt-2 text-sm text-muted">{% translate "No details recorded for this action." %}</p>
           {% endif %}
           {% endwith %}
         </details>
       </li>
     {% empty %}
-      <li class="px-4 py-3 text-slate-600">{% translate "No events match these filters." %}</li>
+      <li class="px-4 py-3 text-muted">{% translate "No events match these filters." %}</li>
     {% endfor %}
   </ul>
 
   {% if page.has_other_pages %}
     <nav class="mt-4 flex justify-between text-sm" aria-label="{% translate 'Pages' %}">
-      {% if page.has_previous %}<a href="?{% for k, v in filters.items %}{{ k }}={{ v|urlencode }}&{% endfor %}page={{ page.previous_page_number }}" class="text-blue-700 underline">← {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
-      {% if page.has_next %}<a href="?{% for k, v in filters.items %}{{ k }}={{ v|urlencode }}&{% endfor %}page={{ page.next_page_number }}" class="text-blue-700 underline">{% translate "Older" %} →</a>{% endif %}
+      {% if page.has_previous %}<a href="?{% for k, v in filters.items %}{{ k }}={{ v|urlencode }}&{% endfor %}page={{ page.previous_page_number }}" class="text-link underline">← {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
+      {% if page.has_next %}<a href="?{% for k, v in filters.items %}{{ k }}={{ v|urlencode }}&{% endfor %}page={{ page.next_page_number }}" class="text-link underline">{% translate "Older" %} →</a>{% endif %}
     </nav>
   {% endif %}
 {% endblock %}

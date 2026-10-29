@@ -2,10 +2,10 @@
 <div class="flex items-center justify-between gap-3 px-4 py-3">
   <a href="{% url 'bookings:detail' group_id=group.group_id %}" class="min-w-0">
     <span class="block font-medium">{{ group.day|date:"D j M" }}, {{ group.starts_at|time:"H:i" }}–{{ group.ends_at|time:"H:i" }}</span>
-    <span class="block text-sm text-slate-600">{{ group.machine.name }}{% if group.is_cancelled %} · {% if group.admin_reason %}{% translate "Cancelled by the administration" %}{% else %}{% translate "Cancelled" %}{% endif %}{% endif %}</span>
-    {% if group.admin_reason %}<span class="mt-1 block rounded bg-amber-50 px-2 py-1 text-sm text-amber-900">{{ group.admin_reason }}</span>{% endif %}
+    <span class="block text-sm text-muted">{{ group.machine.name }}{% if group.is_cancelled %} · {% if group.admin_reason %}{% translate "Cancelled by the administration" %}{% else %}{% translate "Cancelled" %}{% endif %}{% endif %}</span>
+    {% if group.admin_reason %}<span class="mt-1 block rounded bg-warning-soft px-2 py-1 text-sm text-warning">{{ group.admin_reason }}</span>{% endif %}
   </a>
   {% if show_cancel %}
-    <a href="{% url 'bookings:cancel' group_id=group.group_id %}" class="shrink-0 text-sm text-red-700 underline">{% translate "Cancel" %}</a>
+    <a href="{% url 'bookings:cancel' group_id=group.group_id %}" class="shrink-0 text-sm text-danger underline">{% translate "Cancel" %}</a>
   {% endif %}
 </div>

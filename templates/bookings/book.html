@@ -2,11 +2,11 @@
 {% load i18n money %}
 {% block title %}{% translate "Book" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <p class="mb-2"><a href="{% url 'core:home' %}?day={{ day|date:'Y-m-d' }}&length={{ length }}" class="text-sm text-blue-700 underline">← {% translate "Back to the schedule" %}</a></p>
+  <p class="mb-2"><a href="{% url 'core:home' %}?day={{ day|date:'Y-m-d' }}&length={{ length }}" class="text-sm text-link underline">← {% translate "Back to the schedule" %}</a></p>
   <h1 class="mb-1 text-xl font-semibold">{{ day|date:"l, j E" }}</h1>
   {% if run %}
     {% with last=run|last %}
-      <p class="mb-4 text-slate-600">
+      <p class="mb-4 text-muted">
         {{ run.0.start_time|time:"H:i" }}–{{ last.end_time|time:"H:i" }} ·
         {% blocktranslate count n=length %}{{ n }} slot{% plural %}{{ n }} slots{% endblocktranslate %}
       </p>
@@ -14,12 +14,12 @@
   {% endif %}
 
   {% if unavailable %}
-    <p class="rounded border border-amber-300 bg-amber-50 p-3">{{ unavailable }}</p>
+    <p class="rounded border border-warning-line bg-warning-soft p-3">{{ unavailable }}</p>
   {% else %}
-    <form method="post" class="rounded-lg bg-white p-4 shadow-sm" novalidate>
+    <form method="post" class="rounded-lg bg-surface p-4 shadow-sm" novalidate>
       {% csrf_token %}
       {% if form.non_field_errors %}
-        <div class="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800" role="alert">
+        <div class="mb-4 rounded border border-danger-line bg-danger-soft p-3 text-sm text-danger" role="alert">
           {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
         </div>
       {% endif %}
@@ -29,13 +29,13 @@
           <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
             {% for choice in form.choices %}
               {% if choice.available %}
-                <label class="flex cursor-pointer items-center gap-2 rounded border border-slate-300 px-3 py-2 has-[:checked]:border-blue-700 has-[:checked]:bg-blue-50">
+                <label class="flex cursor-pointer items-center gap-2 rounded border border-line-strong px-3 py-2 has-[:checked]:border-accent has-[:checked]:bg-accent-soft">
                   <input type="checkbox" name="machines" value="{{ choice.machine.pk }}" data-machine
                          {% if choice.machine.pk|stringformat:"s" in selected %}checked{% endif %}>
                   <span>{{ choice.machine.name }}</span>
                 </label>
               {% else %}
-                <label class="flex items-start gap-2 rounded border border-dashed border-slate-300 bg-slate-100 px-3 py-2 text-slate-400">
+                <label class="flex items-start gap-2 rounded border border-dashed border-line-strong bg-subtle px-3 py-2 text-muted">
                   <input type="checkbox" disabled class="mt-1">
                   <span>
                     <span class="block line-through">{{ choice.machine.name }}</span>
@@ -50,17 +50,17 @@
             {% endfor %}
           </div>
         {% endwith %}
-        {% for error in form.machines.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+        {% for error in form.machines.errors %}<p class="mt-1 text-sm text-danger">{{ error }}</p>{% endfor %}
       </fieldset>
 
-      <p class="mb-1 text-sm text-slate-600">
+      <p class="mb-1 text-sm text-muted">
         {% blocktranslate with price=price_per_machine|rub count n=length %}{{ price }} per machine for {{ n }} slot.{% plural %}{{ price }} per machine for {{ n }} slots.{% endblocktranslate %}
         {% blocktranslate with balance=balance|rub %}Your balance: {{ balance }}.{% endblocktranslate %}
       </p>
       {# Filled in by static/js/app.js; without JavaScript the total is checked on submit. #}
       <p class="mb-4 font-medium" id="booking-total" hidden
          data-price="{{ price_per_machine }}" data-label="{% translate 'Total' %}" data-money="{{ 0|rub }}"></p>
-      <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Book" %}</button>
+      <button type="submit" class="w-full rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Book" %}</button>
     </form>
   {% endif %}
 {% endblock %}

@@ -1,11 +1,14 @@
 from django.conf import settings
 from django.contrib.auth import views as auth_views
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 from django.views import i18n
 from django.views.decorators.http import require_POST
 
 from .forms import LoginForm, SetPinForm
+from .models import UserPreferences
 
 
 def remember_language(response, user):
@@ -38,6 +41,34 @@ def set_language(request):
     ):
         resident.language = code
         resident.save(update_fields=["language"])
+    return response
+
+
+THEME_COOKIE = "theme"
+
+
+@require_POST
+def set_theme(request):
+    """Light, dark or like the phone. Kept in a cookie (also before logging
+    in) and, for a logged-in user, saved for all their devices."""
+    theme = request.POST.get("theme")
+    if theme not in UserPreferences.Theme.values:
+        theme = UserPreferences.Theme.SYSTEM
+    if request.user.is_authenticated:
+        UserPreferences.objects.update_or_create(user=request.user, defaults={"theme": theme})
+    next_url = request.POST.get("next", "/")
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = "/"
+    response = HttpResponseRedirect(next_url)
+    response.set_cookie(
+        THEME_COOKIE,
+        theme,
+        max_age=60 * 60 * 24 * 365,
+        samesite="Lax",
+        secure=request.is_secure(),
+    )
     return response
 
 

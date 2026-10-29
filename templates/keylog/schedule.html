@@ -4,7 +4,7 @@
 {% block content %}
   <div class="mb-3 flex items-center justify-between gap-3">
     <h1 class="text-xl font-semibold">{% translate "Today's key schedule" %}</h1>
-    {% if is_admin_role %}<a href="{% url 'manage:index' %}" class="text-sm text-blue-700 underline">{% translate "Management" %}</a>{% elif user.is_superuser %}<a href="{% url 'admin:index' %}" class="text-sm text-blue-700 underline">{% translate "Administration" %}</a>{% endif %}
+    {% if is_admin_role %}<a href="{% url 'manage:index' %}" class="text-sm text-link underline">{% translate "Management" %}</a>{% elif user.is_superuser %}<a href="{% url 'admin:index' %}" class="text-sm text-link underline">{% translate "Administration" %}</a>{% endif %}
   </div>
   <div id="schedule">
     {% include "keylog/_schedule.html" %}

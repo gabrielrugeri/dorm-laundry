@@ -5,3 +5,191 @@
 /* Where Tailwind looks for class names. */
 @source "../../templates";
 @source "../../apps";
+
+/* --- Colour tokens -------------------------------------------------------------
+   Templates use these names (bg-surface, text-muted, border-line, bg-accent,
+   text-danger...), never raw palette colours, so light and dark mode change
+   in one place. Each token has a light and a dark value below.
+   apps/core/tests/test_contrast.py checks every text/background pair against
+   WCAG AA (4.5:1 for text, 3:1 for borders of form fields); keep the values
+   as #rrggbb so the test can read them. */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-subtle-strong: var(--subtle-strong);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-link: var(--link);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-line: var(--danger-line);
+  --color-danger-strong: var(--danger-strong);
+  --color-danger-stronger: var(--danger-stronger);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-line: var(--success-line);
+  --color-success-strong: var(--success-strong);
+  --color-success-stronger: var(--success-stronger);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-warning-line: var(--warning-line);
+  --color-warning-strong: var(--warning-strong);
+  --color-on-warning: var(--on-warning);
+}
+
+/* tokens:light */
+:root {
+  color-scheme: light;
+  --canvas: #f8fafc;
+  --surface: #ffffff;
+  --subtle: #f1f5f9;
+  --subtle-strong: #e2e8f0;
+  --ink: #0f172a;
+  --ink-soft: #334155;
+  --muted: #475569;
+  --line: #e2e8f0;
+  --line-strong: #7b8794;
+  --link: #1d4ed8;
+  --accent: #1d4ed8;
+  --accent-strong: #1e40af;
+  --accent-soft: #eff6ff;
+  --on-accent: #ffffff;
+  --danger: #b91c1c;
+  --danger-soft: #fef2f2;
+  --danger-line: #fca5a5;
+  --danger-strong: #b91c1c;
+  --danger-stronger: #991b1b;
+  --success: #166534;
+  --success-soft: #f0fdf4;
+  --success-line: #86efac;
+  --success-strong: #15803d;
+  --success-stronger: #166534;
+  --warning: #92400e;
+  --warning-soft: #fffbeb;
+  --warning-line: #fcd34d;
+  --warning-strong: #fbbf24;
+  --on-warning: #451a03;
+}
+/* end tokens:light */
+
+/* Dark: chosen by the user (data-theme="dark"), or by the phone when the
+   user left it on "like the phone". The two blocks must stay identical. */
+/* tokens:dark */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #0b1220;
+  --surface: #111a2b;
+  --subtle: #1b2638;
+  --subtle-strong: #253247;
+  --ink: #e8ecf2;
+  --ink-soft: #c8d0dc;
+  --muted: #a3adbb;
+  --line: #253247;
+  --line-strong: #6b7a90;
+  --link: #93b8ff;
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --accent-soft: #15284a;
+  --on-accent: #ffffff;
+  --danger: #fca5a5;
+  --danger-soft: #3a1517;
+  --danger-line: #9b2c2c;
+  --danger-strong: #c62828;
+  --danger-stronger: #a61f1f;
+  --success: #86efac;
+  --success-soft: #0f2a1a;
+  --success-line: #1f7a43;
+  --success-strong: #15803d;
+  --success-stronger: #166534;
+  --warning: #fcd34d;
+  --warning-soft: #2e2208;
+  --warning-line: #8a5a0f;
+  --warning-strong: #fbbf24;
+  --on-warning: #451a03;
+}
+/* end tokens:dark */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --canvas: #0b1220;
+    --surface: #111a2b;
+    --subtle: #1b2638;
+    --subtle-strong: #253247;
+    --ink: #e8ecf2;
+    --ink-soft: #c8d0dc;
+    --muted: #a3adbb;
+    --line: #253247;
+    --line-strong: #6b7a90;
+    --link: #93b8ff;
+    --accent: #2563eb;
+    --accent-strong: #1d4ed8;
+    --accent-soft: #15284a;
+    --on-accent: #ffffff;
+    --danger: #fca5a5;
+    --danger-soft: #3a1517;
+    --danger-line: #9b2c2c;
+    --danger-strong: #c62828;
+    --danger-stronger: #a61f1f;
+    --success: #86efac;
+    --success-soft: #0f2a1a;
+    --success-line: #1f7a43;
+    --success-strong: #15803d;
+    --success-stronger: #166534;
+    --warning: #fcd34d;
+    --warning-soft: #2e2208;
+    --warning-line: #8a5a0f;
+    --warning-strong: #fbbf24;
+    --on-warning: #451a03;
+  }
+}
+
+/* --- Phones and the installed app ------------------------------------------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    /* No rubber-band bounce revealing a gap behind the fixed navigation. */
+    overscroll-behavior: none;
+  }
+  /* No double-tap zoom on controls (pinch zoom stays available). */
+  a,
+  button,
+  input,
+  label,
+  select,
+  summary,
+  textarea {
+    touch-action: manipulation;
+  }
+  /* 16px or more: iOS zooms into smaller fields when they get focus. */
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* Keep content clear of the notch and the home indicator (viewport-fit=cover). */
+@utility safe-top {
+  padding-top: max(env(safe-area-inset-top), 0.5rem);
+}
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@utility safe-x {
+  padding-left: max(env(safe-area-inset-left), 1rem);
+  padding-right: max(env(safe-area-inset-right), 1rem);
+}
+/* Room for the fixed bottom navigation, so the last item is never hidden. */
+@utility pb-nav {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}

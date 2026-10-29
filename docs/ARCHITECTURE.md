@@ -327,6 +327,50 @@ yet" page. The tests in `apps/keylog/tests/` switch it on.
   (`scripts/tailwind.py`, pinned version, verified by SHA256).
 - Pages use the system font stack, so no font files are needed.
 - WhiteNoise serves static files in production.
+- **Colour tokens** (`assets/css/input.css`): templates use names such as
+  `bg-surface`, `text-muted`, `border-line`, `bg-accent`, `text-danger`, never
+  raw palette colours (`bg-white`, `text-slate-600`). Each token has a light
+  and a dark value. `apps/core/tests/test_contrast.py` checks every text and
+  background pair against WCAG AA (4.5:1) and form-field borders against 3:1,
+  in both modes.
+- **Dark mode** follows the phone (`prefers-color-scheme`) unless the user
+  picks "Light" or "Dark" in the header menu («Оформление»). The choice is
+  saved in `accounts.UserPreferences` for a logged-in user (all their
+  devices) and in a `theme` cookie; the server writes it as
+  `<html data-theme="…">`, so the page never flashes the wrong colours and no
+  inline script is needed.
+
+## Installable app (PWA)
+
+- `/manifest.webmanifest` (standalone, start URL and scope `/`, theme
+  colour, icons 192/512 and a maskable 512) plus Apple meta tags and a
+  180×180 `apple-touch-icon`. The icons in `static/icons/` are placeholders
+  drawn by `scripts/make_icons.py`; replace the PNG files (same names and
+  sizes) with the final design.
+- `/sw.js` (served from the root so it covers every page) caches only the
+  offline page, its CSS and the icon, fetched without the login cookie.
+  Every page, booking and balance comes from the network; nothing personal is
+  stored on the phone. When there is no connection, pages fall back to
+  `/offline/` (Russian and English, no personal data, does not use
+  `base.html`). The CSP allows `manifest-src 'self'` and `worker-src 'self'`.
+- **Phones:** `viewport-fit=cover` with safe-area padding (`safe-top`,
+  `safe-bottom`, `safe-x`, `pb-nav` utilities) so nothing hides under the
+  notch or the home indicator; `overscroll-behavior: none`;
+  `touch-action: manipulation` on controls (no double-tap zoom; pinch zoom
+  stays); form fields at least 16px so iOS does not zoom in. The bottom
+  navigation is fixed and the page reserves its height, so nothing jumps.
+- **Install guide** (`templates/core/_install_guide.html`, logic in
+  `static/js/app.js`): hidden by default and never shown inside the installed
+  app. iPhone/iPad: Share → Add to Home Screen, with small drawings. Android
+  Chrome: a real "Install" button (`beforeinstallprompt`). In-app browsers
+  (Telegram, Instagram, VK, Facebook, WhatsApp, recognised by their user
+  agent; not every one can be recognised): explains that installing is
+  impossible there and offers the link to open in Safari or Chrome. "Got it"
+  hides it for good on that device (`localStorage`).
+- **Check on a real iPhone** (the emulator cannot): install from Safari; the
+  status bar and the bottom navigation stay clear of the notch and home
+  indicator; scrolling does not bounce the navigation; tapping a field does
+  not zoom; airplane mode shows the offline page; dark mode follows the phone.
 
 ## Deployment readiness
 

@@ -2,16 +2,16 @@
 {% load i18n %}
 {% block title %}{% translate "Check before importing" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <p class="mb-2"><a href="{% url 'manage:resident_import' %}" class="text-sm text-blue-700 underline">← {% translate "Choose another file" %}</a></p>
+  <p class="mb-2"><a href="{% url 'manage:resident_import' %}" class="text-sm text-link underline">← {% translate "Choose another file" %}</a></p>
   <h1 class="mb-1 text-xl font-semibold">{% translate "Check before importing" %}</h1>
-  <p class="mb-3 text-slate-600">{% translate "Nothing has been changed yet." %}</p>
+  <p class="mb-3 text-muted">{% translate "Nothing has been changed yet." %}</p>
 
   {# Summary #}
   <ul class="mb-4 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
-    <li class="rounded bg-green-50 p-2 text-green-900"><strong class="block text-lg">{{ result.new_rows|length }}</strong>{% translate "new" %}</li>
-    <li class="rounded bg-amber-50 p-2 text-amber-900"><strong class="block text-lg">{{ result.changed_rows|length }}</strong>{% translate "will change" %}</li>
-    <li class="rounded bg-slate-100 p-2 text-slate-700"><strong class="block text-lg">{{ result.unchanged_rows|length }}</strong>{% translate "no changes" %}</li>
-    <li class="rounded bg-red-50 p-2 text-red-900"><strong class="block text-lg">{{ result.error_rows|length }}</strong>{% translate "with errors" %}</li>
+    <li class="rounded bg-success-soft p-2 text-success"><strong class="block text-lg">{{ result.new_rows|length }}</strong>{% translate "new" %}</li>
+    <li class="rounded bg-warning-soft p-2 text-warning"><strong class="block text-lg">{{ result.changed_rows|length }}</strong>{% translate "will change" %}</li>
+    <li class="rounded bg-subtle p-2 text-ink-soft"><strong class="block text-lg">{{ result.unchanged_rows|length }}</strong>{% translate "no changes" %}</li>
+    <li class="rounded bg-danger-soft p-2 text-danger"><strong class="block text-lg">{{ result.error_rows|length }}</strong>{% translate "with errors" %}</li>
   </ul>
 
   {# The one action #}
@@ -19,24 +19,24 @@
     <form method="post" action="{% url 'manage:resident_import_confirm' %}" class="mb-4">
       {% csrf_token %}
       <input type="hidden" name="token" value="{{ token }}">
-      <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">
+      <button type="submit" class="w-full rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">
         {% blocktranslate count n=result.to_apply|length %}Import {{ n }} row{% plural %}Import {{ n }} rows{% endblocktranslate %}
       </button>
-      {% if result.error_rows %}<p class="mt-1 text-sm text-slate-600">{% translate "Rows with errors are skipped. Fix them in the file and import it again later." %}</p>{% endif %}
+      {% if result.error_rows %}<p class="mt-1 text-sm text-muted">{% translate "Rows with errors are skipped. Fix them in the file and import it again later." %}</p>{% endif %}
     </form>
   {% else %}
-    <p class="mb-4 rounded border border-slate-300 bg-slate-50 p-3">{% translate "There is nothing to import: everyone in the file is already here with the same details." %}</p>
+    <p class="mb-4 rounded border border-line-strong bg-subtle p-3">{% translate "There is nothing to import: everyone in the file is already here with the same details." %}</p>
   {% endif %}
 
   {% if result.error_rows %}
-    <section class="mb-4 rounded-lg border border-red-200 bg-white shadow-sm">
-      <h2 class="border-b border-red-200 px-4 py-3 font-medium text-red-800">{% translate "Rows with errors (will be skipped)" %}</h2>
-      <ul class="divide-y divide-slate-200">
+    <section class="mb-4 rounded-lg border border-danger-line bg-surface shadow-sm">
+      <h2 class="border-b border-danger-line px-4 py-3 font-medium text-danger">{% translate "Rows with errors (will be skipped)" %}</h2>
+      <ul class="divide-y divide-line">
         {% for row in result.error_rows %}
           <li class="px-4 py-2 text-sm">
             <span class="font-medium">{% blocktranslate with line=row.line %}Line {{ line }}{% endblocktranslate %}:</span>
             {{ row.errors|join:"; " }}
-            {% if row.values.full_name or row.values.student_code %}<span class="block text-slate-600">{{ row.values.full_name }} {{ row.values.student_code }}</span>{% endif %}
+            {% if row.values.full_name or row.values.student_code %}<span class="block text-muted">{{ row.values.full_name }} {{ row.values.student_code }}</span>{% endif %}
           </li>
         {% endfor %}
       </ul>
@@ -44,16 +44,16 @@
   {% endif %}
 
   {% if result.changed_rows %}
-    <section class="mb-4 rounded-lg border border-amber-200 bg-white shadow-sm">
-      <h2 class="border-b border-amber-200 px-4 py-3 font-medium text-amber-900">{% translate "Will change" %}</h2>
-      <ul class="divide-y divide-slate-200">
+    <section class="mb-4 rounded-lg border border-warning-line bg-surface shadow-sm">
+      <h2 class="border-b border-warning-line px-4 py-3 font-medium text-warning">{% translate "Will change" %}</h2>
+      <ul class="divide-y divide-line">
         {% for row in result.changed_rows %}
-          <li class="px-4 py-2 text-sm {% if row.name_changed %}bg-amber-50{% endif %}">
+          <li class="px-4 py-2 text-sm {% if row.name_changed %}bg-warning-soft{% endif %}">
             <span class="block font-medium">{{ row.resident.full_name }} · {{ row.values.student_code }}{% if not row.resident.user.is_active %} · {% translate "access turned off" %}{% endif %}</span>
             {% for field, change in row.changes.items %}
-              <span class="block {% if field == 'full_name' %}font-semibold text-amber-900{% endif %}">
+              <span class="block {% if field == 'full_name' %}font-semibold text-warning{% endif %}">
                 {% if field == "full_name" %}{% translate "Name" %}{% elif field == "room" %}{% translate "Room" %}{% else %}{% translate "Language" %}{% endif %}:
-                <s class="text-slate-500">{{ change.0 }}</s> → {{ change.1 }}
+                <s class="text-muted">{{ change.0 }}</s> → {{ change.1 }}
               </span>
             {% endfor %}
           </li>
@@ -63,9 +63,9 @@
   {% endif %}
 
   {% if result.new_rows %}
-    <section class="mb-4 rounded-lg border border-green-200 bg-white shadow-sm">
-      <h2 class="border-b border-green-200 px-4 py-3 font-medium text-green-900">{% translate "New residents" %}</h2>
-      <ul class="divide-y divide-slate-200">
+    <section class="mb-4 rounded-lg border border-success-line bg-surface shadow-sm">
+      <h2 class="border-b border-success-line px-4 py-3 font-medium text-success">{% translate "New residents" %}</h2>
+      <ul class="divide-y divide-line">
         {% for row in result.new_rows %}
           <li class="px-4 py-2 text-sm">{{ row.values.full_name }} · {% blocktranslate with room=row.values.room %}room {{ room }}{% endblocktranslate %} · {{ row.values.student_code }}</li>
         {% endfor %}
@@ -74,9 +74,9 @@
   {% endif %}
 
   {% if result.unchanged_rows %}
-    <details class="mb-4 rounded-lg bg-white shadow-sm">
+    <details class="mb-4 rounded-lg bg-surface shadow-sm">
       <summary class="cursor-pointer px-4 py-3 font-medium">{% translate "No changes" %} ({{ result.unchanged_rows|length }})</summary>
-      <ul class="divide-y divide-slate-200 border-t border-slate-200">
+      <ul class="divide-y divide-line border-t border-line">
         {% for row in result.unchanged_rows %}
           <li class="px-4 py-2 text-sm">{{ row.values.full_name }} · {{ row.values.student_code }}</li>
         {% endfor %}

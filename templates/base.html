@@ -1,41 +1,54 @@
 {% load i18n static %}<!doctype html>
 {% get_current_language as LANGUAGE_CODE %}
-<html lang="{{ LANGUAGE_CODE }}">
+{# data-theme: the user's own light/dark choice; without it the phone's setting is followed (assets/css/input.css). #}
+<html lang="{{ LANGUAGE_CODE }}"{% if theme == "light" or theme == "dark" %} data-theme="{{ theme }}"{% endif %}>
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {# viewport-fit=cover: use the whole screen on phones with a notch; safe-area padding keeps content clear. #}
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{% block title %}{% translate "Dorm Laundry" %}{% endblock %}</title>
   {% if demo_mode %}<meta name="robots" content="noindex, nofollow">{% endif %}
+  {# Installable app (PWA): manifest, icons and the colours of the phone's status bar. #}
+  <link rel="manifest" href="{% url 'core:manifest' %}">
+  <link rel="icon" href="{% static 'icons/icon-192.png' %}" type="image/png">
+  <link rel="apple-touch-icon" href="{% static 'icons/apple-touch-icon.png' %}">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="{% translate 'Laundry' %}">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111a2b" media="(prefers-color-scheme: dark)">
   {# Everything is served from our own server: no CDNs, no inline scripts (CSP). #}
   {# htmx must not add its own <style> tag, which the CSP would block. #}
   <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
   <link rel="stylesheet" href="{% static 'css/app.css' %}">
   <script src="{% static 'vendor/htmx/htmx.min.js' %}" defer></script>
-  <script src="{% static 'js/app.js' %}" defer></script>
+  <script src="{% static 'js/app.js' %}" defer data-service-worker="{% url 'core:service_worker' %}"></script>
   {% block head %}{% endblock %}
 </head>
 {# htmx sends the CSRF token with every request it makes. #}
-<body class="min-h-screen bg-slate-50 text-slate-900 font-sans" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<body class="min-h-screen bg-canvas text-ink font-sans" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   {% if demo_mode %}
-    <div class="bg-amber-400 px-4 py-2 text-center text-sm font-medium text-amber-950" role="note">
+    <div class="safe-top bg-warning-strong px-4 py-2 text-center text-sm font-medium text-on-warning" role="note">
       {% translate "Demo: all names and data here are made up. Do not enter real personal data." %}
     </div>
   {% endif %}
-  <header class="flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-sm">
+  <header class="{% if not demo_mode %}safe-top{% endif %} safe-x flex items-center justify-between gap-4 bg-surface px-4 py-3 shadow-sm">
     <a href="{% url 'core:home' %}" class="font-semibold">{% translate "Dorm Laundry" %}</a>
     {% if user.is_authenticated %}
       {# Who is logged in, with their own menu. Residents only ever see their own name and room. #}
       <details class="relative min-w-0">
-        <summary class="flex max-w-[60vw] cursor-pointer list-none items-center gap-1 rounded px-2 py-1 text-sm hover:bg-slate-100 [&::-webkit-details-marker]:hidden">
+        <summary class="flex max-w-[60vw] cursor-pointer list-none items-center gap-1 rounded px-2 py-1 text-sm hover:bg-subtle [&::-webkit-details-marker]:hidden">
           <span class="truncate">{% if user.resident %}{{ user.resident.full_name }} · {{ user.resident.room }}{% else %}{{ user.get_username }}{% endif %}</span>
           <span aria-hidden="true">▾</span>
         </summary>
-        <div class="absolute right-0 z-30 mt-1 w-64 space-y-3 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
-          {% if user.resident %}<a href="{% url 'ledger:balance' %}" class="block text-blue-700 underline">{% translate "My balance" %}</a>{% endif %}
+        <div class="absolute right-0 z-30 mt-1 w-64 space-y-3 rounded-lg border border-line bg-surface p-3 shadow-lg">
+          {% if user.resident %}<a href="{% url 'ledger:balance' %}" class="block text-link underline">{% translate "My balance" %}</a>{% endif %}
           {% include "core/_language_switch.html" %}
+          {% include "core/_theme_switch.html" %}
           <form action="{% url 'accounts:logout' %}" method="post">
             {% csrf_token %}
-            <button type="submit" class="text-sm text-slate-600 underline hover:text-slate-900">{% translate "Log out" %}</button>
+            <button type="submit" class="text-sm text-muted underline hover:text-ink">{% translate "Log out" %}</button>
           </form>
         </div>
       </details>
@@ -44,28 +57,29 @@
     {% endif %}
   </header>
   {% if resident_balance is not None %}
-    {# Resident navigation: a bottom bar on phones, a row under the header on wider screens. #}
+    {# Resident navigation: a bottom bar on phones (clear of the home indicator), a row under the header on wider screens. #}
     {% load money %}
     {% url 'core:home' as home_url %}{% url 'bookings:mine' as mine_url %}{% url 'ledger:balance' as balance_url %}
     <nav aria-label="{% translate 'Main' %}"
-         class="fixed inset-x-0 bottom-0 z-10 grid grid-cols-3 border-t border-slate-200 bg-white text-center text-sm md:static md:mx-auto md:flex md:max-w-3xl md:gap-2 md:border-0 md:bg-transparent md:px-4 md:pt-3">
-      <a href="{{ home_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == home_url %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "Book" %}</a>
-      <a href="{{ mine_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == mine_url %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "My bookings" %}</a>
-      <a href="{{ balance_url }}" class="px-2 py-3 md:ml-auto md:rounded md:py-2 {% if request.path == balance_url %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "Balance" %}: {{ resident_balance|rub }}</a>
+         class="safe-bottom safe-x fixed inset-x-0 bottom-0 z-10 grid grid-cols-3 border-t border-line bg-surface text-center text-sm md:static md:mx-auto md:flex md:max-w-3xl md:gap-2 md:border-0 md:bg-transparent md:px-4 md:pt-3">
+      <a href="{{ home_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == home_url %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Book" %}</a>
+      <a href="{{ mine_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == mine_url %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "My bookings" %}</a>
+      <a href="{{ balance_url }}" class="px-2 py-3 md:ml-auto md:rounded md:py-2 {% if request.path == balance_url %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Balance" %}: {{ resident_balance|rub }}</a>
     </nav>
   {% elif is_admin_role %}
     {# Admin navigation: at most 5-6 items (docs/CLAUDE.md, Admin UI principles). #}
     {% url 'manage:residents' as residents_url %}{% url 'core:staff_home' as keys_url %}{% url 'manage:audit' as audit_url %}
     <nav aria-label="{% translate 'Main' %}"
-         class="fixed inset-x-0 bottom-0 z-10 grid {% if keys_enabled %}grid-cols-3{% else %}grid-cols-2{% endif %} border-t border-slate-200 bg-white text-center text-sm md:static md:mx-auto md:flex md:max-w-3xl md:gap-2 md:border-0 md:bg-transparent md:px-4 md:pt-3">
-      <a href="{{ residents_url }}" class="px-2 py-3 md:rounded md:py-2 {% if residents_url in request.path %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "Residents" %}</a>
-      {% if keys_enabled %}<a href="{{ keys_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == keys_url %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "Keys" %}</a>{% endif %}
-      <a href="{{ audit_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == audit_url %}font-semibold text-blue-700{% else %}text-slate-700{% endif %}">{% translate "Change history" %}</a>
+         class="safe-bottom safe-x fixed inset-x-0 bottom-0 z-10 grid {% if keys_enabled %}grid-cols-3{% else %}grid-cols-2{% endif %} border-t border-line bg-surface text-center text-sm md:static md:mx-auto md:flex md:max-w-3xl md:gap-2 md:border-0 md:bg-transparent md:px-4 md:pt-3">
+      <a href="{{ residents_url }}" class="px-2 py-3 md:rounded md:py-2 {% if residents_url in request.path %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Residents" %}</a>
+      {% if keys_enabled %}<a href="{{ keys_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == keys_url %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Keys" %}</a>{% endif %}
+      <a href="{{ audit_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == audit_url %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Change history" %}</a>
     </nav>
   {% endif %}
-  <main class="mx-auto max-w-3xl p-4 {% if resident_balance is not None or is_admin_role %}pb-20 md:pb-4{% endif %}">
+  <main class="safe-x mx-auto max-w-3xl p-4 {% if resident_balance is not None or is_admin_role %}pb-nav md:pb-4{% endif %}">
+    {% include "core/_install_guide.html" %}
     {% for message in messages %}
-      <div class="mb-4 rounded border p-3 {% if message.level_tag == 'error' %}border-red-300 bg-red-50 text-red-800{% else %}border-green-300 bg-green-50 text-green-800{% endif %}" role="status">{{ message }}</div>
+      <div class="mb-4 rounded border p-3 {% if message.level_tag == 'error' %}border-danger-line bg-danger-soft text-danger{% else %}border-success-line bg-success-soft text-success{% endif %}" role="status">{{ message }}</div>
     {% endfor %}
     {% block content %}{% endblock %}
   </main>

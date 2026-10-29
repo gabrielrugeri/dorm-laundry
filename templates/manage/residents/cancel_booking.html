@@ -2,16 +2,16 @@
 {% load i18n money %}
 {% block title %}{% translate "Cancel booking" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <p class="mb-2"><a href="{% url 'manage:resident' pk=resident.pk %}" class="text-sm text-blue-700 underline">← {{ resident.full_name }}</a></p>
-  <div class="mx-auto max-w-md rounded-lg bg-white p-4 shadow-sm">
+  <p class="mb-2"><a href="{% url 'manage:resident' pk=resident.pk %}" class="text-sm text-link underline">← {{ resident.full_name }}</a></p>
+  <div class="mx-auto max-w-md rounded-lg bg-surface p-4 shadow-sm">
     <h1 class="mb-1 text-xl font-semibold">{% translate "Cancel booking" %}</h1>
-    <p class="mb-4 text-slate-600">{{ resident.full_name }} · {{ group.machine.name }}, {{ group.day|date:"j E" }}, {{ group.starts_at|time:"H:i" }}–{{ group.ends_at|time:"H:i" }}</p>
+    <p class="mb-4 text-muted">{{ resident.full_name }} · {{ group.machine.name }}, {{ group.day|date:"j E" }}, {{ group.starts_at|time:"H:i" }}–{{ group.ends_at|time:"H:i" }}</p>
     <form method="post" novalidate>
       {% csrf_token %}
       <div class="mb-4">
         <label for="{{ form.reason.id_for_label }}" class="mb-1 block text-sm font-medium">{{ form.reason.label }}</label>
         {{ form.reason }}
-        {% for error in form.reason.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+        {% for error in form.reason.errors %}<p class="mt-1 text-sm text-danger">{{ error }}</p>{% endfor %}
       </div>
       <fieldset class="mb-4">
         <legend class="mb-1 text-sm font-medium">{{ form.refund.label }}</legend>
@@ -25,8 +25,8 @@
         </label>
       </fieldset>
       <div class="flex flex-wrap gap-3">
-        <button type="submit" class="rounded bg-red-700 px-4 py-2 font-medium text-white hover:bg-red-800">{% translate "Cancel booking" %}</button>
-        <a href="{% url 'manage:resident' pk=resident.pk %}" class="rounded px-4 py-2 text-slate-700 underline">{% translate "Keep booking" %}</a>
+        <button type="submit" class="rounded bg-danger-strong px-4 py-2 font-medium text-on-accent hover:bg-danger-stronger">{% translate "Cancel booking" %}</button>
+        <a href="{% url 'manage:resident' pk=resident.pk %}" class="rounded px-4 py-2 text-ink-soft underline">{% translate "Keep booking" %}</a>
       </div>
     </form>
   </div>

@@ -106,7 +106,7 @@ def test_preview_in_russian_highlights_name_changes(client, dormitory, resident)
     html = page.content.decode()
     assert "Проверьте перед импортом" in html
     assert "Ivan Testov" in html and "Ivan Novy" in html
-    assert "bg-amber-50" in html  # the name change is highlighted
+    assert "bg-warning-soft" in html  # the name change is highlighted
 
 
 @pytest.mark.parametrize("url", [UPLOAD, DONE, LINKS, SAMPLE])
