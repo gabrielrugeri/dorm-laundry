@@ -1,9 +1,11 @@
 """Forms for the admin area. Labels use the plain words from docs/GLOSSARY.md."""
 
 from django import forms
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import Resident
+from apps.dorms import rules
 from apps.ledger.models import LedgerEntry
 
 INPUT = "w-full rounded border border-line-strong bg-surface px-3 py-2"
@@ -112,3 +114,83 @@ class ConfirmDebtForm(forms.Form):
     confirm_debt = forms.BooleanField(
         label=_("I have seen that this resident owes money."), required=True
     )
+
+
+class RulesForm(forms.Form):
+    """Change the money and upload rules: a sensitive setting. Needs the
+    admin's own password and a reason; big jumps need an extra tick."""
+
+    credit_limit = forms.IntegerField(
+        required=False,
+        widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
+        help_text=_("In rubles. 0: residents cannot go into debt. Empty: no limit."),
+    )
+    max_receipt_amount = forms.IntegerField(
+        widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
+        help_text=_("In rubles."),
+    )
+    max_credit_per_30_days = forms.IntegerField(
+        widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
+        help_text=_("In rubles, counted over the last 30 days."),
+    )
+    max_uploads_per_day = forms.IntegerField(
+        widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
+    )
+    max_upload_mb = forms.IntegerField(
+        widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
+    )
+    reason = forms.CharField(
+        label=_("Why are you changing this?"),
+        max_length=500,
+        widget=_text(),
+        help_text=_("Saved in the change history."),
+    )
+    password = forms.CharField(
+        label=_("Your password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={"class": INPUT, "autocomplete": "current-password"}),
+        help_text=_("To make sure it is really you."),
+    )
+    confirm_big = forms.BooleanField(required=False)
+
+    def __init__(self, *args, user, current, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user, self.current = user, current
+        for name in rules.FIELDS:
+            low, high = rules.bounds()[name]
+            field = self.fields[name]
+            field.label = rules.LABELS[name]
+            field.min_value, field.max_value = low, high
+            field.validators += [MinValueValidator(low), MaxValueValidator(high)]
+            field.widget.attrs.update(min=low, max=high)
+            self.initial.setdefault(name, getattr(current, name))
+        self.big = []
+
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        if not self.user.check_password(password):
+            raise forms.ValidationError(_("Wrong password."))
+        return password
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if any(name not in cleaned_data for name in rules.FIELDS):
+            return cleaned_data
+        values = self.values()
+        if all(values[name] == getattr(self.current, name) for name in rules.FIELDS):
+            raise forms.ValidationError(_("Nothing was changed."))
+        if values["max_credit_per_30_days"] < values["max_receipt_amount"]:
+            self.add_error(
+                "max_credit_per_30_days",
+                _("Cannot be less than the largest amount on one receipt."),
+            )
+        self.big = rules.big_changes(self.current, values)
+        if self.big and not cleaned_data.get("confirm_big"):
+            raise forms.ValidationError(
+                _("Some values change a lot. Check them, tick the box and save again."),
+                code="confirm_big",
+            )
+        return cleaned_data
+
+    def values(self):
+        return {name: self.cleaned_data[name] for name in rules.FIELDS}

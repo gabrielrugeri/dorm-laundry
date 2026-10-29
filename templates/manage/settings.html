@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Settings" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="mb-3 flex items-center justify-between gap-3">
+    <h1 class="text-xl font-semibold">{% translate "Money and receipts" %}</h1>
+    <a href="{% url 'manage:settings_change' %}" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Change" %}</a>
+  </div>
+  <p class="mb-3 text-sm text-muted">{% translate "The same for every resident. A change applies from now on; nothing that already happened is recalculated." %}</p>
+
+  <dl class="mb-6 divide-y divide-line rounded-lg bg-surface shadow-sm">
+    {% for label, value in rows %}
+      <div class="flex items-baseline justify-between gap-3 px-4 py-3">
+        <dt class="text-ink-soft">{{ label }}</dt>
+        <dd class="shrink-0 text-lg font-semibold">{{ value }}</dd>
+      </div>
+    {% endfor %}
+  </dl>
+
+  <h2 class="mb-2 font-medium">{% translate "Earlier changes" %}</h2>
+  <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
+    {% for event, changes in history %}
+      <li class="px-4 py-3">
+        <p class="flex flex-wrap justify-between gap-x-3">
+          <span class="font-medium">{% if event.actor %}{{ event.actor.get_username }}{% else %}{% translate "System" %}{% endif %}</span>
+          <span class="text-sm text-muted">{{ event.created_at|date:"j E Y, H:i" }}</span>
+        </p>
+        <p class="text-sm text-muted">{{ event.reason }}</p>
+        <ul class="mt-1 text-sm">
+          {% for label, old, new in changes %}{% if old != new %}
+            <li>{{ label }}: {{ old }} → <strong>{{ new }}</strong></li>
+          {% endif %}{% endfor %}
+        </ul>
+      </li>
+    {% empty %}
+      <li class="px-4 py-3 text-muted">{% translate "No changes yet: these are the starting values." %}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

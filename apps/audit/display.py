@@ -40,12 +40,25 @@ HIDDEN = {
     "created_at",
 }
 
-MONEY = {"amount", "price_rub", "refund_rub", "balance", "price_per_slot"}
+MONEY = {
+    "amount",
+    "price_rub",
+    "refund_rub",
+    "balance",
+    "price_per_slot",
+    "credit_limit",
+    "max_receipt_amount",
+    "max_credit_per_30_days",
+}
 
 
 def _extra_labels():
-    """Values services add to snapshots that are not model fields."""
+    """Values services add to snapshots that are not model fields, and plain
+    words that replace model field names."""
+    from apps.dorms.rules import LABELS
+
     return {
+        **LABELS,
         "refund_rub": _("Refunded"),
         "full_refund": _("Full refund"),
         "balance": _("Balance"),
@@ -77,6 +90,8 @@ def _field(model, name):
 
 
 def _format(name, field, value):
+    if name == "credit_limit" and value is None:
+        return _("no limit")
     if value in (None, "", []):
         return "—"
     if name == "groups":

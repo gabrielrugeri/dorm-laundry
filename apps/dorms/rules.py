@@ -10,6 +10,7 @@ Changes apply from now on; nothing that already happened is recalculated.
 
 from django.conf import settings
 from django.db import transaction
+from django.utils.translation import gettext_lazy as _
 
 from apps.audit.services import record, snapshot
 
@@ -22,6 +23,16 @@ FIELDS = (
     "max_uploads_per_day",
     "max_upload_mb",
 )
+
+# Plain words for the admin screens and the history (docs/GLOSSARY.md).
+LABELS = {
+    "credit_limit": _("May go into debt up to"),
+    "max_receipt_amount": _("Largest amount on one receipt"),
+    "max_credit_per_30_days": _("Most money for one resident in 30 days"),
+    "max_uploads_per_day": _("Receipts one resident may send per day"),
+    "max_upload_mb": _("Largest receipt file, MB"),
+}
+MONEY_FIELDS = {"credit_limit", "max_receipt_amount", "max_credit_per_30_days"}
 
 # A change bigger than this factor (up or down) needs an extra confirmation.
 BIG_CHANGE_FACTOR = 10

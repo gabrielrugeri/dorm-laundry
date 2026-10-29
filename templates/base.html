@@ -68,12 +68,13 @@
     </nav>
   {% elif is_admin_role %}
     {# Admin navigation: at most 5-6 items (docs/CLAUDE.md, Admin UI principles). #}
-    {% url 'manage:residents' as residents_url %}{% url 'core:staff_home' as keys_url %}{% url 'manage:audit' as audit_url %}
+    {% url 'manage:residents' as residents_url %}{% url 'core:staff_home' as keys_url %}{% url 'manage:audit' as audit_url %}{% url 'manage:settings' as settings_url %}
     <nav aria-label="{% translate 'Main' %}"
-         class="safe-bottom safe-x fixed inset-x-0 bottom-0 z-10 grid {% if keys_enabled %}grid-cols-3{% else %}grid-cols-2{% endif %} border-t border-line bg-surface text-center text-sm md:static md:mx-auto md:flex md:max-w-3xl md:gap-2 md:border-0 md:bg-transparent md:px-4 md:pt-3">
+         class="safe-bottom safe-x fixed inset-x-0 bottom-0 z-10 grid {% if keys_enabled %}grid-cols-4{% else %}grid-cols-3{% endif %} border-t border-line bg-surface text-center text-sm md:static md:mx-auto md:flex md:max-w-3xl md:gap-2 md:border-0 md:bg-transparent md:px-4 md:pt-3">
       <a href="{{ residents_url }}" class="px-2 py-3 md:rounded md:py-2 {% if residents_url in request.path %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Residents" %}</a>
       {% if keys_enabled %}<a href="{{ keys_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == keys_url %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Keys" %}</a>{% endif %}
       <a href="{{ audit_url }}" class="px-2 py-3 md:rounded md:py-2 {% if request.path == audit_url %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Change history" %}</a>
+      <a href="{{ settings_url }}" class="px-2 py-3 md:rounded md:py-2 {% if settings_url in request.path %}font-semibold text-link{% else %}text-ink-soft{% endif %}">{% translate "Settings" %}</a>
     </nav>
   {% endif %}
   <main class="safe-x mx-auto max-w-3xl p-4 {% if resident_balance is not None or is_admin_role %}pb-nav md:pb-4{% endif %}">
