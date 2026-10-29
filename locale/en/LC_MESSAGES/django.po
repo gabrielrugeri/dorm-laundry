@@ -1171,10 +1171,6 @@ msgid "%(field)s is too long"
 msgstr ""
 
 #, python-format
-msgid "unknown language “%(value)s” (use ru or en)"
-msgstr ""
-
-#, python-format
 msgid "the same student code is already on line %(line)s"
 msgstr ""
 
@@ -1313,4 +1309,38 @@ msgstr ""
 msgid ""
 "Keeping track of the laundry keys is switched off for now. There is nothing "
 "to do here until it is switched on."
+msgstr ""
+
+#: apps/dorms/models.py:31
+msgid "short code"
+msgstr ""
+
+#: apps/dorms/models.py:37
+msgid "2 to 8 capital Latin letters or digits, e.g. DEM."
+msgstr ""
+
+#: apps/dorms/models.py:41
+msgid ""
+"Used in file names, e.g. calendar files. Filled in from the slug when left "
+"empty."
+msgstr ""
+
+#: templates/base.html:31
+msgid "My balance"
+msgstr ""
+
+#: templates/ledger/balance.html:28
+msgid "Details"
+msgstr ""
+
+#: templates/ledger/balance.html:32
+msgid "recorded"
+msgstr ""
+
+#: templates/bookings/_add_to_calendar.html:6
+msgid "Google Calendar"
+msgstr ""
+
+#: templates/bookings/_add_to_calendar.html:8
+msgid "Apple / other (file)"
 msgstr ""

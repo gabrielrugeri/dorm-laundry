@@ -111,3 +111,13 @@ def test_example_import_file_matches_the_demo_data(db):
         "error",
     ]
     assert result.rows[2].name_changed
+
+
+def test_demo_names_are_stored_as_a_real_list_would_have_them(db):
+    """One name field: Russian names in Cyrillic, foreign ones in Latin script."""
+    from apps.accounts.models import Resident
+
+    call_command("seed_demo")
+    names = set(Resident.objects.values_list("full_name", flat=True))
+    assert "Иван Тестов" in names
+    assert "Carlos Ejemplo" in names
