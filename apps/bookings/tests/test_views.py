@@ -190,7 +190,10 @@ def test_unavailable_machine_cannot_be_submitted(
 
 
 def test_insufficient_balance_shows_message(client, resident, slots, machine, tomorrow):
-    client.force_login(resident.user)  # balance 0
+    from apps.dorms.models import GlobalSettings
+
+    GlobalSettings.objects.update_or_create(pk=1, defaults={"credit_limit": 0})
+    client.force_login(resident.user)  # balance 0, no debt allowed
     response = client.post(book_url(tomorrow, slots[0]), {"machines": [machine.pk]})
     assert response.status_code == 200
     assert response.context["form"].non_field_errors()

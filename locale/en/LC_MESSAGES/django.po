@@ -343,7 +343,9 @@ msgstr ""
 msgid "This time slot is no longer available. Please choose another one."
 msgstr ""
 
-msgid "Your balance is too low for this booking."
+msgid ""
+"Your balance is too low for this booking. Top up your balance with the "
+"administration."
 msgstr ""
 
 msgid "Selected time slots must follow each other without gaps."
