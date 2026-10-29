@@ -1,5 +1,7 @@
 from datetime import date, timedelta
+from functools import wraps
 
+from django.conf import settings
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import redirect, render
@@ -19,6 +21,19 @@ ACTIONS = {
     "return": services.return_key,
     "undo": services.undo_last,
 }
+
+
+def keys_enabled_required(view):
+    """Key handling is on hold while settings.KEYS_ENABLED is false: its pages
+    do not exist (404), as if the feature were not installed."""
+
+    @wraps(view)
+    def wrapper(request, *args, **kwargs):
+        if not settings.KEYS_ENABLED:
+            raise Http404
+        return view(request, *args, **kwargs)
+
+    return wrapper
 
 
 def _staff_days(dormitory):
@@ -50,6 +65,7 @@ def _render_schedule(request, day):
     return render(request, template, context)
 
 
+@keys_enabled_required
 @staff_required
 def schedule(request):
     """The manager's start page: today's bookings and who has which key."""
@@ -57,6 +73,7 @@ def schedule(request):
     return _render_schedule(request, _chosen_day(request.GET.get("day"), days))
 
 
+@keys_enabled_required
 @staff_required
 @require_POST
 def key_action(request, group_id, action):

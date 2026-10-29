@@ -18,7 +18,9 @@ Goal: a working, deployed demo (with fake data) that the dormitory administratio
 - Balance screen: current balance and transaction history.
 - Language switch RU/EN. Mobile-first, installable PWA.
 
-**Manager (keys)**
+**Manager (keys)** — *on hold.* Not part of the demo or the pilot for now.
+The code and its tests stay; the screens are hidden while the setting
+`KEYS_ENABLED` is false (the default). Switching it on brings them back.
 - Today's view by time: which machine, which slot, who (name + room) should be picking up the key.
 - One-tap "key taken" / "key returned" with automatic timestamp; optional note.
 - Shows overdue returns.
@@ -26,7 +28,7 @@ Goal: a working, deployed demo (with fake data) that the dormitory administratio
 **Admin**
 - Manage residents (import from CSV: code, name, room), reset PIN, deactivate.
 - Credit balance manually (after confirming payment received), with a note; all as ledger transactions.
-- View/modify/cancel any booking; see key log.
+- View/modify/cancel any booking; see key log (key log on hold, see above).
 - Django admin may be used for the first version, with a simple custom dashboard if time allows.
 
 **Platform**
@@ -64,21 +66,21 @@ Goal: a working, deployed demo (with fake data) that the dormitory administratio
 3. Booking confirmation (select consecutive slots, machine choice)
 4. My bookings (+ .ics)
 5. Balance and history
-6. Manager: today's key schedule
+6. Manager: today's key schedule (on hold)
 7. Admin: residents, credits, bookings, key log
 
 ## Acceptance criteria
 - Two phones booking the same machine/slot at the same moment: exactly one succeeds.
 - Booking 2 consecutive slots shows one confirmation and charges 100 RUB.
 - A resident cannot find another resident's name or room through any screen or URL.
-- The manager can tell from the "today" screen who has the key at any given hour.
+- The manager can tell from the "today" screen who has the key at any given hour (on hold, with key handling).
 - Works on a mobile browser in RU and EN, with no requests to third-party domains (check the browser network tab).
 - Loads and works from the dormitory Wi-Fi without VPN.
 
 ## Demo plan for the administration
-- Deployed demo URL with fake residents and a short guided scenario (book, cancel, manager flow, admin credit).
+- Deployed demo URL with fake residents and a short guided scenario (book, cancel, admin credit).
 - One-page proposal: problem, demo, pilot (1 dormitory, 4 weeks), what the administration needs to provide (resident list, slot hours, hosting preference), data handling and privacy.
-- Pilot success measures: zero double-bookings, % of bookings paid via balance, manager time spent logging keys.
+- Pilot success measures: zero double-bookings, % of bookings paid via balance.
 
 ## Open questions
 - Exact slot hours and days of operation?
