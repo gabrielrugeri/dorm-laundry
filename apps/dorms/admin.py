@@ -17,6 +17,6 @@ class MachineInline(admin.TabularInline):
 
 @admin.register(Dormitory)
 class DormitoryAdmin(AuditedAdmin, admin.ModelAdmin):
-    list_display = ["name", "slug", "timezone", "price_per_slot"]
+    list_display = ["name", "code", "slug", "timezone", "price_per_slot"]
     prepopulated_fields = {"slug": ["name"]}
     inlines = [TimeSlotInline, MachineInline]

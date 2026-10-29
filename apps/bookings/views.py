@@ -13,7 +13,7 @@ from apps.accounts.decorators import resident_required
 from apps.dorms.models import TimeSlot
 from apps.ledger.models import LedgerEntry
 
-from . import availability, ics, services
+from . import availability, calendar, ics, services
 from .forms import BookingForm
 from .groups import get_group_or_404, resident_groups
 from .models import Booking
@@ -113,9 +113,8 @@ def book(request, day, slot_id):
     return render(request, "bookings/book.html", context)
 
 
-@resident_required
-def confirmed(request):
-    """What was just booked: one item per machine (?g=<group id>&g=...)."""
+def _groups_from_query(request):
+    """The resident's own booking groups named by ?g=<group id>&g=..."""
     ids = []
     for value in request.GET.getlist("g"):
         try:
@@ -126,7 +125,34 @@ def confirmed(request):
     groups = resident_groups(resident, Booking.objects.filter(resident=resident, group_id__in=ids))
     if not groups:
         raise Http404
-    return render(request, "bookings/confirmed.html", {"groups": groups})
+    return groups
+
+
+def _calendar_links(request, groups):
+    event = calendar.event_for(groups, request.dormitory)
+    if len(groups) == 1:
+        ics_url = reverse("bookings:calendar", kwargs={"group_id": groups[0].group_id})
+    else:
+        ids = "&".join(f"g={g.group_id}" for g in groups)
+        ics_url = f"{reverse('bookings:calendar_together')}?{ids}"
+    return calendar.links(event, ics_url)
+
+
+@resident_required
+def confirmed(request):
+    """What was just booked: one item per machine (?g=<group id>&g=...).
+    Machines booked together for the same time get one calendar event."""
+    groups = _groups_from_query(request)
+    together = len(groups) > 1 and calendar.can_share_event(groups)
+    context = {
+        "groups": groups,
+        "calendar_together": _calendar_links(request, groups) if together else None,
+        "rows": [
+            (g, None if together or g.is_cancelled else _calendar_links(request, [g]))
+            for g in groups
+        ],
+    }
+    return render(request, "bookings/confirmed.html", context)
 
 
 @resident_required
@@ -135,7 +161,20 @@ def group_detail(request, group_id):
     group = get_group_or_404(request.user.resident, group_id)
     now = timezone.now()
     can_cancel = any(b.starts_at > now for b in group.active_bookings())
-    return render(request, "bookings/detail.html", {"group": group, "can_cancel": can_cancel})
+    context = {
+        "group": group,
+        "can_cancel": can_cancel,
+        "calendar": None if group.is_cancelled else _calendar_links(request, [group]),
+    }
+    return render(request, "bookings/detail.html", context)
+
+
+def _ics_response(request, groups):
+    event = calendar.event_for(groups, request.dormitory)
+    body = ics.booking_calendar(event, uid_domain=request.get_host().split(":")[0])
+    response = HttpResponse(body, content_type="text/calendar; charset=utf-8")
+    response["Content-Disposition"] = f'attachment; filename="{calendar.filename(event)}"'
+    return response
 
 
 @resident_required
@@ -144,16 +183,16 @@ def calendar_file(request, group_id):
     group = get_group_or_404(request.user.resident, group_id)
     if group.is_cancelled:
         raise Http404
-    body = ics.booking_calendar(
-        group,
-        request.dormitory,
-        uid_domain=request.get_host().split(":")[0],
-        summary=_("Laundry: %(machine)s") % {"machine": group.machine.name},
-    )
-    response = HttpResponse(body, content_type="text/calendar; charset=utf-8")
-    filename = f"laundry-{group.day.isoformat()}.ics"
-    response["Content-Disposition"] = f'attachment; filename="{filename}"'
-    return response
+    return _ics_response(request, [group])
+
+
+@resident_required
+def calendar_file_together(request):
+    """Machines booked together for the same time, as one .ics event."""
+    groups = _groups_from_query(request)
+    if not calendar.can_share_event(groups):
+        raise Http404
+    return _ics_response(request, groups)
 
 
 @resident_required

@@ -65,7 +65,7 @@ class Command(BaseCommand):
                 )
 
         dorm, dorm_created = Dormitory.objects.get_or_create(
-            slug="demo", defaults={"name": "Общежитие № 1"}
+            slug="demo", defaults={"name": "Общежитие № 1", "code": "DEM"}
         )
         slots = [
             TimeSlot.objects.update_or_create(

@@ -48,11 +48,12 @@ def _offset(delta):
     return f"{sign}{hours:02d}{minutes:02d}"
 
 
-def booking_calendar(group, dormitory, *, uid_domain, summary):
-    """An .ics document with one event covering the group's booked slots."""
+def booking_calendar(event, *, uid_domain):
+    """An .ics document with one event (apps.bookings.calendar.Event)."""
+    dormitory = event.dormitory
     tz = dormitory.tzinfo
-    start = group.starts_at.astimezone(tz)
-    end = group.ends_at.astimezone(tz)
+    start = event.starts_at.astimezone(tz)
+    end = event.ends_at.astimezone(tz)
     offset = _offset(start.utcoffset())
     local = "%Y%m%dT%H%M%S"
     lines = [
@@ -71,12 +72,12 @@ def booking_calendar(group, dormitory, *, uid_domain, summary):
         "END:STANDARD",
         "END:VTIMEZONE",
         "BEGIN:VEVENT",
-        f"UID:{group.group_id}@{uid_domain}",
+        f"UID:{event.uid}@{uid_domain}",
         f"DTSTAMP:{timezone.now().astimezone(UTC):%Y%m%dT%H%M%SZ}",
         f"DTSTART;TZID={dormitory.timezone}:{start.strftime(local)}",
         f"DTEND;TZID={dormitory.timezone}:{end.strftime(local)}",
-        f"SUMMARY:{_escape(summary)}",
-        f"LOCATION:{_escape(dormitory.name)}",
+        f"SUMMARY:{_escape(event.summary)}",
+        f"LOCATION:{_escape(event.location)}",
         "END:VEVENT",
         "END:VCALENDAR",
     ]

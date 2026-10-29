@@ -4,17 +4,18 @@
 {% block content %}
   <h1 class="mb-3 text-xl font-semibold">{% translate "Your bookings" %}</h1>
   <ul class="mb-4 divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
-    {% for group in groups %}
+    {% for group, cal in rows %}
       <li class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
         <a href="{% url 'bookings:detail' group_id=group.group_id %}">
           <span class="block font-medium">{{ group.machine.name }}</span>
           <span class="block text-sm text-slate-600">{{ group.day|date:"l, j E" }}, {{ group.starts_at|time:"H:i" }}–{{ group.ends_at|time:"H:i" }}</span>
         </a>
-        {% if not group.is_cancelled %}
-          <a href="{% url 'bookings:calendar' group_id=group.group_id %}" class="rounded bg-blue-700 px-3 py-2 text-sm font-medium text-white hover:bg-blue-800">{% translate "Add to calendar" %}</a>
-        {% endif %}
+        {% if cal %}{% include "bookings/_add_to_calendar.html" %}{% endif %}
       </li>
     {% endfor %}
   </ul>
+  {% if calendar_together %}
+    <div class="mb-4">{% include "bookings/_add_to_calendar.html" with cal=calendar_together %}</div>
+  {% endif %}
   <a href="{% url 'bookings:mine' %}" class="text-blue-700 underline">{% translate "My bookings" %}</a>
 {% endblock %}
