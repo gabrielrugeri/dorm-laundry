@@ -1,7 +1,7 @@
 {% load i18n %}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_available_languages as LANGUAGES %}
-<form action="{% url 'set_language' %}" method="post" class="flex items-center gap-2 text-sm">
+<form action="{% url 'accounts:set_language' %}" method="post" class="flex items-center gap-2 text-sm">
   {% csrf_token %}
   <input name="next" type="hidden" value="{{ request.get_full_path }}">
   <label for="language-select" class="sr-only">{% translate "Language" %}</label>

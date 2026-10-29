@@ -19,7 +19,6 @@ import csv
 import io
 from dataclasses import dataclass, field
 
-from django.conf import settings
 from django.db import transaction
 from django.utils.translation import gettext as _
 
@@ -28,7 +27,7 @@ from .models import Resident
 
 MAX_FILE_BYTES = 1024 * 1024
 MAX_ROWS = 5000
-FIELDS = ("student_code", "full_name", "room", "language")
+FIELDS = ("student_code", "full_name", "room")
 MAX_LENGTH = {"student_code": 32, "full_name": 200, "room": 20}
 
 # Column titles we recognise (lower case, ru and en).
@@ -43,8 +42,9 @@ HEADERS = {
     },
     "full_name": {"full_name", "full name", "name", "фио", "имя", "фамилия имя", "фамилия, имя"},
     "room": {"room", "комната", "номер комнаты"},
-    "language": {"language", "lang", "язык"},
 }
+# Other columns (e.g. an old "language" column) are ignored: residents choose
+# their own language, and the app remembers it.
 
 NEW, CHANGED, UNCHANGED, ERROR = "new", "changed", "unchanged", "error"
 
@@ -162,9 +162,6 @@ def _check(row, seen_codes):
             row.errors.append(_("%(field)s is missing") % {"field": label})
         elif len(values[name]) > MAX_LENGTH[name]:
             row.errors.append(_("%(field)s is too long") % {"field": label})
-    language = values.get("language", "")
-    if language and language.lower() not in dict(settings.LANGUAGES):
-        row.errors.append(_("unknown language “%(value)s” (use ru or en)") % {"value": language})
     code = values.get("student_code", "").lower()
     if code:
         if code in seen_codes:
@@ -190,14 +187,12 @@ def preview(dormitory, data):
         if row.errors:
             row.status = ERROR
             continue
-        if row.values.get("language"):
-            row.values["language"] = row.values["language"].lower()
         resident = existing.get(row.values["student_code"].lower())
         if resident is None:
             row.status = NEW
             continue
         row.resident = resident
-        for name in ("full_name", "room", "language"):
+        for name in ("full_name", "room"):
             new = row.values.get(name)
             if new and new != getattr(resident, name):
                 row.changes[name] = (getattr(resident, name), new)
@@ -220,7 +215,6 @@ def apply(actor, dormitory, data):
                         full_name=row.values["full_name"],
                         room=row.values["room"],
                         student_code=row.values["student_code"],
-                        language=row.values.get("language") or "ru",
                     )
                 )
             else:

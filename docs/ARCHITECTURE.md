@@ -125,6 +125,8 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   see is Moscow time.
 - Calendar files (`.ics`) also use Moscow wall-clock time
   (`DTSTART;TZID=Europe/Moscow:…` with a VTIMEZONE of UTC+03:00), not UTC.
+  The Google Calendar link uses UTC (`…Z`), the Outlook link local time with
+  its offset (`+03:00`); all three come from one `calendar.Event`.
 
 ## Booking service
 
@@ -197,12 +199,33 @@ All are behind `resident_required` and use only the resident's own data.
 |---|---|
 | `/?day=…&length=N` | Schedule: pick a day (today … booking horizon) and a length ("How long?": N slots in a row). Lists only start times where at least one machine is free for all N slots, with how many machines are; the resident's own bookings of the day are listed above. Tabs swap only the grid with htmx; plain links work without JavaScript. |
 | `/book/<date>/<slot>/?length=N` | Every machine, with checkboxes for those free for all N slots; the others are greyed out and say why (booked, free only until HH:MM, out of service). Ticking several machines books them all with `book_machines()`; a small script shows the running total. Service errors are shown on the form. |
-| `/bookings/confirmed/?g=…` | What was just booked: one item per machine, each with "Add to calendar". |
+| `/bookings/confirmed/?g=…` | What was just booked: one item per machine. Machines booked together for the same time share one "Add to calendar" menu (one event); otherwise each item has its own. |
 | `/bookings/` | Upcoming bookings (one row per group) and the last 30 days of past and cancelled ones. |
-| `/bookings/<group>/` | One booking; links to the calendar file and to cancelling. |
+| `/bookings/<group>/` | One booking; "Add to calendar" menu and a link to cancelling. |
 | `/bookings/<group>/cancel/` | States per slot whether it will be refunded, then `cancel_group()` on POST. |
-| `/bookings/<group>/calendar.ics` | Calendar file (`apps/bookings/ics.py`, no dependency). |
-| `/balance/` | Balance and own ledger history, 20 entries per page. |
+| `/bookings/<group>/calendar.ics` | Calendar file (`apps/bookings/ics.py`, no dependency), named `laundry-<CODE>-YYYY-MM-DD-HH-HH-M<n>.ics`. |
+| `/bookings/calendar.ics?g=…` | One calendar file for machines booked together (`…-M1-M3.ics` lists every machine number). |
+| `/balance/` | The resident's name and room, balance, and history: one line per booking (see below), 20 lines per page. |
+
+- **"Add to calendar"** (`apps/bookings/calendar.py`) is a menu of three
+  plain links: Google Calendar and Outlook.com (prefilled "new event" pages,
+  opened in a new tab with `rel="noopener noreferrer"`) and the `.ics` file
+  for Apple Calendar and everything else (Yandex Calendar imports it too; it
+  has no documented prefilled link). Our pages load nothing from Google or
+  Microsoft, so the CSP stays self-only; the event text names the machines,
+  time and dormitory, never the resident. `Dormitory.code` (e.g. `DEM`,
+  set by superusers in `/admin/`) goes into the file name.
+- *Later option, not built:* a personal calendar feed
+  (`/calendar/<token>.ics`) with a random, hashed, revocable token, so new
+  bookings appear by themselves. Trade-offs: the URL works like a password;
+  Google refreshes feeds only every 12–24 hours (cancellations show late);
+  Google fetches the feed from abroad, so the server must be reachable from
+  outside Russia.
+- **Balance history lines** (`apps/ledger/history.py`): the ledger keeps one
+  entry per slot, so partial cancellations and refunds stay exact. For
+  display, adjacent entries with the same booking group and kind become one
+  line ("Машина 1, 29 октября 14:00–18:00: −100 ₽") with the per-slot entries
+  under «Подробнее». A later partial cancellation is its own refund line.
 
 - `apps/bookings/availability.py` answers the grid's questions with counts,
   never with other residents' bookings. `groups.py` turns the slots booked
@@ -261,8 +284,21 @@ yet" page. The tests in `apps/keylog/tests/` switch it on.
   are valid for `PASSWORD_RESET_TIMEOUT` (7 days) and stop working once the
   PIN is set. Admins create them, or reset a PIN, with actions on the
   Residents admin page.
-- **Language:** logging in, or activating, switches the interface to the
-  resident's saved language.
+- **Language:** the resident chooses it themselves in the header menu; the
+  choice is saved on their profile (`Resident.language`) as well as in the
+  cookie, and logging in or activating on any device switches to it. Admins
+  do not set it (no field in the resident form; a CSV "language" column is
+  ignored).
+- **How long a login lasts** (`apps/accounts/sessions.py`): residents 30 days
+  from their last visit (the session is refreshed at most once a day, to avoid
+  a database write per request); staff 12 hours from logging in, not
+  extended by activity. Trade-off: a lost or shared phone stays logged in as
+  the resident for up to a month, but a resident's session can only book,
+  cancel and see their own bookings and balance, and residents won't put up
+  with typing a PIN every day. Staff pages show residents' names and rooms,
+  so a forgotten staff login must end the same day.
+- **Header menu:** "Name · room" for residents (only their own), the username
+  for staff; it holds My balance, the language switch and Log out.
 
 ## Roles and privacy
 
@@ -320,8 +356,9 @@ Provider-neutral pieces every deployment uses (targets and gates are in
 ## Translations
 
 - Default language is Russian; English is the alternative. The language is
-  switched with a cookie through Django's `set_language` view; URLs have no
-  language prefix.
+  switched with a cookie through `accounts:set_language` (Django's
+  `set_language`, plus saving a resident's choice); URLs have no language
+  prefix.
 - CI runs `makemessages` and then `scripts/check_translations.py`. The build
   fails if any Russian string is untranslated or fuzzy.
 

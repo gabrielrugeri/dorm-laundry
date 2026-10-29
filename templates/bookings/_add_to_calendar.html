@@ -1,0 +1,10 @@
+{% load i18n %}
+{# "Add to calendar" menu. Google and Outlook are plain links opened in a new tab: nothing is loaded from them. #}
+<details class="relative inline-block">
+  <summary class="cursor-pointer list-none rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800 [&::-webkit-details-marker]:hidden">{% translate "Add to calendar" %} ▾</summary>
+  <ul class="absolute right-0 z-20 mt-1 w-60 rounded-lg border border-slate-200 bg-white py-1 text-slate-900 shadow-lg">
+    <li><a href="{{ cal.google }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-slate-100">{% translate "Google Calendar" %}</a></li>
+    <li><a href="{{ cal.outlook }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-slate-100">Outlook</a></li>
+    <li><a href="{{ cal.ics }}" class="block px-4 py-2 hover:bg-slate-100">{% translate "Apple / other (file)" %}</a></li>
+  </ul>
+</details>

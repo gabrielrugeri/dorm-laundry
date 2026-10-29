@@ -11,8 +11,8 @@
       {% if group.admin_reason %}<dt class="text-slate-600">{% translate "Reason" %}</dt><dd class="rounded bg-amber-50 px-2 text-amber-900">{{ group.admin_reason }}</dd>{% endif %}
     </dl>
     <div class="mt-4 flex flex-wrap gap-3">
-      {% if not group.is_cancelled %}
-        <a href="{% url 'bookings:calendar' group_id=group.group_id %}" class="rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Add to calendar" %}</a>
+      {% if calendar %}
+        {% include "bookings/_add_to_calendar.html" with cal=calendar %}
       {% endif %}
       <a href="{% url 'bookings:mine' %}" class="rounded border border-blue-700 px-4 py-2 font-medium text-blue-700 hover:bg-blue-50">{% translate "My bookings" %}</a>
       {% if can_cancel %}

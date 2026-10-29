@@ -1,7 +1,9 @@
+import re
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo, available_timezones
 
 from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
@@ -12,6 +14,17 @@ def validate_timezone(value):
         raise ValidationError(_("Unknown timezone: %(value)s"), params={"value": value})
 
 
+def unique_code(model, slug, exclude_pk=None):
+    """A short code from the slug ("demo" -> "DEM"), made unique with digits."""
+    base = (re.sub(r"[^A-Z0-9]", "", slug.upper()) or "DORM")[:3].ljust(2, "X")
+    taken = set(model.objects.exclude(pk=exclude_pk).values_list("code", flat=True))
+    code, n = base, 1
+    while code in taken:
+        n += 1
+        code = f"{base}{n}"
+    return code
+
+
 class Dormitory(models.Model):
     """A dormitory with its own machines, residents, slots and prices.
 
@@ -20,6 +33,20 @@ class Dormitory(models.Model):
 
     name = models.CharField(_("name"), max_length=200)
     slug = models.SlugField(_("slug"), unique=True)
+    code = models.CharField(
+        _("short code"),
+        max_length=8,
+        unique=True,
+        blank=True,
+        validators=[
+            RegexValidator(
+                r"^[A-Z0-9]{2,8}$", _("2 to 8 capital Latin letters or digits, e.g. DEM.")
+            )
+        ],
+        help_text=_(
+            "Used in file names, e.g. calendar files. Filled in from the slug when left empty."
+        ),
+    )
     timezone = models.CharField(
         _("timezone"), max_length=64, default="Europe/Moscow", validators=[validate_timezone]
     )
@@ -44,6 +71,11 @@ class Dormitory(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = unique_code(type(self), self.slug, exclude_pk=self.pk)
+        super().save(*args, **kwargs)
 
     @property
     def tzinfo(self):

@@ -1,7 +1,6 @@
 """Forms for the admin area. Labels use the plain words from docs/GLOSSARY.md."""
 
 from django import forms
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import Resident
@@ -21,11 +20,6 @@ class ResidentForm(forms.Form):
         max_length=32,
         widget=_text(autocapitalize="characters"),
         help_text=_("The resident logs in with this code."),
-    )
-    language = forms.ChoiceField(
-        label=_("Language"),
-        choices=settings.LANGUAGES,
-        widget=forms.Select(attrs={"class": INPUT}),
     )
 
     def __init__(self, *args, dormitory, resident=None, **kwargs):

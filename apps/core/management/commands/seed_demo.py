@@ -34,8 +34,31 @@ from apps.dorms.models import Dormitory, Machine, TimeSlot
 from apps.ledger import services as ledger_services
 from apps.ledger.models import LedgerEntry
 
-FIRST_NAMES = ["Ivan", "Anna", "Pyotr", "Olga", "Sergei", "Maria", "Dmitri", "Elena", "Pavel"]
-LAST_NAMES = ["Testov", "Primerova", "Demin", "Fakeova", "Obraztsov", "Vymyslova", "Shablonov"]
+# Made-up names, stored the way a real list would have them: Russian names in
+# Cyrillic, two foreign residents in Latin script. Shown exactly like this in
+# every interface language.
+NAMES = [
+    "Иван Тестов",
+    "Анна Примерова",
+    "Пётр Демин",
+    "Ольга Фейкова",
+    "Сергей Образцов",
+    "Мария Вымыслова",
+    "Дмитрий Шаблонов",
+    "Елена Тестова",
+    "Павел Примеров",
+    "Carlos Ejemplo",
+    "Наталья Образцова",
+    "Алексей Макетов",
+    "Ирина Шаблонова",
+    "Mei Shiyan",
+    "Андрей Пробный",
+    "Татьяна Демина",
+    "Николай Вымыслов",
+    "Юлия Макетова",
+    "Михаил Фейков",
+    "Ксения Пробная",
+]
 # Two-hour slots from 10:00; the last one ends at midnight.
 SLOT_HOURS = [10, 12, 14, 16, 18, 20, 22]
 MACHINE_COUNT = 6
@@ -65,7 +88,7 @@ class Command(BaseCommand):
                 )
 
         dorm, dorm_created = Dormitory.objects.get_or_create(
-            slug="demo", defaults={"name": "Общежитие № 1"}
+            slug="demo", defaults={"name": "Общежитие № 1", "code": "DEM"}
         )
         slots = [
             TimeSlot.objects.update_or_create(
@@ -103,8 +126,10 @@ class Command(BaseCommand):
                 student_code=code,
                 defaults={
                     "user": user,
-                    "full_name": f"{rng.choice(FIRST_NAMES)} {rng.choice(LAST_NAMES)}",
-                    "room": f"{rng.randint(1, 5)}{rng.randint(1, 30):02d}",
+                    "full_name": NAMES[n - 1],
+                    # Rooms like "214", and shared blocks like "301-2".
+                    "room": f"{rng.randint(1, 5)}{rng.randint(1, 30):02d}"
+                    + (f"-{rng.randint(1, 2)}" if n % 4 == 0 else ""),
                 },
             )
             if created:
@@ -195,7 +220,7 @@ class Command(BaseCommand):
         resident_services.create_resident(
             actor=admin,
             dormitory=dorm,
-            full_name="Svetlana Novikova",
+            full_name="Светлана Новикова",
             room="118",
             student_code="D0021",
         )

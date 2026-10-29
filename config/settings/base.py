@@ -52,6 +52,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.accounts.sessions.KeepResidentsLoggedInMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -104,6 +105,13 @@ LOGIN_REDIRECT_URL = "core:home"
 LOGOUT_REDIRECT_URL = "accounts:login"
 # Activation links (Django's password-reset tokens) stay valid for 7 days.
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 7
+
+# How long a login lasts (apps/accounts/sessions.py, docs/ARCHITECTURE.md).
+# Residents stay logged in for 30 days, counted from their last visit: their
+# session can only book and cancel their own slots. Staff sessions can see
+# residents' names and rooms, so they end 12 hours after logging in.
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
+STAFF_SESSION_SECONDS = 60 * 60 * 12
 # After this many failed logins for one student code from one IP address,
 # login is blocked for LOGIN_LOCKOUT_SECONDS.
 LOGIN_MAX_FAILURES = 5

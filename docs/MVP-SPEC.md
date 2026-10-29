@@ -14,7 +14,7 @@ Goal: a working, deployed demo (with fake data) that the dormitory administratio
 - Availability grid: day × time slot, showing number of free machines per slot (7 days ahead, configurable).
 - Book a machine for one slot, or for 2+ consecutive slots on the same machine (one booking per slot, 50 RUB each).
 - Cancel a booking (rule: up to X hours before start gets a refund; X configurable, default 2h).
-- "My bookings" list, with "Add to calendar" (.ics) after booking.
+- "My bookings" list, with an "Add to calendar" menu (Google, Outlook, .ics file) after booking.
 - Balance screen: current balance and transaction history.
 - Language switch RU/EN. Mobile-first, installable PWA.
 

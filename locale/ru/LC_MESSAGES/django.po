@@ -1227,10 +1227,6 @@ msgid "%(field)s is too long"
 msgstr "слишком длинное значение: %(field)s"
 
 #, python-format
-msgid "unknown language “%(value)s” (use ru or en)"
-msgstr "неизвестный язык «%(value)s» (укажите ru или en)"
-
-#, python-format
 msgid "the same student code is already on line %(line)s"
 msgstr "такой же студенческий код уже есть в строке %(line)s"
 
@@ -1395,3 +1391,39 @@ msgid ""
 msgstr ""
 "Учёт ключей от прачечной пока выключен. Здесь нечего делать, пока его не "
 "включат."
+
+#: apps/dorms/models.py:31
+msgid "short code"
+msgstr "короткий код"
+
+#: apps/dorms/models.py:37
+msgid "2 to 8 capital Latin letters or digits, e.g. DEM."
+msgstr "От 2 до 8 заглавных латинских букв или цифр, например DEM."
+
+#: apps/dorms/models.py:41
+msgid ""
+"Used in file names, e.g. calendar files. Filled in from the slug when left "
+"empty."
+msgstr ""
+"Используется в названиях файлов, например файлов календаря. Если оставить "
+"пустым, заполняется из слага."
+
+#: templates/base.html:31
+msgid "My balance"
+msgstr "Мой баланс"
+
+#: templates/ledger/balance.html:28
+msgid "Details"
+msgstr "Подробнее"
+
+#: templates/ledger/balance.html:32
+msgid "recorded"
+msgstr "записано"
+
+#: templates/bookings/_add_to_calendar.html:6
+msgid "Google Calendar"
+msgstr "Google Календарь"
+
+#: templates/bookings/_add_to_calendar.html:8
+msgid "Apple / other (file)"
+msgstr "Apple / другой (файл)"
