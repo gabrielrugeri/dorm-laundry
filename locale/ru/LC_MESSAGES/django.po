@@ -1559,3 +1559,182 @@ msgstr "оформление"
 #: apps/accounts/models.py:110
 msgid "display preferences"
 msgstr "настройки отображения"
+
+#: apps/audit/actions.py:13
+msgid "Money and upload rules changed"
+msgstr "Изменены правила оплаты и чеков"
+
+#: apps/audit/display.py:90
+msgid "no limit"
+msgstr "без ограничения"
+
+#: apps/dorms/models.py:200
+msgid "how far a resident may go into debt (RUB)"
+msgstr "насколько жилец может уйти в минус (₽)"
+
+#: apps/dorms/models.py:204
+msgid "0: no debt allowed. Empty: no limit."
+msgstr "0 — уходить в минус нельзя. Пусто — без ограничения."
+
+#: apps/dorms/models.py:207
+msgid "largest amount on one receipt (RUB)"
+msgstr "самая большая сумма в одном чеке (₽)"
+
+#: apps/dorms/models.py:210
+msgid "most money credited to one resident in 30 days (RUB)"
+msgstr "больше всего денег одному жильцу за 30 дней (₽)"
+
+#: apps/dorms/models.py:213
+msgid "receipts one resident may send per day"
+msgstr "сколько чеков жилец может отправить в день"
+
+#: apps/dorms/models.py:215
+msgid "largest receipt file (MB)"
+msgstr "самый большой файл чека (МБ)"
+
+#: apps/dorms/models.py:216
+msgid "changed at"
+msgstr "изменено"
+
+#: apps/dorms/models.py:219
+msgid "money and upload rules"
+msgstr "правила оплаты и чеков"
+
+#: apps/dorms/models.py:226
+msgid "Money and upload rules"
+msgstr "Правила оплаты и чеков"
+
+#: apps/dorms/rules.py:29
+msgid "May go into debt up to"
+msgstr "Можно уйти в минус до"
+
+#: apps/dorms/rules.py:30
+msgid "Largest amount on one receipt"
+msgstr "Самая большая сумма в одном чеке"
+
+#: apps/dorms/rules.py:31
+msgid "Most money for one resident in 30 days"
+msgstr "Больше всего денег одному жильцу за 30 дней"
+
+#: apps/dorms/rules.py:32
+msgid "Receipts one resident may send per day"
+msgstr "Чеков от одного жильца в день"
+
+#: apps/dorms/rules.py:33
+msgid "Largest receipt file, MB"
+msgstr "Самый большой файл чека, МБ"
+
+#: apps/manage/forms.py:180
+msgid "In rubles. 0: residents cannot go into debt. Empty: no limit."
+msgstr ""
+"В рублях. 0 — жильцы не могут уходить в минус. Пусто — без ограничения."
+
+#: apps/manage/forms.py:184
+msgid "In rubles."
+msgstr "В рублях."
+
+#: apps/manage/forms.py:188
+msgid "In rubles, counted over the last 30 days."
+msgstr "В рублях, за последние 30 дней."
+
+#: apps/manage/forms.py:197
+msgid "Why are you changing this?"
+msgstr "Почему вы это меняете?"
+
+#: apps/manage/forms.py:200
+msgid "Saved in the change history."
+msgstr "Сохраняется в журнале изменений."
+
+#: apps/manage/forms.py:203
+msgid "Your password"
+msgstr "Ваш пароль"
+
+#: apps/manage/forms.py:206
+msgid "To make sure it is really you."
+msgstr "Чтобы убедиться, что это действительно вы."
+
+#: apps/manage/forms.py:225
+msgid "Wrong password."
+msgstr "Неверный пароль."
+
+#: apps/manage/forms.py:234
+msgid "Nothing was changed."
+msgstr "Ничего не изменено."
+
+#: apps/manage/forms.py:238
+msgid "Cannot be less than the largest amount on one receipt."
+msgstr "Не может быть меньше самой большой суммы в одном чеке."
+
+#: apps/manage/forms.py:243
+msgid "Some values change a lot. Check them, tick the box and save again."
+msgstr ""
+"Некоторые значения меняются очень сильно. Проверьте их, поставьте галочку и "
+"сохраните ещё раз."
+
+#: apps/manage/settings_views.py:27
+msgid "no debt allowed"
+msgstr "уходить в минус нельзя"
+
+#: apps/manage/settings_views.py:57
+msgid "The rules were changed. They apply from now on."
+msgstr "Правила изменены. Они действуют с этого момента."
+
+#: templates/base.html:77
+msgid "Settings"
+msgstr "Настройки"
+
+#: templates/manage/settings.html:6
+msgid "Money and receipts"
+msgstr "Оплата и чеки"
+
+#: templates/manage/settings.html:9
+msgid ""
+"The same for every resident. A change applies from now on; nothing that "
+"already happened is recalculated."
+msgstr ""
+"Одинаково для всех жильцов. Изменение действует с этого момента; то, что уже "
+"произошло, не пересчитывается."
+
+#: templates/manage/settings.html:20
+msgid "Earlier changes"
+msgstr "Прошлые изменения"
+
+#: templates/manage/settings.html:35
+msgid "No changes yet: these are the starting values."
+msgstr "Изменений пока не было: это начальные значения."
+
+#: templates/manage/settings_change.html:3
+msgid "Change money and receipt rules"
+msgstr "Изменить правила оплаты и чеков"
+
+#: templates/manage/settings_change.html:8
+msgid ""
+"These numbers affect every resident. Change them only when the administration"
+" has decided so."
+msgstr ""
+"Эти числа касаются всех жильцов. Меняйте их, только если так решила "
+"администрация."
+
+#: templates/manage/settings_change.html:21
+msgid "These values change a lot:"
+msgstr "Эти значения меняются очень сильно:"
+
+#: templates/manage/settings_change.html:27
+msgid "Yes, I have checked these values and want to save them."
+msgstr "Да, значения проверены, сохранить их."
+
+#: templates/manage/residents/list.html:49
+msgid "owes since %(day)s"
+msgstr "в долгу с %(day)s"
+
+#: templates/bookings/book.html:59
+msgid "You may go into debt up to %(limit)s."
+msgstr "Можно уйти в минус до %(limit)s."
+
+#: templates/manage/residents/list.html:29
+msgid "%(count)s resident owes %(total)s in total."
+msgid_plural "%(count)s residents owe %(total)s in total."
+msgstr[0] "%(count)s жилец должен всего %(total)s."
+msgstr[1] "%(count)s жильца должны всего %(total)s."
+msgstr[2] "%(count)s жильцов должны всего %(total)s."
+msgstr[3] "%(count)s жильца должны всего %(total)s."
