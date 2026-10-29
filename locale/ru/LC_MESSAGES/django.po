@@ -1738,3 +1738,7 @@ msgstr[0] "%(count)s жилец должен всего %(total)s."
 msgstr[1] "%(count)s жильца должны всего %(total)s."
 msgstr[2] "%(count)s жильцов должны всего %(total)s."
 msgstr[3] "%(count)s жильца должны всего %(total)s."
+
+#: templates/manage/settings.html:7
+msgid "Change the rules"
+msgstr "Изменить правила"

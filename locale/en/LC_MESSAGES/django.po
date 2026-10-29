@@ -1637,3 +1637,7 @@ msgid "%(count)s resident owes %(total)s in total."
 msgid_plural "%(count)s residents owe %(total)s in total."
 msgstr[0] ""
 msgstr[1] ""
+
+#: templates/manage/settings.html:7
+msgid "Change the rules"
+msgstr ""
