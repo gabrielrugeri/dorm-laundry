@@ -46,6 +46,50 @@ def listed(client, **params):
 # --- List ----------------------------------------------------------------------------
 
 
+@pytest.mark.parametrize(
+    ("rooms", "expected"),
+    [
+        (["1010", "301-2", "210", "301-1"], ["210", "301-1", "301-2", "1010"]),
+        (["301-10", "301-2", "301"], ["301", "301-2", "301-10"]),
+        (["A-12", "99", "", "B-1"], ["99", "A-12", "B-1", ""]),
+    ],
+    ids=["dorm-formats", "block-numbers", "letters-and-empty"],
+)
+def test_room_natural_order(rooms, expected):
+    from apps.manage.residents import room_key
+
+    assert sorted(rooms, key=room_key) == expected
+
+
+def test_list_is_in_natural_room_order_then_name(boss_client, dormitory):
+    for code, name, room in [
+        ("R1", "Boris", "1010"),
+        ("R2", "Vera", "301-2"),
+        ("R3", "Anna", "210"),
+        ("R4", "Zoya", "301-1"),
+        ("R5", "Alla", "301-1"),
+    ]:
+        make_resident(dormitory, code, name=name, room=room)
+    rooms = [(r.room, r.full_name) for r in boss_client.get(LIST).context["page"]]
+    assert rooms == [
+        ("210", "Anna"),
+        ("301-1", "Alla"),
+        ("301-1", "Zoya"),
+        ("301-2", "Vera"),
+        ("1010", "Boris"),
+    ]
+
+
+def test_list_sorts_by_clicked_column(boss_client, resident, other_resident):
+    owe(resident, 30)  # Ivan Testov, room 101, owes 30
+    assert listed(boss_client, sort="name") == [other_resident.pk, resident.pk]
+    assert listed(boss_client, sort="-room") == [other_resident.pk, resident.pk]
+    assert listed(boss_client, sort="balance") == [resident.pk, other_resident.pk]
+    assert listed(boss_client, sort="nonsense") == [resident.pk, other_resident.pk]
+    html = boss_client.get(LIST, {"sort": "name", "q": "a"}).content.decode()
+    assert "sort=-name" in html  # clicking the active column reverses it
+
+
 def test_list_filters_and_search(boss_client, resident, other_resident, dormitory, other_dormitory):
     owe(other_resident, 70)
     off = make_resident(dormitory, "S0003", name="Pavel Demin", room="303")

@@ -6,6 +6,7 @@ are not allowed have no button. Every write goes through a service.
 """
 
 import csv
+import re
 from datetime import timedelta
 
 from django.contrib import messages
@@ -43,6 +44,26 @@ RECENT_PAYMENTS = 5
 FILTERS = ("active", "debt", "off")
 
 
+def room_key(room):
+    """Natural order for rooms: numbers compare as numbers, so
+    210 < 301-1 < 301-2 < 1010. Rooms starting with letters come after, and
+    an empty room (erased residents) last."""
+    parts = re.findall(r"\d+|\D+", room or "")
+    return (not parts, [(0, int(p), "") if p.isdigit() else (1, 0, p.lower()) for p in parts])
+
+
+def _name_key(resident):
+    return (resident.is_anonymized, resident.full_name.lower())
+
+
+# ?sort=room|name|balance, with a leading "-" for the other direction.
+SORTS = {
+    "room": lambda r: (room_key(r.room), _name_key(r)),
+    "name": lambda r: (_name_key(r), room_key(r.room)),
+    "balance": lambda r: (r.balance, room_key(r.room), _name_key(r)),
+}
+
+
 def _resident(request, pk):
     """A resident of the admin's own dormitory, or 404."""
     return get_object_or_404(
@@ -66,7 +87,6 @@ def resident_list(request):
         Resident.objects.filter(dormitory=request.dormitory)
         .select_related("user")
         .annotate(balance=Coalesce(Sum("ledger_entries__amount"), Value(0)))
-        .order_by("room", "full_name")
     )
     if show == "active":
         residents = residents.filter(user__is_active=True)
@@ -80,10 +100,27 @@ def resident_list(request):
             | Q(room__icontains=query)
             | Q(student_code__iexact=query, anonymized_at__isnull=True)
         )
+    sort = request.GET.get("sort", "room")
+    field = sort.removeprefix("-")
+    if field not in SORTS:
+        sort = field = "room"
+    # Sorted in Python: natural room order is hard in SQL, and a dormitory
+    # has a few hundred residents at most.
+    residents = sorted(residents, key=SORTS[field], reverse=sort.startswith("-"))
     page = Paginator(residents, RESIDENTS_PER_PAGE).get_page(request.GET.get("page"))
-    return render(
-        request, "manage/residents/list.html", {"page": page, "show": show, "query": query}
-    )
+    columns = [
+        (name, label, f"-{name}" if sort == name else name, sort.removeprefix("-") == name)
+        for name, label in (("room", _("Room")), ("name", _("Name")), ("balance", _("Balance")))
+    ]
+    context = {
+        "page": page,
+        "show": show,
+        "query": query,
+        "sort": sort,
+        "descending": sort.startswith("-"),
+        "columns": columns,
+    }
+    return render(request, "manage/residents/list.html", context)
 
 
 # --- Profile -------------------------------------------------------------------------

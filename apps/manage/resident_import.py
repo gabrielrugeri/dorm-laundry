@@ -21,7 +21,7 @@ from apps.accounts.activation import activation_url
 from apps.accounts.models import Resident
 from apps.audit.services import record
 
-from .residents import _safe
+from .residents import SORTS, _safe
 from .views import admin_required
 
 SESSION_FILE = "resident_import_file"
@@ -86,17 +86,15 @@ def confirm(request):
 
 
 def _new_residents(request):
+    """New residents in room order (natural: 210 < 301-1 < 1010)."""
     ids = request.session.get(SESSION_CREATED, [])
-    return (
-        Resident.objects.filter(
-            pk__in=ids,
-            dormitory=request.dormitory,
-            anonymized_at__isnull=True,
-            user__is_active=True,
-        )
-        .select_related("user")
-        .order_by("room", "full_name")
-    )
+    residents = Resident.objects.filter(
+        pk__in=ids,
+        dormitory=request.dormitory,
+        anonymized_at__isnull=True,
+        user__is_active=True,
+    ).select_related("user")
+    return sorted(residents, key=lambda r: SORTS["room"](r))
 
 
 @admin_required
