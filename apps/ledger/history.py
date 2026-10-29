@@ -20,7 +20,7 @@ class Line:
 
     @property
     def kind_label(self):
-        return self.first.get_kind_display()
+        return self.first.label
 
     @property
     def created_at(self):

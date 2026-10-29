@@ -32,9 +32,8 @@ from apps.ledger.models import LedgerEntry
 
 from .forms import (
     CancelBookingForm,
+    ChangeBalanceForm,
     ConfirmDebtForm,
-    CorrectionForm,
-    PaymentForm,
     ResidentForm,
 )
 from .views import admin_required
@@ -218,55 +217,26 @@ def resident_edit(request, pk):
 # --- Money ---------------------------------------------------------------------------
 
 
-def _money_form(request, pk, form_class, kind, title, submit, done):
+@admin_required
+def resident_balance(request, pk):
+    """ "Change balance": a payment received or a correction, adding or
+    subtracting, with a live preview of the new balance."""
     resident = _resident(request, pk)
     if resident.is_anonymized:
         raise Http404
-    form = form_class(request.POST or None)
+    form = ChangeBalanceForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         ledger_services.add_manual_entry(
             actor=request.user,
             resident=resident,
-            kind=kind,
-            amount=form.cleaned_data["amount"],
+            kind=form.kind,
+            amount=form.signed_amount,
             note=form.cleaned_data["note"],
         )
-        messages.success(request, done)
+        messages.success(request, _("Balance changed."))
         return redirect("manage:resident", pk=resident.pk)
-    context = {
-        "form": form,
-        "resident": resident,
-        "balance": _balance(resident),
-        "title": title,
-        "submit": submit,
-    }
-    return render(request, "manage/residents/form.html", context)
-
-
-@admin_required
-def resident_payment(request, pk):
-    return _money_form(
-        request,
-        pk,
-        PaymentForm,
-        LedgerEntry.Kind.CREDIT,
-        _("Record a payment"),
-        _("Record payment"),
-        _("Payment recorded."),
-    )
-
-
-@admin_required
-def resident_correction(request, pk):
-    return _money_form(
-        request,
-        pk,
-        CorrectionForm,
-        LedgerEntry.Kind.ADJUSTMENT,
-        _("Correct the balance"),
-        _("Save correction"),
-        _("Balance corrected."),
-    )
+    context = {"form": form, "resident": resident, "balance": _balance(resident)}
+    return render(request, "manage/residents/change_balance.html", context)
 
 
 # --- Login -------------------------------------------------------------------------
@@ -453,7 +423,7 @@ def resident_history_csv(request, pk):
         writer.writerow(
             [
                 formats.date_format(local, "d.m.Y H:i"),
-                _safe(str(entry.get_kind_display()).capitalize()),
+                _safe(str(entry.label).capitalize()),
                 entry.amount,
                 entry.balance_after,
                 _safe(entry.note),

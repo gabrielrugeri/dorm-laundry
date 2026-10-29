@@ -10,14 +10,18 @@ English) words on the right, and add new concepts here when you add a screen.
 | Ledger, ledger entries, statement | История платежей | Payment history |
 | Balance (sum of the ledger) | Баланс | Balance |
 | Negative balance | Долг | Debt |
-| Credit (manual, after a payment) | Оплата внесена / Внести оплату | Payment recorded / Record payment |
-| Adjustment | Исправление баланса / Исправить баланс | Balance correction / Correct balance |
+| Manual money change (one screen) | Изменить баланс | Change balance |
+| Credit (manual, after a payment) | Поступила оплата (тип) / Оплата внесена (в истории) | Payment received |
+| Negative credit | Оплата отменена | Payment taken back |
+| Adjustment | Исправление (тип) / Исправление баланса (в истории) | Correction / Balance correction |
+| Add / subtract | Добавить / Вычесть | Add / Subtract |
+| Amount field | Сумма, ₽ (never «Изменение») | Amount, ₽ (never "Change") |
 | Booking charge | Оплата бронирования | Booking payment |
 | Refund | Возврат | Refund |
 | `cancelled_by_admin` | Отменено администрацией | Cancelled by the administration |
 | Audit log, audit event | Журнал изменений, запись | Change history, entry |
 | Activation link | Ссылка для входа | Login link |
-| Reset PIN | Сбросить PIN-код | Reset PIN |
+| Reset PIN + login link (one action) | Сбросить PIN / ссылка для входа | Reset PIN / login link |
 | Deactivate (`is_active=False`) | Отключить доступ | Turn off access |
 | Deactivated residents | Отключённые | Access turned off |
 | Reactivate | Вернуть доступ | Turn access back on |

@@ -64,3 +64,10 @@ def test_staff_home_still_needs_staff(client, resident):
     assert client.get(STAFF_HOME).status_code == 302  # anonymous: to login
     client.force_login(resident.user)
     assert client.get(STAFF_HOME).status_code == 403
+
+
+def test_resident_profile_has_no_key_section(boss_client, resident, settings):
+    url = reverse("manage:resident", kwargs={"pk": resident.pk})
+    assert "Key hand-overs" not in boss_client.get(url).content.decode()
+    settings.KEYS_ENABLED = True
+    assert "Key hand-overs" in boss_client.get(url).content.decode()

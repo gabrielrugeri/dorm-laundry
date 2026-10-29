@@ -75,12 +75,18 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
 ## Residents in the admin area
 
 - `/manage/residents/`: list with search (name, room, student code) and filters
-  (active, owe money, access turned off). `/manage/residents/<id>/`: the
+  (active, owe money, access turned off), ordered by room in natural order
+  (`room_key`: 210 < 301-1 < 301-2 < 1010), then name; the Room, Name and
+  Balance headers sort (`?sort=`, `-` reverses). `/manage/residents/<id>/`: the
   profile, built to answer "is this resident in good standing?" (balance,
   debt since, upcoming bookings, recent payments; full history collapsed).
 - Actions call `apps/accounts/services.py` (create, update, deactivate,
   reactivate, anonymize, delete) and `apps/ledger/services.py`
-  (`add_manual_entry`: payments and balance corrections, note required).
+  (`add_manual_entry`). Money goes through one "Change balance" screen: type
+  (payment received = `credit`, correction = `adjustment`, so reconciliation
+  keeps them apart), add or subtract, amount, and a note (required for
+  corrections). A subtracted payment is a negative `credit` ("payment taken
+  back"), so it stays in the payments column.
   Each writes its audit event in the same transaction.
 - Residents with history (bookings or money) are never deleted; access is
   turned off, or personal data is erased (`anonymize`): name, room and code
@@ -88,8 +94,11 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   PIN are turned off, and bookings and money stay. Turning off or erasing a
   resident in debt needs an explicit confirmation; the debt is recorded in
   the audit event.
-- Login links (activation tokens) are shown once on the page and never
-  stored. The payment history downloads as an Excel-friendly CSV with
+- "Reset PIN / login link" (one action, with a warning page) shows a
+  one-time link once and never stores it. The current PIN keeps working until
+  the link is used, so a mistaken click locks nobody out; setting the new PIN
+  invalidates the link (and logging in with the old PIN does too, since the
+  token covers the last login). The payment history downloads as an Excel-friendly CSV with
   protection against formula injection.
 - CSV import (`apps/accounts/importing.py`, pages in `apps/manage/resident_import.py`):
   `preview()` compares each row with the dormitory's residents by student

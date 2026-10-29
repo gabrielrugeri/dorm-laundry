@@ -124,7 +124,7 @@ def test_profile_answers_good_standing_at_a_glance(boss_client, resident):
     html = response.content.decode()
     assert "Ivan Testov" in html and "Room 101" in html
     assert "Owes money since" in html
-    assert "Record a payment" in html  # the one primary action
+    assert "Change balance" in html  # the one primary action
 
 
 def test_profile_uses_plain_language(boss_client, resident, make_booking):
@@ -160,9 +160,9 @@ def test_erased_resident_has_no_actions(boss_client, boss, resident):
     html = response.content.decode()
     assert "Former resident" in html
     assert "Ivan Testov" not in html
-    assert url("resident_payment", resident) not in html
+    assert url("resident_balance", resident) not in html
     assert boss_client.get(url("resident_edit", resident)).status_code == 404
-    assert boss_client.get(url("resident_payment", resident)).status_code == 404
+    assert boss_client.get(url("resident_balance", resident)).status_code == 404
 
 
 # --- Add and edit --------------------------------------------------------------------
@@ -195,27 +195,52 @@ def test_edit_resident(boss_client, resident):
 # --- Money ---------------------------------------------------------------------------
 
 
-def test_record_payment(boss_client, boss, resident):
-    page = boss_client.post(url("resident_payment", resident), {"amount": 300, "note": ""})
-    assert page.context["form"].errors["note"]
-    assert (
-        boss_client.post(url("resident_payment", resident), {"amount": -5, "note": "x"}).status_code
-        == 200
-    )
-    boss_client.post(url("resident_payment", resident), {"amount": 300, "note": "Cash"})
+def test_change_balance_payment(boss_client, boss, resident):
+    target = url("resident_balance", resident)
+    html = boss_client.get(target).content.decode()
+    assert "Amount, ₽" in html and "Change, ₽" not in html
+    assert 'data-balance="0"' in html  # for the live preview
+
+    # A payment without a comment is fine.
+    boss_client.post(target, {"type": "payment", "direction": "add", "amount": 300, "note": ""})
     entry = LedgerEntry.objects.get()
-    assert (entry.kind, entry.amount, entry.note, entry.created_by) == ("credit", 300, "Cash", boss)
+    assert (entry.kind, entry.amount, entry.note, entry.created_by) == ("credit", 300, "", boss)
     assert AuditEvent.objects.get().action == "ledger.payment"
 
 
-def test_correct_balance(boss_client, resident):
-    page = boss_client.post(url("resident_correction", resident), {"amount": 0, "note": "x"})
-    assert page.context["form"].errors["amount"]
+def test_payment_can_be_taken_back(boss_client, resident):
+    target = url("resident_balance", resident)
+    boss_client.post(target, {"type": "payment", "direction": "add", "amount": 300})
     boss_client.post(
-        url("resident_correction", resident), {"amount": -40, "note": "Double payment"}
+        target, {"type": "payment", "direction": "subtract", "amount": 300, "note": "Twice"}
     )
-    assert LedgerEntry.objects.balance(resident) == -40
+    entries = LedgerEntry.objects.order_by("id")
+    assert [(e.kind, e.amount) for e in entries] == [("credit", 300), ("credit", -300)]
+    assert str(entries[1].label) == "payment taken back"
+    assert LedgerEntry.objects.balance(resident) == 0
+
+
+def test_change_balance_correction_needs_a_comment(boss_client, resident):
+    target = url("resident_balance", resident)
+    page = boss_client.post(target, {"type": "correction", "direction": "subtract", "amount": 40})
+    assert page.context["form"].errors["note"]
+    boss_client.post(
+        target,
+        {"type": "correction", "direction": "subtract", "amount": 40, "note": "Double payment"},
+    )
+    entry = LedgerEntry.objects.get()
+    assert (entry.kind, entry.amount) == ("adjustment", -40)
     assert AuditEvent.objects.get().action == "ledger.correction"
+
+
+@pytest.mark.parametrize("amount", [0, -5, "abc"])
+def test_change_balance_needs_a_positive_amount(boss_client, resident, amount):
+    page = boss_client.post(
+        url("resident_balance", resident),
+        {"type": "payment", "direction": "add", "amount": amount},
+    )
+    assert page.context["form"].errors["amount"]
+    assert not LedgerEntry.objects.exists()
 
 
 # --- Login ---------------------------------------------------------------------------
@@ -338,8 +363,7 @@ def test_payment_history_csv(boss_client, resident):
 ACTION_NAMES = [
     "resident",
     "resident_edit",
-    "resident_payment",
-    "resident_correction",
+    "resident_balance",
     "resident_login_link",
     "resident_deactivate",
     "resident_erase",
@@ -366,7 +390,7 @@ def test_admin_pages_are_in_russian_by_default(client, boss, resident):
     client.force_login(boss)  # no language cookie: Russian is the default
     owe(resident, 40)
     html = client.get(url("resident", resident)).content.decode()
-    assert "Внести оплату" in html and "Комната 101" in html and "Долг с" in html
+    assert "Изменить баланс" in html and "Комната 101" in html and "Долг с" in html
     assert "Жильцы" in html and "Журнал изменений" in html  # navigation
     erase = client.get(url("resident_erase", resident)).content.decode()
     assert "Имя, комната и студенческий код будут удалены везде" in erase
