@@ -5,3 +5,4 @@ django-environ     # read settings from environment variables / .env
 whitenoise         # serve static files from our own server
 psycopg[binary]    # PostgreSQL driver (production)
 gunicorn           # production WSGI server
+Pillow             # check and re-save uploaded images (receipts, payment QR code)

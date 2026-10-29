@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     "apps.ledger",
     "apps.keylog",
     "apps.audit",
+    "apps.receipts",
+    "apps.payments",
     "apps.manage",
 ]
 
@@ -158,6 +160,11 @@ KEYS_ENABLED = env.bool("KEYS_ENABLED", default=False)
 # limit (nginx client_max_body_size) must use the same value. The admin-editable
 # file size setting can never be above it.
 MAX_UPLOAD_BYTES_HARD = env.int("MAX_UPLOAD_BYTES_HARD", default=20 * 1024 * 1024)
+
+# Uploaded files that are not public (receipts, the payment QR code). Kept
+# outside the static files and any public URL; our views check permissions
+# before sending them (apps/core/storage.py). Back this folder up in production.
+PRIVATE_MEDIA_ROOT = Path(env("PRIVATE_MEDIA_ROOT", default=str(BASE_DIR / "private_media")))
 
 # True only in config/settings/prod.py (and modules built on it). Guards
 # commands that must behave differently on a real server, e.g. seed_demo.

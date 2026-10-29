@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "How to pay" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'ledger:balance' %}" class="text-sm text-link underline">← {% translate "Balance" %}</a></p>
+  <h1 class="mb-3 text-xl font-semibold">{% translate "How to pay" %}</h1>
+
+  {% if not details %}
+    <p class="rounded-lg bg-surface p-4 text-muted shadow-sm">{% translate "The administration has not given payment details yet. Ask them how to pay." %}</p>
+  {% else %}
+    <ol class="mb-4 list-decimal space-y-1 pl-5 text-ink-soft">
+      <li>{% translate "Pay from your bank app using the details below." %}</li>
+      <li>{% translate "Copy the payment purpose into the transfer, so the administration knows it is you." %}</li>
+      <li>{% blocktranslate %}Then <strong>send the receipt</strong>: your balance is topped up at once.{% endblocktranslate %}</li>
+    </ol>
+
+    <div class="mb-4 rounded-lg bg-surface p-4 shadow-sm">
+      {% translate "Payment purpose" as purpose_label %}
+      {% include "payments/_copy_field.html" with label=purpose_label value=purpose id="pay-purpose" %}
+      {% translate "Recipient" as label %}{% include "payments/_copy_field.html" with label=label value=details.recipient id="pay-recipient" %}
+      {% translate "Bank" as label %}{% include "payments/_copy_field.html" with label=label value=details.bank id="pay-bank" %}
+      {% if details.sbp_phone %}{% translate "Phone number for SBP (fast payments)" as label %}{% include "payments/_copy_field.html" with label=label value=details.sbp_phone_display id="pay-phone" %}{% endif %}
+
+      {% if details.payment_link %}
+        <a href="{{ details.payment_link }}" target="_blank" rel="noopener noreferrer"
+           class="mb-3 block rounded bg-accent px-4 py-2 text-center font-medium text-on-accent hover:bg-accent-strong">{% translate "Pay with the bank's link" %}</a>
+      {% endif %}
+      {% if details.qr_image %}
+        <figure class="mb-3 text-center">
+          <img src="{% url 'payments:qr' %}" alt="{% translate 'SBP QR code for paying' %}" width="220" height="220" class="mx-auto rounded bg-on-accent p-2">
+          <figcaption class="mt-1 text-sm text-muted">{% translate "Scan it in your bank app." %}</figcaption>
+        </figure>
+      {% endif %}
+
+      {% if details.account %}
+        <details class="mt-2">
+          <summary class="cursor-pointer text-link">{% translate "Full bank details" %}</summary>
+          <div class="mt-3">
+            {% translate "Account number" as label %}{% include "payments/_copy_field.html" with label=label value=details.account id="pay-account" %}
+            {% translate "BIK" as label %}{% include "payments/_copy_field.html" with label=label value=details.bik id="pay-bik" %}
+            {% if details.inn %}{% translate "Recipient's INN" as label %}{% include "payments/_copy_field.html" with label=label value=details.inn id="pay-inn" %}{% endif %}
+          </div>
+        </details>
+      {% endif %}
+    </div>
+    <a href="{% url 'receipts:new' %}" class="block w-full rounded bg-accent px-4 py-2 text-center font-medium text-on-accent hover:bg-accent-strong">{% translate "I have paid: send the receipt" %}</a>
+  {% endif %}
+{% endblock %}

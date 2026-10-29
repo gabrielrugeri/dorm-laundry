@@ -65,8 +65,10 @@ def _balance(resident):
 
 def has_history(resident):
     """True if anything refers to this resident: bookings (and so key
-    hand-overs) or money movements. Receipts (stage 4) will be added here."""
-    return resident.bookings.exists() or resident.ledger_entries.exists()
+    hand-overs), money movements or receipts."""
+    return (
+        resident.bookings.exists() or resident.ledger_entries.exists() or resident.receipts.exists()
+    )
 
 
 def create_resident(*, actor, dormitory, full_name, room, student_code, language="ru"):

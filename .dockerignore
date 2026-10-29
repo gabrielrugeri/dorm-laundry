@@ -16,3 +16,4 @@ locale/*/LC_MESSAGES/*.mo
 *.pyc
 .pytest_cache/
 .ruff_cache/
+private_media

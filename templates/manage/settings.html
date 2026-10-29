@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n audit %}
 {% block title %}{% translate "Settings" %} · {{ block.super }}{% endblock %}
 {% block content %}
   <div class="mb-3 flex items-center justify-between gap-3">
@@ -17,12 +17,25 @@
     {% endfor %}
   </dl>
 
+  <div class="mb-2 flex items-center justify-between gap-3">
+    <h2 class="font-medium">{% translate "How residents pay" %}</h2>
+    <a href="{% url 'manage:payment_details' %}" class="text-sm text-link underline">{% if payment_details %}{% translate "Change payment details" %}{% else %}{% translate "Add payment details" %}{% endif %}</a>
+  </div>
+  <div class="mb-6 rounded-lg bg-surface px-4 py-3 shadow-sm">
+    {% if payment_details %}
+      <p class="font-medium">{{ payment_details.recipient }}</p>
+      <p class="text-sm text-muted">{{ payment_details.bank }}{% if payment_details.sbp_phone %} · {% translate "SBP" %} {{ payment_details.sbp_phone_display }}{% endif %}</p>
+    {% else %}
+      <p class="text-danger">{% translate "Not filled in yet: residents do not know where to pay." %}</p>
+    {% endif %}
+  </div>
+
   <h2 class="mb-2 font-medium">{% translate "Earlier changes" %}</h2>
   <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
     {% for event, changes in history %}
       <li class="px-4 py-3">
         <p class="flex flex-wrap justify-between gap-x-3">
-          <span class="font-medium">{% if event.actor %}{{ event.actor.get_username }}{% else %}{% translate "System" %}{% endif %}</span>
+          <span class="font-medium">{{ event.action|action_label }} · {% if event.actor %}{{ event.actor.get_username }}{% else %}{% translate "System" %}{% endif %}</span>
           <span class="text-sm text-muted">{{ event.created_at|date:"j E Y, H:i" }}</span>
         </p>
         <p class="text-sm text-muted">{{ event.reason }}</p>

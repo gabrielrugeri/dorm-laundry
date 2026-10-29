@@ -14,6 +14,9 @@ LABELS = {
     "ledger.correction": _("Balance corrected"),
     "ledger.manual_entry": _("Payment or balance correction"),  # stage 1a events
     "settings.change": _("Money and upload rules changed"),
+    "payments.details_change": _("Payment details changed"),
+    "receipt.credit": _("Receipt sent, balance topped up"),
+    "receipt.refused": _("Receipt refused"),
     "resident.create": _("Resident added"),
     "resident.update": _("Resident details changed"),
     "resident.deactivate": _("Access turned off"),

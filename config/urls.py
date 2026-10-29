@@ -8,6 +8,8 @@ urlpatterns = [
     path("manage/", include("apps.manage.urls")),
     path("", include("apps.bookings.urls")),
     path("", include("apps.ledger.urls")),
+    path("", include("apps.receipts.urls")),
+    path("", include("apps.payments.urls")),
     path("", include("apps.keylog.urls")),
     path("", include("apps.core.urls")),
 ]
