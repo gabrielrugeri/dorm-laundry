@@ -1,5 +1,6 @@
 """Resident pages in the admin area. Every name and code here is fake."""
 
+import re
 from datetime import timedelta
 
 import pytest
@@ -85,7 +86,9 @@ def test_profile_answers_good_standing_at_a_glance(boss_client, resident):
 def test_profile_uses_plain_language(boss_client, resident, make_booking):
     make_booking()
     owe(resident, 10)
-    html = boss_client.get(url("resident", resident)).content.decode().lower()
+    html = boss_client.get(url("resident", resident)).content.decode()
+    # CSRF tokens are random letters and may contain e.g. "utc" by chance.
+    html = re.sub(r'(csrfmiddlewaretoken" value="|X-CSRFToken": ")[^"]+', "", html).lower()
     for word in ("ledger", "adjustment", "audit", "utc", "json", "cancelled_by_admin"):
         assert word not in html, word
 
