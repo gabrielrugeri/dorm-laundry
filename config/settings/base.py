@@ -75,6 +75,7 @@ TEMPLATES = [
                 "apps.accounts.context_processors.user_roles",
                 "apps.core.context_processors.demo_mode",
                 "apps.core.context_processors.features",
+                "apps.core.context_processors.theme",
             ],
         },
     },

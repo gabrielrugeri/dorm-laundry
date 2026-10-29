@@ -10,7 +10,8 @@ Read `docs/MVP-SPEC.md` before starting any task. It is the source of truth for 
 - Python 3.12+, Django 5.x
 - SQLite in development, PostgreSQL in production
 - HTMX for interactivity, Tailwind CSS compiled locally (standalone CLI), no SPA framework
-- Installable PWA (manifest + service worker) for mobile use
+- Installable PWA (manifest + service worker) for mobile use; the service worker caches only the offline page, never personal data
+- Colours: use the colour tokens from `assets/css/input.css` (`bg-surface`, `text-muted`, `bg-accent`, `text-danger`...), never raw palette classes, so dark mode and contrast stay correct
 - Django i18n (gettext): Russian (`ru`) and English (`en`) are mandatory. Every user-facing string must be translatable from the first commit.
 - Tests: pytest + pytest-django
 

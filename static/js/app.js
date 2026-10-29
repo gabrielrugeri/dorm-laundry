@@ -73,4 +73,84 @@
     });
   });
   document.addEventListener("DOMContentLoaded", updateBalancePreview);
+
+  // --- Installable app ---------------------------------------------------------
+
+  // The service worker only keeps an offline page (templates/core/sw.js).
+  var thisScript = document.currentScript;
+  if ("serviceWorker" in navigator && thisScript && thisScript.dataset.serviceWorker) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register(thisScript.dataset.serviceWorker, { scope: "/" });
+    });
+  }
+
+  // Install guide (templates/core/_install_guide.html): one variant for the
+  // phone at hand, never inside the installed app, gone after "Got it".
+  var DISMISSED = "installGuideDismissed";
+  var installPrompt = null;
+
+  function storage(action, value) {
+    try {
+      return action === "get"
+        ? window.localStorage.getItem(DISMISSED)
+        : window.localStorage.setItem(DISMISSED, value);
+    } catch (error) {
+      return null; // private mode or storage blocked: just show the guide
+    }
+  }
+
+  function isInstalled() {
+    return window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  }
+
+  function platform() {
+    var ua = navigator.userAgent;
+    // In-app browsers cannot install web apps.
+    if (/Telegram|Instagram|FBAN|FBAV|FB_IAB|VKClient|vkclient|WhatsApp|Line\//i.test(ua)) {
+      return "in-app";
+    }
+    var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    if (ios) return "ios";
+    return null; // Android Chrome shows its variant when it offers installation
+  }
+
+  function showGuide(variant) {
+    var guide = document.getElementById("install-guide");
+    if (!guide || isInstalled() || storage("get")) return;
+    guide.querySelectorAll("[data-install-variant]").forEach(function (part) {
+      part.hidden = part.dataset.installVariant !== variant;
+    });
+    guide.hidden = false;
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var variant = platform();
+    if (variant) showGuide(variant);
+  });
+
+  // Android Chrome: it tells us the app can be installed; show our button.
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    installPrompt = event;
+    showGuide("android");
+  });
+
+  document.addEventListener("click", function (event) {
+    if (event.target.closest("[data-install-button]") && installPrompt) {
+      installPrompt.prompt();
+      installPrompt.userChoice.then(function () {
+        installPrompt = null;
+        document.getElementById("install-guide").hidden = true;
+      });
+    }
+    if (event.target.closest("[data-install-dismiss]")) {
+      storage("set", "1");
+      document.getElementById("install-guide").hidden = true;
+    }
+  });
+
+  window.addEventListener("appinstalled", function () {
+    var guide = document.getElementById("install-guide");
+    if (guide) guide.hidden = true;
+  });
 })();

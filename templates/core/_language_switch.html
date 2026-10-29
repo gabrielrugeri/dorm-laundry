@@ -5,7 +5,7 @@
   {% csrf_token %}
   <input name="next" type="hidden" value="{{ request.get_full_path }}">
   <label for="language-select" class="sr-only">{% translate "Language" %}</label>
-  <select id="language-select" name="language" data-autosubmit class="rounded border border-slate-300 bg-white px-2 py-1">
+  <select id="language-select" name="language" data-autosubmit class="rounded border border-line-strong bg-surface px-2 py-1">
     {% for code, name in LANGUAGES %}
       <option value="{{ code }}"{% if code == LANGUAGE_CODE %} selected{% endif %}>{{ code|language_name_local }}</option>
     {% endfor %}

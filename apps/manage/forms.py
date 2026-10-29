@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.accounts.models import Resident
 from apps.ledger.models import LedgerEntry
 
-INPUT = "w-full rounded border border-slate-300 bg-white px-3 py-2"
+INPUT = "w-full rounded border border-line-strong bg-surface px-3 py-2"
 
 
 def _text(**attrs):

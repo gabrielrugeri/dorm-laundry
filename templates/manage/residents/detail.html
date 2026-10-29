@@ -2,22 +2,22 @@
 {% load i18n money %}
 {% block title %}{% if resident.is_anonymized %}{% translate "Former resident" %}{% else %}{{ resident.full_name }}{% endif %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <p class="mb-2"><a href="{% url 'manage:residents' %}" class="text-sm text-blue-700 underline">← {% translate "Residents" %}</a></p>
+  <p class="mb-2"><a href="{% url 'manage:residents' %}" class="text-sm text-link underline">← {% translate "Residents" %}</a></p>
 
   {# 1. Who and are they in good standing? #}
-  <section class="mb-4 rounded-lg bg-white p-4 shadow-sm">
+  <section class="mb-4 rounded-lg bg-surface p-4 shadow-sm">
     {% if resident.is_anonymized %}
       <h1 class="text-xl font-semibold">{% translate "Former resident" %}</h1>
-      <p class="text-sm text-slate-600">{% translate "Personal data erased. The payment history is kept." %}</p>
+      <p class="text-sm text-muted">{% translate "Personal data erased. The payment history is kept." %}</p>
     {% else %}
       <h1 class="text-xl font-semibold">{{ resident.full_name }}</h1>
-      <p class="text-slate-600">{% blocktranslate with room=resident.room %}Room {{ room }}{% endblocktranslate %} · {% translate "student code" %} {{ resident.student_code }}</p>
+      <p class="text-muted">{% blocktranslate with room=resident.room %}Room {{ room }}{% endblocktranslate %} · {% translate "student code" %} {{ resident.student_code }}</p>
       {% if not resident.user.is_active %}
-        <p class="mt-2 inline-block rounded bg-slate-200 px-2 py-0.5 text-sm">{% translate "Access turned off" %}</p>
+        <p class="mt-2 inline-block rounded bg-subtle-strong px-2 py-0.5 text-sm">{% translate "Access turned off" %}</p>
       {% endif %}
     {% endif %}
 
-    <div class="mt-4 rounded-lg p-3 {% if balance < 0 %}bg-red-50 text-red-900{% else %}bg-green-50 text-green-900{% endif %}">
+    <div class="mt-4 rounded-lg p-3 {% if balance < 0 %}bg-danger-soft text-danger{% else %}bg-success-soft text-success{% endif %}">
       <p class="text-sm">{% translate "Balance" %}</p>
       <p class="text-3xl font-semibold">{{ balance|rub }}</p>
       <p class="text-sm">
@@ -32,27 +32,27 @@
     {# 2. The main action. Everything else is under "More". #}
     {% if not resident.is_anonymized %}
       <div class="mt-4 flex flex-wrap items-start gap-3">
-        <a href="{% url 'manage:resident_balance' pk=resident.pk %}" class="rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Change balance" %}</a>
+        <a href="{% url 'manage:resident_balance' pk=resident.pk %}" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Change balance" %}</a>
         <details class="relative">
-          <summary class="cursor-pointer list-none rounded border border-slate-300 px-4 py-2">{% translate "More" %} ▾</summary>
-          <div class="absolute z-10 mt-1 w-64 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
-            <a href="{% url 'manage:resident_edit' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Change details" %}</a>
+          <summary class="cursor-pointer list-none rounded border border-line-strong px-4 py-2">{% translate "More" %} ▾</summary>
+          <div class="absolute z-10 mt-1 w-64 rounded-lg border border-line bg-surface py-1 shadow-lg">
+            <a href="{% url 'manage:resident_edit' pk=resident.pk %}" class="block px-4 py-2 hover:bg-subtle">{% translate "Change details" %}</a>
             {% if resident.user.is_active %}
-              <a href="{% url 'manage:resident_login_link' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Reset PIN / login link" %}</a>
+              <a href="{% url 'manage:resident_login_link' pk=resident.pk %}" class="block px-4 py-2 hover:bg-subtle">{% translate "Reset PIN / login link" %}</a>
             {% endif %}
-            <a href="{% url 'manage:resident_history_csv' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Download payment history" %}</a>
-            <hr class="my-1 border-slate-200">
+            <a href="{% url 'manage:resident_history_csv' pk=resident.pk %}" class="block px-4 py-2 hover:bg-subtle">{% translate "Download payment history" %}</a>
+            <hr class="my-1 border-line">
             {% if resident.user.is_active %}
-              <a href="{% url 'manage:resident_deactivate' pk=resident.pk %}" class="block px-4 py-2 text-red-700 hover:bg-red-50">{% translate "Turn off access" %}</a>
+              <a href="{% url 'manage:resident_deactivate' pk=resident.pk %}" class="block px-4 py-2 text-danger hover:bg-danger-soft">{% translate "Turn off access" %}</a>
             {% else %}
               <form method="post" action="{% url 'manage:resident_reactivate' pk=resident.pk %}">
                 {% csrf_token %}
-                <button type="submit" class="block w-full px-4 py-2 text-left hover:bg-slate-50">{% translate "Turn access back on" %}</button>
+                <button type="submit" class="block w-full px-4 py-2 text-left hover:bg-subtle">{% translate "Turn access back on" %}</button>
               </form>
             {% endif %}
-            <a href="{% url 'manage:resident_erase' pk=resident.pk %}" class="block px-4 py-2 text-red-700 hover:bg-red-50">{% translate "Erase personal data" %}</a>
+            <a href="{% url 'manage:resident_erase' pk=resident.pk %}" class="block px-4 py-2 text-danger hover:bg-danger-soft">{% translate "Erase personal data" %}</a>
             {% if can_delete %}
-              <a href="{% url 'manage:resident_delete' pk=resident.pk %}" class="block px-4 py-2 text-red-700 hover:bg-red-50">{% translate "Delete resident" %}</a>
+              <a href="{% url 'manage:resident_delete' pk=resident.pk %}" class="block px-4 py-2 text-danger hover:bg-danger-soft">{% translate "Delete resident" %}</a>
             {% endif %}
           </div>
         </details>
@@ -63,87 +63,87 @@
   {# 3. What's coming up and recent money in. #}
   <section class="mb-4">
     <h2 class="mb-2 font-medium">{% translate "Upcoming bookings" %}</h2>
-    <ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+    <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
       {% for group in upcoming %}
         <li class="flex items-center justify-between gap-3 px-4 py-3">
           <span>
             <span class="block font-medium">{{ group.day|date:"D j E" }}, {{ group.starts_at|time:"H:i" }}–{{ group.ends_at|time:"H:i" }}</span>
-            <span class="block text-sm text-slate-600">{{ group.machine.name }}</span>
+            <span class="block text-sm text-muted">{{ group.machine.name }}</span>
           </span>
           {% if group.group_id in can_cancel %}
-            <a href="{% url 'manage:resident_cancel_booking' pk=resident.pk group_id=group.group_id %}" class="text-sm text-red-700 underline">{% translate "Cancel" %}</a>
+            <a href="{% url 'manage:resident_cancel_booking' pk=resident.pk group_id=group.group_id %}" class="text-sm text-danger underline">{% translate "Cancel" %}</a>
           {% endif %}
         </li>
       {% empty %}
-        <li class="px-4 py-3 text-slate-600">{% translate "No upcoming bookings." %}</li>
+        <li class="px-4 py-3 text-muted">{% translate "No upcoming bookings." %}</li>
       {% endfor %}
     </ul>
   </section>
 
   <section class="mb-4">
     <h2 class="mb-2 font-medium">{% translate "Recent payments" %}</h2>
-    <ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+    <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
       {% for entry in recent_payments %}
         <li class="flex justify-between gap-3 px-4 py-3">
           <span>
             <span class="block">{{ entry.created_at|date:"j E Y" }}</span>
-            {% if entry.note %}<span class="block text-sm text-slate-600">{{ entry.note }}</span>{% endif %}
+            {% if entry.note %}<span class="block text-sm text-muted">{{ entry.note }}</span>{% endif %}
           </span>
-          <span class="font-medium text-green-800">{{ entry.amount|rub_signed }}</span>
+          <span class="font-medium text-success">{{ entry.amount|rub_signed }}</span>
         </li>
       {% empty %}
-        <li class="px-4 py-3 text-slate-600">{% translate "No payments yet." %}</li>
+        <li class="px-4 py-3 text-muted">{% translate "No payments yet." %}</li>
       {% endfor %}
     </ul>
   </section>
 
   {# 4. Full history, collapsed. #}
-  <details class="mb-3 rounded-lg bg-white shadow-sm">
+  <details class="mb-3 rounded-lg bg-surface shadow-sm">
     <summary class="cursor-pointer px-4 py-3 font-medium">{% translate "Full payment history" %}</summary>
-    <ul class="divide-y divide-slate-200 border-t border-slate-200">
+    <ul class="divide-y divide-line border-t border-line">
       {% for entry in history %}
         <li class="flex justify-between gap-3 px-4 py-2 text-sm">
           <span>
             <span class="block">{{ entry.label|capfirst }} · {{ entry.created_at|date:"j E Y, H:i" }}</span>
-            {% if entry.booking %}<span class="block text-slate-600">{{ entry.booking.machine.name }}, {{ entry.booking.date|date:"j E" }}, {{ entry.booking.slot }}</span>{% endif %}
-            {% if entry.note %}<span class="block text-slate-600">{{ entry.note }}</span>{% endif %}
+            {% if entry.booking %}<span class="block text-muted">{{ entry.booking.machine.name }}, {{ entry.booking.date|date:"j E" }}, {{ entry.booking.slot }}</span>{% endif %}
+            {% if entry.note %}<span class="block text-muted">{{ entry.note }}</span>{% endif %}
           </span>
           <span class="shrink-0 text-right">
-            <span class="block font-medium {% if entry.amount > 0 %}text-green-800{% endif %}">{{ entry.amount|rub_signed }}</span>
-            <span class="block text-xs text-slate-500">{% blocktranslate with balance=entry.balance_after|rub %}balance {{ balance }}{% endblocktranslate %}</span>
+            <span class="block font-medium {% if entry.amount > 0 %}text-success{% endif %}">{{ entry.amount|rub_signed }}</span>
+            <span class="block text-xs text-muted">{% blocktranslate with balance=entry.balance_after|rub %}balance {{ balance }}{% endblocktranslate %}</span>
           </span>
         </li>
       {% empty %}
-        <li class="px-4 py-2 text-sm text-slate-600">{% translate "No payments yet." %}</li>
+        <li class="px-4 py-2 text-sm text-muted">{% translate "No payments yet." %}</li>
       {% endfor %}
     </ul>
   </details>
 
-  <details class="mb-3 rounded-lg bg-white shadow-sm">
+  <details class="mb-3 rounded-lg bg-surface shadow-sm">
     <summary class="cursor-pointer px-4 py-3 font-medium">{% translate "Past bookings (90 days)" %}</summary>
-    <ul class="divide-y divide-slate-200 border-t border-slate-200">
+    <ul class="divide-y divide-line border-t border-line">
       {% for group in past_bookings %}
         <li class="px-4 py-2 text-sm">
           {{ group.day|date:"j E" }}, {{ group.starts_at|time:"H:i" }}–{{ group.ends_at|time:"H:i" }} · {{ group.machine.name }}
           {% if group.admin_reason %} · {% translate "Cancelled by the administration" %}: {{ group.admin_reason }}{% elif group.is_cancelled %} · {% translate "Cancelled" %}{% endif %}
         </li>
       {% empty %}
-        <li class="px-4 py-2 text-sm text-slate-600">{% translate "No past bookings." %}</li>
+        <li class="px-4 py-2 text-sm text-muted">{% translate "No past bookings." %}</li>
       {% endfor %}
     </ul>
   </details>
 
   {% if keys_enabled %}
-  <details class="mb-3 rounded-lg bg-white shadow-sm">
+  <details class="mb-3 rounded-lg bg-surface shadow-sm">
     <summary class="cursor-pointer px-4 py-3 font-medium">{% translate "Key hand-overs" %}</summary>
-    <ul class="divide-y divide-slate-200 border-t border-slate-200">
+    <ul class="divide-y divide-line border-t border-line">
       {% for log in key_logs %}
         <li class="px-4 py-2 text-sm">
           {{ log.booking.date|date:"j E" }} · {{ log.booking.machine.name }}:
           {% if log.taken_at %}{% blocktranslate with time=log.taken_at|time:"H:i" %}taken {{ time }}{% endblocktranslate %}{% endif %}{% if log.returned_at %}, {% blocktranslate with time=log.returned_at|time:"H:i" %}returned {{ time }}{% endblocktranslate %}{% endif %}
         </li>
       {% empty %}
-        <li class="px-4 py-2 text-sm text-slate-600">{% translate "No key hand-overs yet." %}</li>
+        <li class="px-4 py-2 text-sm text-muted">{% translate "No key hand-overs yet." %}</li>
       {% endfor %}
     </ul>
   </details>

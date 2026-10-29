@@ -7,7 +7,7 @@ from . import ratelimit
 from .validators import validate_pin
 
 # Tailwind classes shared by the text inputs of our forms.
-INPUT_CLASS = "w-full rounded border border-slate-300 bg-white px-3 py-2"
+INPUT_CLASS = "w-full rounded border border-line-strong bg-surface px-3 py-2"
 
 
 class LoginForm(AuthenticationForm):

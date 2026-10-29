@@ -2,30 +2,30 @@
 {% load i18n money %}
 {% block title %}{% translate "Balance" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <div class="mb-4 rounded-lg bg-white p-4 shadow-sm">
+  <div class="mb-4 rounded-lg bg-surface p-4 shadow-sm">
     <p class="mb-2 font-medium">{{ resident.full_name }} · {% blocktranslate with room=resident.room %}room {{ room }}{% endblocktranslate %}</p>
-    <p class="text-sm text-slate-600">{% translate "Current balance" %}</p>
+    <p class="text-sm text-muted">{% translate "Current balance" %}</p>
     <p class="text-3xl font-semibold">{{ balance|rub }}</p>
-    <p class="mt-2 text-sm text-slate-600">{% translate "To top up, pay the dormitory administration. They add the money to your balance." %}</p>
+    <p class="mt-2 text-sm text-muted">{% translate "To top up, pay the dormitory administration. They add the money to your balance." %}</p>
   </div>
 
   <h2 class="mb-2 font-medium">{% translate "History" %}</h2>
-  <ul class="divide-y divide-slate-200 rounded-lg bg-white shadow-sm">
+  <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
     {% for line in page %}
       <li class="px-4 py-3">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <p class="font-medium">{{ line.kind_label|capfirst }}</p>
-            <p class="text-sm text-slate-600">
+            <p class="text-sm text-muted">
               {% if line.machine %}{{ line.machine.name }}, {{ line.starts_at|date:"j E" }} {{ line.starts_at|time:"H:i" }}–{{ line.ends_at|time:"H:i" }}{% else %}{{ line.created_at|date:"j E Y, H:i" }}{% endif %}
             </p>
-            {% if line.note %}<p class="text-sm text-slate-600">{{ line.note }}</p>{% endif %}
+            {% if line.note %}<p class="text-sm text-muted">{{ line.note }}</p>{% endif %}
           </div>
-          <span class="shrink-0 font-medium {% if line.amount > 0 %}text-green-800{% else %}text-slate-900{% endif %}">{{ line.amount|rub_signed }}</span>
+          <span class="shrink-0 font-medium {% if line.amount > 0 %}text-success{% else %}text-ink{% endif %}">{{ line.amount|rub_signed }}</span>
         </div>
         {% if line.is_grouped or line.machine %}
-          <details class="mt-1 text-sm text-slate-600">
-            <summary class="cursor-pointer text-blue-700">{% translate "Details" %}</summary>
+          <details class="mt-1 text-sm text-muted">
+            <summary class="cursor-pointer text-link">{% translate "Details" %}</summary>
             <ul class="mt-1 space-y-1 pl-2">
               {% for entry in line.entries %}
                 <li class="flex justify-between gap-3">
@@ -38,14 +38,14 @@
         {% endif %}
       </li>
     {% empty %}
-      <li class="px-4 py-3 text-slate-600">{% translate "No transactions yet." %}</li>
+      <li class="px-4 py-3 text-muted">{% translate "No transactions yet." %}</li>
     {% endfor %}
   </ul>
 
   {% if page.has_other_pages %}
     <nav class="mt-4 flex justify-between text-sm" aria-label="{% translate 'Pages' %}">
-      {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}" class="text-blue-700 underline">← {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
-      {% if page.has_next %}<a href="?page={{ page.next_page_number }}" class="text-blue-700 underline">{% translate "Older" %} →</a>{% endif %}
+      {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}" class="text-link underline">← {% translate "Newer" %}</a>{% else %}<span></span>{% endif %}
+      {% if page.has_next %}<a href="?page={{ page.next_page_number }}" class="text-link underline">{% translate "Older" %} →</a>{% endif %}
     </nav>
   {% endif %}
 {% endblock %}

@@ -2,15 +2,15 @@
 {% load i18n money %}
 {% block title %}{% translate "Change balance" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <p class="mb-2"><a href="{% url 'manage:resident' pk=resident.pk %}" class="text-sm text-blue-700 underline">← {{ resident.full_name }}</a></p>
-  <div class="mx-auto max-w-md rounded-lg bg-white p-4 shadow-sm">
+  <p class="mb-2"><a href="{% url 'manage:resident' pk=resident.pk %}" class="text-sm text-link underline">← {{ resident.full_name }}</a></p>
+  <div class="mx-auto max-w-md rounded-lg bg-surface p-4 shadow-sm">
     <h1 class="mb-1 text-xl font-semibold">{% translate "Change balance" %}</h1>
-    <p class="mb-4 text-slate-600">{{ resident.full_name }}, {% blocktranslate with room=resident.room %}room {{ room }}{% endblocktranslate %}</p>
+    <p class="mb-4 text-muted">{{ resident.full_name }}, {% blocktranslate with room=resident.room %}room {{ room }}{% endblocktranslate %}</p>
 
     <form method="post" novalidate data-balance-form>
       {% csrf_token %}
       {% if form.non_field_errors %}
-        <div class="mb-4 rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800" role="alert">
+        <div class="mb-4 rounded border border-danger-line bg-danger-soft p-3 text-sm text-danger" role="alert">
           {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
         </div>
       {% endif %}
@@ -21,30 +21,30 @@
             <legend class="mb-1 text-sm font-medium">{{ field.label }}</legend>
             <div class="flex flex-wrap gap-2">
               {% for choice in field %}
-                <label class="flex cursor-pointer items-center gap-2 rounded border border-slate-300 px-3 py-2 has-[:checked]:border-blue-700 has-[:checked]:bg-blue-50">
+                <label class="flex cursor-pointer items-center gap-2 rounded border border-line-strong px-3 py-2 has-[:checked]:border-accent has-[:checked]:bg-accent-soft">
                   {{ choice.tag }} <span>{{ choice.choice_label }}</span>
                 </label>
               {% endfor %}
             </div>
-            {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+            {% for error in field.errors %}<p class="mt-1 text-sm text-danger">{{ error }}</p>{% endfor %}
           </fieldset>
         {% else %}
           <div class="mb-4">
             <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
             {{ field }}
-            {% if field.help_text %}<p class="mt-1 text-xs text-slate-500">{{ field.help_text }}</p>{% endif %}
-            {% for error in field.errors %}<p class="mt-1 text-sm text-red-700">{{ error }}</p>{% endfor %}
+            {% if field.help_text %}<p class="mt-1 text-xs text-muted">{{ field.help_text }}</p>{% endif %}
+            {% for error in field.errors %}<p class="mt-1 text-sm text-danger">{{ error }}</p>{% endfor %}
           </div>
         {% endif %}
       {% endfor %}
 
       {# Live preview, filled in by static/js/app.js; the server recalculates on save. #}
-      <p id="balance-preview" class="mb-4 rounded bg-slate-50 px-3 py-2 text-lg"
+      <p id="balance-preview" class="mb-4 rounded bg-subtle px-3 py-2 text-lg"
          data-balance="{{ balance }}" data-money="{{ 0|rub }}" data-label="{% translate 'Balance' %}">
-        {% translate "Balance" %}: <strong class="{% if balance < 0 %}text-red-700{% endif %}">{{ balance|rub }}</strong>
+        {% translate "Balance" %}: <strong class="{% if balance < 0 %}text-danger{% endif %}">{{ balance|rub }}</strong>
       </p>
 
-      <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Save" %}</button>
+      <button type="submit" class="w-full rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Save" %}</button>
     </form>
   </div>
 {% endblock %}

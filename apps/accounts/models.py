@@ -89,3 +89,29 @@ class StaffProfile(models.Model):
 
     def __str__(self):
         return f"{self.user} @ {self.dormitory}"
+
+
+class UserPreferences(models.Model):
+    """Display choices a user makes for themselves (residents and staff)."""
+
+    class Theme(models.TextChoices):
+        SYSTEM = "system", _("like the phone")
+        LIGHT = "light", _("light")
+        DARK = "dark", _("dark")
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="preferences",
+        verbose_name=_("user"),
+    )
+    theme = models.CharField(
+        _("colours"), max_length=8, choices=Theme.choices, default=Theme.SYSTEM
+    )
+
+    class Meta:
+        verbose_name = _("display preferences")
+        verbose_name_plural = _("display preferences")
+
+    def __str__(self):
+        return f"{self.user}: {self.theme}"

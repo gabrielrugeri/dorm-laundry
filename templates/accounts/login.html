@@ -2,17 +2,17 @@
 {% load i18n %}
 {% block title %}{% translate "Log in" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <div class="mx-auto max-w-sm rounded-lg bg-white p-6 shadow-sm">
+  <div class="mx-auto max-w-sm rounded-lg bg-surface p-6 shadow-sm">
     <h1 class="mb-4 text-xl font-semibold">{% translate "Log in" %}</h1>
     <form method="post" novalidate>
       {% csrf_token %}
       {% include "accounts/_form_fields.html" %}
       <input type="hidden" name="next" value="{{ next }}">
-      <button type="submit" class="w-full rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">
+      <button type="submit" class="w-full rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">
         {% translate "Log in" %}
       </button>
     </form>
-    <p class="mt-4 text-sm text-slate-600">
+    <p class="mt-4 text-sm text-muted">
       {% translate "First time here? Ask the dormitory administration for your activation link." %}
     </p>
   </div>

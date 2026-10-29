@@ -1,0 +1,22 @@
+{% load i18n static %}<!doctype html>
+{# Cached by the service worker: the same for everyone, no personal data, so it does not extend base.html. #}
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>{% language "ru" %}{% translate "No connection" %}{% endlanguage %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="min-h-screen bg-canvas font-sans text-ink">
+  <main class="mx-auto max-w-md p-6 text-center">
+    <img src="{% static 'icons/icon-192.png' %}" alt="" width="96" height="96" class="mx-auto mb-4 rounded-2xl">
+    {% language "ru" %}
+      <h1 class="mb-2 text-xl font-semibold">{% translate "No connection" %}</h1>
+      <p class="mb-4 text-muted">{% translate "The laundry app needs the internet. Check Wi-Fi or mobile data, then try again." %}</p>
+    {% endlanguage %}
+    <p class="mb-6 text-sm text-muted" lang="en">{% language "en" %}{% translate "No connection" %}. {% translate "The laundry app needs the internet. Check Wi-Fi or mobile data, then try again." %}{% endlanguage %}</p>
+    <a href="/" class="rounded bg-accent px-4 py-2 font-medium text-on-accent">{% language "ru" %}{% translate "Try again" %}{% endlanguage %}</a>
+  </main>
+</body>
+</html>

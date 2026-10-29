@@ -10,5 +10,6 @@ urlpatterns = [
     # Django's LogoutView accepts POST only, so a link cannot log users out.
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("language/", views.set_language, name="set_language"),
+    path("theme/", views.set_theme, name="set_theme"),
     path("activate/<uidb64>/<token>/", views.ActivateView.as_view(), name="activate"),
 ]

@@ -1363,3 +1363,105 @@ msgstr ""
 #: templates/manage/residents/list.html:28
 msgid "Sort by"
 msgstr ""
+
+#: templates/base.html:17
+msgid "Laundry"
+msgstr ""
+
+#: templates/core/_theme_switch.html:6
+msgid "Colours"
+msgstr ""
+
+#: templates/core/_theme_switch.html:8
+msgid "Like the phone"
+msgstr ""
+
+#: templates/core/_theme_switch.html:9
+msgid "Light"
+msgstr ""
+
+#: templates/core/_theme_switch.html:10
+msgid "Dark"
+msgstr ""
+
+#: templates/core/_install_guide.html:5
+msgid "Put the app on your home screen"
+msgstr ""
+
+#: templates/core/_install_guide.html:6
+msgid "Got it"
+msgstr ""
+
+#: templates/core/_install_guide.html:13
+msgid "Tap Share"
+msgstr ""
+
+#: templates/core/_install_guide.html:15
+msgid "(at the bottom of Safari)"
+msgstr ""
+
+#: templates/core/_install_guide.html:19
+msgid "Choose “Add to Home Screen”"
+msgstr ""
+
+#: templates/core/_install_guide.html:22
+msgid "Tap “Add”. The app appears among your other apps."
+msgstr ""
+
+#: templates/core/_install_guide.html:27
+msgid "Install the app: it opens like any other app, without the browser bar."
+msgstr ""
+
+#: templates/core/_install_guide.html:28
+msgid "Install"
+msgstr ""
+
+#: templates/core/_install_guide.html:32
+msgid ""
+"This page is open inside another app (for example Telegram or Instagram). It "
+"cannot be installed from here."
+msgstr ""
+
+#: templates/core/_install_guide.html:33
+msgid ""
+"Open it in Safari (iPhone) or Chrome (Android): tap the menu (⋯ or ⋮) and "
+"choose “Open in browser”. Or copy the link:"
+msgstr ""
+
+#: templates/core/_install_guide.html:34
+msgid "Link"
+msgstr ""
+
+#: templates/core/offline.html:8
+msgid "No connection"
+msgstr ""
+
+#: templates/core/offline.html:16
+msgid ""
+"The laundry app needs the internet. Check Wi-Fi or mobile data, then try "
+"again."
+msgstr ""
+
+#: templates/core/offline.html:19
+msgid "Try again"
+msgstr ""
+
+#: apps/accounts/models.py:94
+msgid "like the phone"
+msgstr ""
+
+#: apps/accounts/models.py:95
+msgid "light"
+msgstr ""
+
+#: apps/accounts/models.py:96
+msgid "dark"
+msgstr ""
+
+#: apps/accounts/models.py:105
+msgid "colours"
+msgstr ""
+
+#: apps/accounts/models.py:110
+msgid "display preferences"
+msgstr ""

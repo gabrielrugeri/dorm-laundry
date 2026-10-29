@@ -78,9 +78,10 @@ Stage 3 → Stage 4 + "How to pay" → Stage 5 → Dashboard → Stage 2
   illustrations, Android `beforeinstallprompt` button, in-app browsers
   (Telegram, Instagram, VK, Facebook) asked to open Safari/Chrome.
 - Dark mode: colour tokens, light/dark/system switch remembered per user
-  (`accounts.UserPreferences(user, language, theme)`, `Resident.language`
-  migrated into it) and in a cookie; a blocking `theme-init.js` avoids a
-  flash. WCAG AA contrast tested for every token pair and checked on every
+  (`accounts.UserPreferences(user, theme)`) and in a cookie. *As built:* the
+  server writes the choice into `<html data-theme>`, so no blocking script is
+  needed; the language stays on `Resident.language` (moving it was not
+  needed for anything requested). WCAG AA contrast tested for every token pair and checked on every
   screen.
 
 ## Stage 4 addition: "How to pay"

@@ -2,9 +2,9 @@
 {% load i18n %}
 {% block title %}{% translate "Not available yet" %} · {{ block.super }}{% endblock %}
 {% block content %}
-  <div class="mx-auto max-w-md rounded-lg bg-white p-4 shadow-sm">
+  <div class="mx-auto max-w-md rounded-lg bg-surface p-4 shadow-sm">
     <h1 class="mb-2 text-xl font-semibold">{% translate "Not available yet" %}</h1>
-    <p class="mb-3 text-slate-600">{% translate "Keeping track of the laundry keys is switched off for now. There is nothing to do here until it is switched on." %}</p>
-    {% if user.is_superuser %}<p><a href="{% url 'admin:index' %}" class="text-sm text-blue-700 underline">{% translate "Administration" %}</a></p>{% endif %}
+    <p class="mb-3 text-muted">{% translate "Keeping track of the laundry keys is switched off for now. There is nothing to do here until it is switched on." %}</p>
+    {% if user.is_superuser %}<p><a href="{% url 'admin:index' %}" class="text-sm text-link underline">{% translate "Administration" %}</a></p>{% endif %}
   </div>
 {% endblock %}

@@ -15,6 +15,9 @@ CSP = "; ".join(
         "img-src 'self' data:",
         "font-src 'self'",
         "connect-src 'self'",
+        # The installable app: manifest and service worker from our own server.
+        "manifest-src 'self'",
+        "worker-src 'self'",
         "frame-ancestors 'none'",
         "base-uri 'self'",
         "form-action 'self'",
