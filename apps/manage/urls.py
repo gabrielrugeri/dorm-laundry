@@ -27,7 +27,6 @@ urlpatterns = [
     path(
         "residents/<int:pk>/login-link/", residents.resident_login_link, name="resident_login_link"
     ),
-    path("residents/<int:pk>/reset-pin/", residents.resident_reset_pin, name="resident_reset_pin"),
     path("residents/<int:pk>/turn-off/", residents.resident_deactivate, name="resident_deactivate"),
     path("residents/<int:pk>/turn-on/", residents.resident_reactivate, name="resident_reactivate"),
     path("residents/<int:pk>/erase/", residents.resident_erase, name="resident_erase"),

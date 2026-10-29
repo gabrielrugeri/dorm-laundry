@@ -39,11 +39,7 @@
             <a href="{% url 'manage:resident_edit' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Change details" %}</a>
             <a href="{% url 'manage:resident_correction' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Correct the balance" %}</a>
             {% if resident.user.is_active %}
-              <form method="post" action="{% url 'manage:resident_login_link' pk=resident.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="block w-full px-4 py-2 text-left hover:bg-slate-50">{% translate "Give a login link" %}</button>
-              </form>
-              <a href="{% url 'manage:resident_reset_pin' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Reset PIN" %}</a>
+              <a href="{% url 'manage:resident_login_link' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Reset PIN / login link" %}</a>
             {% endif %}
             <a href="{% url 'manage:resident_history_csv' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Download payment history" %}</a>
             <hr class="my-1 border-slate-200">

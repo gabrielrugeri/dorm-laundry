@@ -273,40 +273,28 @@ def resident_correction(request, pk):
 
 
 @admin_required
-@require_POST
 def resident_login_link(request, pk):
-    """A one-time login link. Shown once; never stored."""
-    resident = _resident(request, pk)
-    if resident.is_anonymized or not resident.user.is_active:
-        raise Http404
-    record(actor=request.user, action="resident.activation_link", target=resident)
-    context = {"resident": resident, "link": activation_url(request, resident.user)}
-    return render(request, "manage/residents/login_link.html", context)
-
-
-@admin_required
-def resident_reset_pin(request, pk):
+    """ "Reset PIN / login link": after a warning, a one-time link with which
+    the resident chooses a new PIN. Shown once; never stored. The current PIN
+    keeps working until the link is used, so a mistaken click never locks
+    anyone out (the link stops working once the PIN changes)."""
     resident = _resident(request, pk)
     if resident.is_anonymized or not resident.user.is_active:
         raise Http404
     if request.method == "POST":
-        resident.user.set_unusable_password()
-        resident.user.save(update_fields=["password"])
-        record(actor=request.user, action="resident.pin_reset", target=resident)
-        context = {
-            "resident": resident,
-            "link": activation_url(request, resident.user),
-            "after_reset": True,
-        }
+        record(actor=request.user, action="resident.login_link", target=resident)
+        context = {"resident": resident, "link": activation_url(request, resident.user)}
         return render(request, "manage/residents/login_link.html", context)
     return _confirm(
         request,
         resident,
-        title=_("Reset PIN"),
+        title=_("Reset PIN / login link"),
         text=_(
-            "The current PIN stops working at once. You then get a login link to give to the resident."
+            "You get a one-time link to give to the resident. With it they choose a new PIN. "
+            "Their current PIN keeps working until they use the link."
         ),
-        submit=_("Reset PIN"),
+        submit=_("Create the link"),
+        danger=False,
     )
 
 

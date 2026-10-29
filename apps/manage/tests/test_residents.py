@@ -222,22 +222,31 @@ def test_correct_balance(boss_client, resident):
 
 
 def test_login_link_is_shown_once_and_never_stored(boss_client, resident):
-    assert boss_client.get(url("resident_login_link", resident)).status_code == 405
+    warning = boss_client.get(url("resident_login_link", resident))
+    assert "current PIN keeps working" in warning.content.decode()
+    assert not AuditEvent.objects.exists()  # nothing happens before confirming
     response = boss_client.post(url("resident_login_link", resident))
     link = response.context["link"]
     assert "/account/activate/" in link
     assert link not in str(list(AuditEvent.objects.values()))
-    assert AuditEvent.objects.get().action == "resident.activation_link"
+    assert AuditEvent.objects.get().action == "resident.login_link"
 
 
-def test_reset_pin_needs_confirmation(boss_client, resident):
-    boss_client.get(url("resident_reset_pin", resident))
+def test_old_pin_works_until_the_link_is_used(boss_client, client, resident, settings):
+    from urllib.parse import urlsplit
+
+    settings.DEFAULT_DORMITORY_SLUG = resident.dormitory.slug
+    link = boss_client.post(url("resident_login_link", resident)).context["link"]
     resident.user.refresh_from_db()
-    assert resident.user.has_usable_password()
-    response = boss_client.post(url("resident_reset_pin", resident))
+    assert resident.user.check_password("123456")  # a mistaken click locks nobody out
+
+    page = client.get(urlsplit(link).path, follow=True)  # token moves into the session
+    client.post(page.redirect_chain[-1][0], {"pin1": "482915", "pin2": "482915"})
     resident.user.refresh_from_db()
-    assert not resident.user.has_usable_password()
-    assert response.context["after_reset"]
+    assert resident.user.check_password("482915")
+    assert not resident.user.check_password("123456")
+    # The link worked once and now is dead.
+    assert not client.get(urlsplit(link).path, follow=True).context["validlink"]
 
 
 # --- Access, erase, delete -----------------------------------------------------------
@@ -331,7 +340,7 @@ ACTION_NAMES = [
     "resident_edit",
     "resident_payment",
     "resident_correction",
-    "resident_reset_pin",
+    "resident_login_link",
     "resident_deactivate",
     "resident_erase",
     "resident_delete",
