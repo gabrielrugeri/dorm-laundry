@@ -221,6 +221,11 @@ of the group's last non-cancelled slot.
 
 `/staff/` (managers and admins, `staff_required`) is the key schedule.
 
+**On hold:** while `KEYS_ENABLED` is false (the default), the key schedule
+and key actions return 404 and "Keys" leaves the admin navigation. `/staff/`
+then sends admins to `/manage/` and shows managers a short "not available
+yet" page. The tests in `apps/keylog/tests/` switch it on.
+
 - **Days:** yesterday, today and tomorrow. One row per booking group: time,
   machine, the resident's **name and room** (staff-only), and the key status:
   waiting, taken, returned, or overdue.

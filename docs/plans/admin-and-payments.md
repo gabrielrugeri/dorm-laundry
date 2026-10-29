@@ -5,7 +5,11 @@ contributors can follow it. Each stage is one branch and one pull request from
 `main`; the next stage starts after the previous one is merged.
 
 **Order:** 1a → 1b → 1c → *deployment (demo)* → 2 → 3 → 4 → 5, then the
-*pilot deployment* before any real resident data. Stages 2 and 3 both change
+*pilot deployment* before any real resident data.
+
+**New order after the demo feedback (2026-10-29):** Package A (UX fixes) →
+Package B (PWA) → 3 → 4 (+ "How to pay") → 5 → Dashboard → 2. See
+[demo-feedback.md](demo-feedback.md). Stages 2 and 3 both change
 `book_machines` and the booking model, so they never run in parallel. Only the
 PWA may be built in a separate session.
 

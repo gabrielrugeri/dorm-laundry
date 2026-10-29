@@ -2,7 +2,8 @@
 
 Open-source web app for booking washing machines in university dormitories.
 Residents see free slots at a glance, book and cancel from their phones, and
-pay from a prepaid balance. The key manager sees who should pick up which key.
+pay from a prepaid balance. (Key handling for a key manager exists but is on
+hold: switched off unless `KEYS_ENABLED=true`.)
 
 Pilot: one dormitory, 6 machines, 2-hour slots, 50 RUB per machine per slot.
 Works in Russian and English, and loads nothing from third-party servers.
@@ -12,8 +13,8 @@ Works in Russian and English, and loads nothing from third-party servers.
 - Contributor and AI-assistant guide: [docs/CLAUDE.md](docs/CLAUDE.md)
 
 > Status: early development. Residents can log in, see free machines, book,
-> cancel, export bookings to their calendar and see their balance. Managers
-> record key hand-overs on the key schedule. Admins manage residents at
+> cancel, export bookings to their calendar and see their balance. Key
+> handling is on hold (`KEYS_ENABLED=false` by default). Admins manage residents at
 > `/manage/residents/` (payments, balance corrections, login links, turning
 > access off, erasing personal data, importing a list from a CSV file) and see every admin action in the change
 > history at `/manage/history/`. The admin and payment features in
@@ -51,7 +52,7 @@ Django admin (`/admin/`) is for developers only: create a superuser with
 | Login | Password | Role |
 |---|---|---|
 | `admin` | `SEED_DEMO_STAFF_PASSWORD` (default `demo-staff-password`) | dormitory admin (`/manage/`) |
-| `manager` | same as above | key manager |
+| `manager` | same as above | key manager (sees a "not available yet" page while key handling is on hold) |
 | student code `D0001` … `D0020` | PIN `SEED_DEMO_RESIDENT_PIN` (default `123456`) | residents |
 
 Everyone logs in at `/account/login/`: residents with student code and PIN,

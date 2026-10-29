@@ -2,9 +2,10 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.db import DatabaseError, connection
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
-from apps.accounts.decorators import is_staff_member
+from apps.accounts import roles
+from apps.accounts.decorators import is_staff_member, staff_required
 from apps.bookings.views import grid
 from apps.keylog.views import schedule
 
@@ -17,9 +18,15 @@ def home(request):
     return grid(request)
 
 
+@staff_required
 def staff_home(request):
-    """Managers and admins start on today's key schedule."""
-    return schedule(request)
+    """Managers and admins start on today's key schedule. While key handling
+    is on hold, admins start in the admin area and managers see a short note."""
+    if settings.KEYS_ENABLED:
+        return schedule(request)
+    if roles.has_role(request.user, roles.ADMIN):
+        return redirect("manage:index")
+    return render(request, "core/staff_unavailable.html")
 
 
 def healthz(request):

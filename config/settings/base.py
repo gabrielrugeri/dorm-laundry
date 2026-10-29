@@ -73,6 +73,7 @@ TEMPLATES = [
                 "apps.ledger.context_processors.resident_balance",
                 "apps.accounts.context_processors.user_roles",
                 "apps.core.context_processors.demo_mode",
+                "apps.core.context_processors.features",
             ],
         },
     },
@@ -138,6 +139,11 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # engines not to index the site. Production refuses to start with
 # DEMO_MODE=false unless PILOT_READY=true (see config/settings/prod.py).
 DEMO_MODE = env.bool("DEMO_MODE", default=False)
+
+# Key handling (managers recording who took and returned the key) is on hold.
+# While false, the key schedule disappears from navigation and its pages
+# return 404; the code and its tests stay (docs/MVP-SPEC.md).
+KEYS_ENABLED = env.bool("KEYS_ENABLED", default=False)
 
 # Largest request body accepted, in bytes (uploads included). The web server's
 # limit (nginx client_max_body_size) must use the same value. The admin-editable

@@ -1383,3 +1383,15 @@ msgid ""
 msgstr ""
 "Демо: все имена и данные здесь вымышленные. Не вводите настоящие личные "
 "данные."
+
+#: templates/core/staff_unavailable.html:3
+msgid "Not available yet"
+msgstr "Пока недоступно"
+
+#: templates/core/staff_unavailable.html:7
+msgid ""
+"Keeping track of the laundry keys is switched off for now. There is nothing "
+"to do here until it is switched on."
+msgstr ""
+"Учёт ключей от прачечной пока выключен. Здесь нечего делать, пока его не "
+"включат."

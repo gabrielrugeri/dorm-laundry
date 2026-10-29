@@ -85,7 +85,8 @@ def test_filters(boss_client, boss, room_change):
     assert boss_client.get(AUDIT, {"from": "not-a-date"}).status_code == 200
 
 
-def test_staff_page_links_admins_to_management(boss_client):
+def test_staff_page_links_admins_to_management(boss_client, settings):
+    settings.KEYS_ENABLED = True
     html = boss_client.get(reverse("core:staff_home")).content.decode()
     assert INDEX in html
 

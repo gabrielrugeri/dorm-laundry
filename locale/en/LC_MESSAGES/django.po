@@ -1304,3 +1304,13 @@ msgstr[1] ""
 msgid ""
 "Demo: all names and data here are made up. Do not enter real personal data."
 msgstr ""
+
+#: templates/core/staff_unavailable.html:3
+msgid "Not available yet"
+msgstr ""
+
+#: templates/core/staff_unavailable.html:7
+msgid ""
+"Keeping track of the laundry keys is switched off for now. There is nothing "
+"to do here until it is switched on."
+msgstr ""

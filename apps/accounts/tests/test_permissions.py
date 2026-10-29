@@ -34,7 +34,8 @@ def test_resident_cannot_open_staff_page(client, resident):
     assert client.get(STAFF_HOME).status_code == 403
 
 
-def test_staff_home_redirects_staff(client, manager):
+def test_staff_home_redirects_staff(client, manager, settings):
+    settings.KEYS_ENABLED = True
     client.force_login(manager)
     response = client.get(HOME)
     assert response.status_code == 302
