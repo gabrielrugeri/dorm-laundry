@@ -140,9 +140,7 @@ def resident_detail(request, pk):
 
 @admin_required
 def resident_add(request):
-    form = ResidentForm(
-        request.POST or None, dormitory=request.dormitory, initial={"language": "ru"}
-    )
+    form = ResidentForm(request.POST or None, dormitory=request.dormitory)
     if request.method == "POST" and form.is_valid():
         resident = resident_services.create_resident(
             actor=request.user, dormitory=request.dormitory, **form.cleaned_data
@@ -163,7 +161,7 @@ def resident_edit(request, pk):
     resident = _resident(request, pk)
     if resident.is_anonymized:
         raise Http404
-    initial = {f: getattr(resident, f) for f in ("full_name", "room", "student_code", "language")}
+    initial = {f: getattr(resident, f) for f in ("full_name", "room", "student_code")}
     form = ResidentForm(
         request.POST or None, dormitory=request.dormitory, resident=resident, initial=initial
     )

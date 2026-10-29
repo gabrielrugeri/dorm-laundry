@@ -99,8 +99,7 @@ def test_excel_files_windows_1251_and_commas(dormitory):
         "student_code": "S9001",
         "full_name": "Ольга Новикова",
         "room": "305",
-        "language": "en",
-    }
+    }  # the "language" column is ignored
 
 
 def test_utf8_with_bom_and_english_headers(dormitory):
@@ -134,16 +133,16 @@ def test_other_dormitory_and_erased_residents_are_not_matched(boss, other_dormit
     assert statuses(importing.preview(resident.dormitory, data)) == [(2, "new")]
 
 
-def test_too_long_values_and_unknown_language(dormitory):
+def test_too_long_values_and_ignored_language_column(dormitory):
     data = csv_bytes(
         ("код", "фио", "комната", "язык"),
         ("S1", "A" * 201, "1", "ru"),
         ("S2", "B", "2", "de"),
     )
     rows = importing.preview(dormitory, data).rows
-    assert rows[0].status == rows[1].status == "error"
+    assert rows[0].status == "error"
     assert "too long" in rows[0].errors[0]
-    assert "de" in rows[1].errors[0]
+    assert rows[1].status == "new"
 
 
 def test_apply_is_one_transaction(boss, dormitory, monkeypatch):

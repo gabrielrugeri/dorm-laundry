@@ -2,6 +2,8 @@ from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
+from django.views import i18n
+from django.views.decorators.http import require_POST
 
 from .forms import LoginForm, SetPinForm
 
@@ -18,6 +20,24 @@ def remember_language(response, user):
             samesite=settings.LANGUAGE_COOKIE_SAMESITE,
             secure=settings.LANGUAGE_COOKIE_SECURE,
         )
+    return response
+
+
+@require_POST
+def set_language(request):
+    """Django's language switch, plus: a logged-in resident's choice is saved
+    on their profile, so the next login on any device uses it."""
+    response = i18n.set_language(request)
+    code = request.POST.get("language")
+    resident = getattr(request.user, "resident", None) if request.user.is_authenticated else None
+    if (
+        resident is not None
+        and not resident.is_anonymized
+        and code in dict(settings.LANGUAGES)
+        and resident.language != code
+    ):
+        resident.language = code
+        resident.save(update_fields=["language"])
     return response
 
 

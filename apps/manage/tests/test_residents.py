@@ -122,7 +122,7 @@ def test_erased_resident_has_no_actions(boss_client, boss, resident):
 
 
 def test_add_resident(boss_client, dormitory):
-    data = {"full_name": "Olga Primerova", "room": "214", "student_code": "S7777", "language": "ru"}
+    data = {"full_name": "Olga Primerova", "room": "214", "student_code": "S7777"}
     response = boss_client.post(reverse("manage:resident_add"), data)
     resident = Resident.objects.get(student_code="S7777")
     assert response.url == url("resident", resident)
@@ -131,7 +131,7 @@ def test_add_resident(boss_client, dormitory):
 
 
 def test_student_codes_are_unique_in_the_dormitory(boss_client, resident):
-    data = {"full_name": "Copy", "room": "1", "student_code": "s0001", "language": "ru"}
+    data = {"full_name": "Copy", "room": "1", "student_code": "s0001"}
     response = boss_client.post(reverse("manage:resident_add"), data)
     assert response.context["form"].errors["student_code"]
 
@@ -140,7 +140,8 @@ def test_edit_resident(boss_client, resident):
     data = {"full_name": "Ivan Testov", "room": "305", "student_code": "S0001", "language": "en"}
     boss_client.post(url("resident_edit", resident), data)
     resident.refresh_from_db()
-    assert (resident.room, resident.language) == ("305", "en")
+    # Language is the resident's own choice: the admin form has no such field.
+    assert (resident.room, resident.language) == ("305", "ru")
     assert AuditEvent.objects.get().action == "resident.update"
 
 

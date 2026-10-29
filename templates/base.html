@@ -23,15 +23,25 @@
   {% endif %}
   <header class="flex items-center justify-between gap-4 bg-white px-4 py-3 shadow-sm">
     <a href="{% url 'core:home' %}" class="font-semibold">{% translate "Dorm Laundry" %}</a>
-    <div class="flex items-center gap-3">
+    {% if user.is_authenticated %}
+      {# Who is logged in, with their own menu. Residents only ever see their own name and room. #}
+      <details class="relative min-w-0">
+        <summary class="flex max-w-[60vw] cursor-pointer list-none items-center gap-1 rounded px-2 py-1 text-sm hover:bg-slate-100 [&::-webkit-details-marker]:hidden">
+          <span class="truncate">{% if user.resident %}{{ user.resident.full_name }} · {{ user.resident.room }}{% else %}{{ user.get_username }}{% endif %}</span>
+          <span aria-hidden="true">▾</span>
+        </summary>
+        <div class="absolute right-0 z-30 mt-1 w-64 space-y-3 rounded-lg border border-slate-200 bg-white p-3 shadow-lg">
+          {% if user.resident %}<a href="{% url 'ledger:balance' %}" class="block text-blue-700 underline">{% translate "My balance" %}</a>{% endif %}
+          {% include "core/_language_switch.html" %}
+          <form action="{% url 'accounts:logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="text-sm text-slate-600 underline hover:text-slate-900">{% translate "Log out" %}</button>
+          </form>
+        </div>
+      </details>
+    {% else %}
       {% include "core/_language_switch.html" %}
-      {% if user.is_authenticated %}
-        <form action="{% url 'accounts:logout' %}" method="post">
-          {% csrf_token %}
-          <button type="submit" class="text-sm text-slate-600 underline hover:text-slate-900">{% translate "Log out" %}</button>
-        </form>
-      {% endif %}
-    </div>
+    {% endif %}
   </header>
   {% if resident_balance is not None %}
     {# Resident navigation: a bottom bar on phones, a row under the header on wider screens. #}

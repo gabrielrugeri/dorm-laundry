@@ -90,7 +90,7 @@ def create_resident(*, actor, dormitory, full_name, room, student_code, language
 
 
 def update_resident(*, actor, resident, **fields):
-    """Change name, room, student code or language."""
+    """Change name, room, student code or language (the resident's own choice)."""
     allowed = {"full_name", "room", "student_code", "language"}
     if set(fields) - allowed:
         raise ValueError(f"Unknown fields: {set(fields) - allowed}")
