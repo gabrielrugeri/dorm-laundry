@@ -20,14 +20,10 @@ urlpatterns = [
     path("residents/import/sample.csv", resident_import.sample_csv, name="resident_import_sample"),
     path("residents/<int:pk>/", residents.resident_detail, name="resident"),
     path("residents/<int:pk>/edit/", residents.resident_edit, name="resident_edit"),
-    path("residents/<int:pk>/payment/", residents.resident_payment, name="resident_payment"),
-    path(
-        "residents/<int:pk>/correction/", residents.resident_correction, name="resident_correction"
-    ),
+    path("residents/<int:pk>/balance/", residents.resident_balance, name="resident_balance"),
     path(
         "residents/<int:pk>/login-link/", residents.resident_login_link, name="resident_login_link"
     ),
-    path("residents/<int:pk>/reset-pin/", residents.resident_reset_pin, name="resident_reset_pin"),
     path("residents/<int:pk>/turn-off/", residents.resident_deactivate, name="resident_deactivate"),
     path("residents/<int:pk>/turn-on/", residents.resident_reactivate, name="resident_reactivate"),
     path("residents/<int:pk>/erase/", residents.resident_erase, name="resident_erase"),

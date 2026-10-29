@@ -885,24 +885,6 @@ msgstr "Комментарий"
 msgid "For example: cash, 15 October"
 msgstr "Например: наличными, 15 октября"
 
-msgid "Required. Saved in the resident's payment history."
-msgstr "Обязательно. Сохранится в истории платежей жильца."
-
-msgid "Change, ₽"
-msgstr "Изменение, ₽"
-
-msgid "Use a minus sign to reduce the balance, e.g. -50."
-msgstr "Чтобы уменьшить баланс, поставьте минус, например -50."
-
-msgid "Why"
-msgstr "Причина"
-
-msgid "Required. Explain the correction."
-msgstr "Обязательно. Объясните исправление."
-
-msgid "The change cannot be zero."
-msgstr "Изменение не может быть нулевым."
-
 msgid "Reason (the resident will see it)"
 msgstr "Причина (её увидит жилец)"
 
@@ -937,33 +919,8 @@ msgstr "Изменить данные"
 msgid "Save"
 msgstr "Сохранить"
 
-msgid "Record a payment"
-msgstr "Внести оплату"
-
-msgid "Record payment"
-msgstr "Внести оплату"
-
-msgid "Payment recorded."
-msgstr "Оплата внесена."
-
-msgid "Correct the balance"
-msgstr "Исправить баланс"
-
-msgid "Save correction"
-msgstr "Сохранить исправление"
-
-msgid "Balance corrected."
-msgstr "Баланс исправлен."
-
 msgid "Reset PIN"
 msgstr "Сбросить PIN-код"
-
-msgid ""
-"The current PIN stops working at once. You then get a login link to give to "
-"the resident."
-msgstr ""
-"Текущий PIN-код сразу перестанет работать. Затем вы получите ссылку для "
-"входа, которую нужно передать жильцу."
 
 msgid "Turn off access"
 msgstr "Отключить доступ"
@@ -1052,9 +1009,6 @@ msgstr "Долга нет."
 msgid "More"
 msgstr "Ещё"
 
-msgid "Give a login link"
-msgstr "Выдать ссылку для входа"
-
 msgid "Download payment history"
 msgstr "Скачать историю платежей"
 
@@ -1117,9 +1071,6 @@ msgstr "Дальше"
 
 msgid "Login link"
 msgstr "Ссылка для входа"
-
-msgid "The PIN was reset."
-msgstr "PIN-код сброшен."
 
 msgid "Copy link"
 msgstr "Скопировать ссылку"
@@ -1427,3 +1378,71 @@ msgstr "Google Календарь"
 #: templates/bookings/_add_to_calendar.html:8
 msgid "Apple / other (file)"
 msgstr "Apple / другой (файл)"
+
+#: apps/audit/actions.py:22
+msgid "PIN reset / login link created"
+msgstr "Сброс PIN / создана ссылка для входа"
+
+#: apps/ledger/models.py:124
+msgid "payment taken back"
+msgstr "оплата отменена"
+
+#: apps/manage/forms.py:52
+msgid "What happened"
+msgstr "Что произошло"
+
+#: apps/manage/forms.py:53
+msgid "Payment received"
+msgstr "Поступила оплата"
+
+#: apps/manage/forms.py:53
+msgid "Correction"
+msgstr "Исправление"
+
+#: apps/manage/forms.py:59
+msgid "Add"
+msgstr "Добавить"
+
+#: apps/manage/forms.py:59
+msgid "Subtract"
+msgstr "Вычесть"
+
+#: apps/manage/forms.py:75
+msgid "Required for a correction. Saved in the resident's payment history."
+msgstr "Обязательно для исправления. Сохраняется в истории платежей жильца."
+
+#: apps/manage/forms.py:81
+msgid "Explain the correction."
+msgstr "Объясните исправление."
+
+#: apps/manage/residents.py:240
+msgid "Balance changed."
+msgstr "Баланс изменён."
+
+#: apps/manage/residents.py:265
+msgid "Reset PIN / login link"
+msgstr "Сбросить PIN / ссылка для входа"
+
+#: apps/manage/residents.py:267
+msgid ""
+"You get a one-time link to give to the resident. With it they choose a new "
+"PIN. Their current PIN keeps working until they use the link."
+msgstr ""
+"Вы получите одноразовую ссылку, которую нужно передать жильцу. По ней он "
+"выберет новый PIN. Текущий PIN работает, пока жилец не воспользуется ссылкой."
+
+#: apps/manage/residents.py:271
+msgid "Create the link"
+msgstr "Создать ссылку"
+
+#: templates/manage/residents/change_balance.html:3
+msgid "Change balance"
+msgstr "Изменить баланс"
+
+#: templates/manage/residents/login_link.html:11
+msgid "Until then, their current PIN keeps working."
+msgstr "До этого текущий PIN продолжает работать."
+
+#: templates/manage/residents/list.html:28
+msgid "Sort by"
+msgstr "Сортировка"

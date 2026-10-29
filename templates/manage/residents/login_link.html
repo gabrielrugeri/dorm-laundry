@@ -5,9 +5,9 @@
   <p class="mb-2"><a href="{% url 'manage:resident' pk=resident.pk %}" class="text-sm text-blue-700 underline">← {{ resident.full_name }}</a></p>
   <div class="mx-auto max-w-md rounded-lg bg-white p-4 shadow-sm">
     <h1 class="mb-1 text-xl font-semibold">{% translate "Login link" %}</h1>
-    {% if after_reset %}<p class="mb-2 text-green-800">{% translate "The PIN was reset." %}</p>{% endif %}
     <p class="mb-3 text-slate-600">
       {% blocktranslate with name=resident.full_name %}Give this link to {{ name }} only. It works once and expires after 7 days. They open it and choose a new PIN.{% endblocktranslate %}
+      {% translate "Until then, their current PIN keeps working." %}
     </p>
     <label for="login-link" class="sr-only">{% translate "Login link" %}</label>
     <input id="login-link" type="text" readonly value="{{ link }}" data-select-on-click

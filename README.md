@@ -64,13 +64,18 @@ reachable by other people.
 Admins manage residents at `/manage/residents/` (in Russian by default):
 
 1. **Add a resident** (name, room, student code), or open an existing one.
-2. On the resident's page, open **More → Give a login link**
-   («Ещё → Выдать ссылку для входа»). Give the link to that resident only. It
-   works once and expires after 7 days; the link is shown once and never stored.
+2. On the resident's page, open **More → Reset PIN / login link**
+   («Ещё → Сбросить PIN / ссылка для входа»). Give the link to that resident
+   only. It works once and expires after 7 days; the link is shown once and
+   never stored. Any current PIN keeps working until the link is used.
 3. The resident opens it, chooses a 6-digit PIN and is logged in.
 
-If someone forgets their PIN: **More → Reset PIN** («Сбросить PIN-код»), then
-give them the new link.
+If someone forgets their PIN: the same action, **More → Reset PIN / login
+link**, then give them the new link.
+
+Money: **Change balance** («Изменить баланс») on the resident's page records a
+payment received or a correction, adding or subtracting, with a preview of the
+new balance.
 
 **Many residents at once:** on the resident list, **Add many residents from a
 file** («Добавить много жильцов из файла»). Save the list from Excel as CSV with

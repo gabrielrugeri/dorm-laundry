@@ -32,18 +32,13 @@
     {# 2. The main action. Everything else is under "More". #}
     {% if not resident.is_anonymized %}
       <div class="mt-4 flex flex-wrap items-start gap-3">
-        <a href="{% url 'manage:resident_payment' pk=resident.pk %}" class="rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Record a payment" %}</a>
+        <a href="{% url 'manage:resident_balance' pk=resident.pk %}" class="rounded bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800">{% translate "Change balance" %}</a>
         <details class="relative">
           <summary class="cursor-pointer list-none rounded border border-slate-300 px-4 py-2">{% translate "More" %} ▾</summary>
           <div class="absolute z-10 mt-1 w-64 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
             <a href="{% url 'manage:resident_edit' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Change details" %}</a>
-            <a href="{% url 'manage:resident_correction' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Correct the balance" %}</a>
             {% if resident.user.is_active %}
-              <form method="post" action="{% url 'manage:resident_login_link' pk=resident.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="block w-full px-4 py-2 text-left hover:bg-slate-50">{% translate "Give a login link" %}</button>
-              </form>
-              <a href="{% url 'manage:resident_reset_pin' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Reset PIN" %}</a>
+              <a href="{% url 'manage:resident_login_link' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Reset PIN / login link" %}</a>
             {% endif %}
             <a href="{% url 'manage:resident_history_csv' pk=resident.pk %}" class="block px-4 py-2 hover:bg-slate-50">{% translate "Download payment history" %}</a>
             <hr class="my-1 border-slate-200">
@@ -109,7 +104,7 @@
       {% for entry in history %}
         <li class="flex justify-between gap-3 px-4 py-2 text-sm">
           <span>
-            <span class="block">{{ entry.get_kind_display|capfirst }} · {{ entry.created_at|date:"j E Y, H:i" }}</span>
+            <span class="block">{{ entry.label|capfirst }} · {{ entry.created_at|date:"j E Y, H:i" }}</span>
             {% if entry.booking %}<span class="block text-slate-600">{{ entry.booking.machine.name }}, {{ entry.booking.date|date:"j E" }}, {{ entry.booking.slot }}</span>{% endif %}
             {% if entry.note %}<span class="block text-slate-600">{{ entry.note }}</span>{% endif %}
           </span>
@@ -138,6 +133,7 @@
     </ul>
   </details>
 
+  {% if keys_enabled %}
   <details class="mb-3 rounded-lg bg-white shadow-sm">
     <summary class="cursor-pointer px-4 py-3 font-medium">{% translate "Key hand-overs" %}</summary>
     <ul class="divide-y divide-slate-200 border-t border-slate-200">
@@ -151,4 +147,5 @@
       {% endfor %}
     </ul>
   </details>
+  {% endif %}
 {% endblock %}

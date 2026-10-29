@@ -4,6 +4,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import Resident
+from apps.ledger.models import LedgerEntry
 
 INPUT = "w-full rounded border border-slate-300 bg-white px-3 py-2"
 
@@ -36,42 +37,56 @@ class ResidentForm(forms.Form):
         return code
 
 
-class PaymentForm(forms.Form):
-    """Money the resident paid (e.g. cash at the desk): increases the balance."""
+class ChangeBalanceForm(forms.Form):
+    """One screen for every manual money change. A payment and a correction
+    are stored as different kinds, so reconciliation keeps them apart."""
 
+    PAYMENT, CORRECTION = "payment", "correction"
+    ADD, SUBTRACT = "add", "subtract"
+
+    type = forms.ChoiceField(
+        label=_("What happened"),
+        choices=[(PAYMENT, _("Payment received")), (CORRECTION, _("Correction"))],
+        initial=PAYMENT,
+        widget=forms.RadioSelect,
+    )
+    direction = forms.ChoiceField(
+        label=_("Balance"),
+        choices=[(ADD, _("Add")), (SUBTRACT, _("Subtract"))],
+        initial=ADD,
+        widget=forms.RadioSelect,
+    )
     amount = forms.IntegerField(
         label=_("Amount, ₽"),
         min_value=1,
-        widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
+        widget=forms.NumberInput(
+            attrs={"class": INPUT, "inputmode": "numeric", "data-balance-amount": ""}
+        ),
     )
     note = forms.CharField(
         label=_("Comment"),
+        required=False,
         max_length=500,
         widget=_text(placeholder=_("For example: cash, 15 October")),
-        help_text=_("Required. Saved in the resident's payment history."),
+        help_text=_("Required for a correction. Saved in the resident's payment history."),
     )
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("type") == self.CORRECTION and not cleaned_data.get("note", "").strip():
+            self.add_error("note", _("Explain the correction."))
+        return cleaned_data
 
-class CorrectionForm(forms.Form):
-    """Fix a mistake: positive adds money, negative takes it away."""
+    @property
+    def kind(self):
+        if self.cleaned_data["type"] == self.PAYMENT:
+            return LedgerEntry.Kind.CREDIT
+        return LedgerEntry.Kind.ADJUSTMENT
 
-    amount = forms.IntegerField(
-        label=_("Change, ₽"),
-        widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
-        help_text=_("Use a minus sign to reduce the balance, e.g. -50."),
-    )
-    note = forms.CharField(
-        label=_("Why"),
-        max_length=500,
-        widget=_text(),
-        help_text=_("Required. Explain the correction."),
-    )
-
-    def clean_amount(self):
+    @property
+    def signed_amount(self):
         amount = self.cleaned_data["amount"]
-        if amount == 0:
-            raise forms.ValidationError(_("The change cannot be zero."))
-        return amount
+        return -amount if self.cleaned_data["direction"] == self.SUBTRACT else amount
 
 
 class CancelBookingForm(forms.Form):

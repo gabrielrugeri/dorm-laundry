@@ -38,7 +38,8 @@ class LedgerEntry(models.Model):
     entries; it is never stored.
 
     Sign of `amount` by kind (enforced by the database):
-      credit      > 0  money received by the admin (cash, transfer)
+      credit     != 0  money received by the admin (cash, transfer); negative
+                       takes back a payment recorded by mistake
       booking     < 0  price charged for a booking
       refund      > 0  booking price returned on a valid cancellation
       adjustment != 0  manual correction, with a note
@@ -88,9 +89,11 @@ class LedgerEntry(models.Model):
         constraints = [
             models.CheckConstraint(
                 condition=(
-                    Q(kind__in=["credit", "refund"], amount__gt=0)
+                    # A negative payment takes back one recorded by mistake
+                    # (or cash handed back); it stays in the payments column.
+                    Q(kind="refund", amount__gt=0)
                     | Q(kind="booking", amount__lt=0)
-                    | (Q(kind="adjustment") & ~Q(amount=0))
+                    | (Q(kind__in=["credit", "adjustment"]) & ~Q(amount=0))
                 ),
                 name="ledger_amount_sign_matches_kind",
             ),
@@ -111,7 +114,7 @@ class LedgerEntry(models.Model):
         indexes = [models.Index(fields=["resident", "created_at"])]
 
     def __str__(self):
-        return f"{self.get_kind_display()} {self.amount:+d}"
+        return f"{self.label} {self.amount:+d}"
 
     def save(self, *args, **kwargs):
         if not self._state.adding:
@@ -120,3 +123,11 @@ class LedgerEntry(models.Model):
 
     def delete(self, *args, **kwargs):
         raise ValueError("Ledger entries are append-only and cannot be deleted.")
+
+    @property
+    def label(self):
+        """What residents and admins read: the kind, except that a negative
+        payment reads "payment taken back"."""
+        if self.kind == self.Kind.CREDIT and self.amount < 0:
+            return _("payment taken back")
+        return self.get_kind_display()

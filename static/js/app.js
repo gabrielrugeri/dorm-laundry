@@ -47,4 +47,30 @@
     if (event.target.matches("input[data-machine]")) updateBookingTotal();
   });
   document.addEventListener("DOMContentLoaded", updateBookingTotal);
+
+  // "Change balance": <p id="balance-preview" data-balance data-money
+  // data-label> shows "Balance: 120 ₽ → 170 ₽" while the admin types.
+  function money(template, amount) {
+    return (amount < 0 ? "−" : "") + template.replace("0", String(Math.abs(amount)));
+  }
+  function updateBalancePreview() {
+    var preview = document.getElementById("balance-preview");
+    var form = document.querySelector("form[data-balance-form]");
+    if (!preview || !form) return;
+    var current = Number(preview.dataset.balance);
+    var amount = parseInt(form.querySelector("[data-balance-amount]").value, 10);
+    var direction = form.querySelector("input[name=direction]:checked");
+    var text = preview.dataset.label + ": " + money(preview.dataset.money, current);
+    if (amount > 0 && direction) {
+      var next = current + (direction.value === "subtract" ? -amount : amount);
+      text += " → " + money(preview.dataset.money, next);
+    }
+    preview.textContent = text;
+  }
+  ["input", "change"].forEach(function (type) {
+    document.addEventListener(type, function (event) {
+      if (event.target.closest("form[data-balance-form]")) updateBalancePreview();
+    });
+  });
+  document.addEventListener("DOMContentLoaded", updateBalancePreview);
 })();

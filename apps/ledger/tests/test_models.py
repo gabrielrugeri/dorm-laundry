@@ -28,7 +28,6 @@ def test_balance_is_per_resident(resident, other_resident):
 @pytest.mark.parametrize(
     ("kind", "amount", "needs_booking"),
     [
-        (Kind.CREDIT, -10, False),
         (Kind.CREDIT, 0, False),
         (Kind.BOOKING, 50, True),
         (Kind.REFUND, -50, True),

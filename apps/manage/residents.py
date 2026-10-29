@@ -6,6 +6,7 @@ are not allowed have no button. Every write goes through a service.
 """
 
 import csv
+import re
 from datetime import timedelta
 
 from django.contrib import messages
@@ -31,9 +32,8 @@ from apps.ledger.models import LedgerEntry
 
 from .forms import (
     CancelBookingForm,
+    ChangeBalanceForm,
     ConfirmDebtForm,
-    CorrectionForm,
-    PaymentForm,
     ResidentForm,
 )
 from .views import admin_required
@@ -41,6 +41,26 @@ from .views import admin_required
 RESIDENTS_PER_PAGE = 50
 RECENT_PAYMENTS = 5
 FILTERS = ("active", "debt", "off")
+
+
+def room_key(room):
+    """Natural order for rooms: numbers compare as numbers, so
+    210 < 301-1 < 301-2 < 1010. Rooms starting with letters come after, and
+    an empty room (erased residents) last."""
+    parts = re.findall(r"\d+|\D+", room or "")
+    return (not parts, [(0, int(p), "") if p.isdigit() else (1, 0, p.lower()) for p in parts])
+
+
+def _name_key(resident):
+    return (resident.is_anonymized, resident.full_name.lower())
+
+
+# ?sort=room|name|balance, with a leading "-" for the other direction.
+SORTS = {
+    "room": lambda r: (room_key(r.room), _name_key(r)),
+    "name": lambda r: (_name_key(r), room_key(r.room)),
+    "balance": lambda r: (r.balance, room_key(r.room), _name_key(r)),
+}
 
 
 def _resident(request, pk):
@@ -66,7 +86,6 @@ def resident_list(request):
         Resident.objects.filter(dormitory=request.dormitory)
         .select_related("user")
         .annotate(balance=Coalesce(Sum("ledger_entries__amount"), Value(0)))
-        .order_by("room", "full_name")
     )
     if show == "active":
         residents = residents.filter(user__is_active=True)
@@ -80,10 +99,27 @@ def resident_list(request):
             | Q(room__icontains=query)
             | Q(student_code__iexact=query, anonymized_at__isnull=True)
         )
+    sort = request.GET.get("sort", "room")
+    field = sort.removeprefix("-")
+    if field not in SORTS:
+        sort = field = "room"
+    # Sorted in Python: natural room order is hard in SQL, and a dormitory
+    # has a few hundred residents at most.
+    residents = sorted(residents, key=SORTS[field], reverse=sort.startswith("-"))
     page = Paginator(residents, RESIDENTS_PER_PAGE).get_page(request.GET.get("page"))
-    return render(
-        request, "manage/residents/list.html", {"page": page, "show": show, "query": query}
-    )
+    columns = [
+        (name, label, f"-{name}" if sort == name else name, sort.removeprefix("-") == name)
+        for name, label in (("room", _("Room")), ("name", _("Name")), ("balance", _("Balance")))
+    ]
+    context = {
+        "page": page,
+        "show": show,
+        "query": query,
+        "sort": sort,
+        "descending": sort.startswith("-"),
+        "columns": columns,
+    }
+    return render(request, "manage/residents/list.html", context)
 
 
 # --- Profile -------------------------------------------------------------------------
@@ -181,95 +217,54 @@ def resident_edit(request, pk):
 # --- Money ---------------------------------------------------------------------------
 
 
-def _money_form(request, pk, form_class, kind, title, submit, done):
+@admin_required
+def resident_balance(request, pk):
+    """ "Change balance": a payment received or a correction, adding or
+    subtracting, with a live preview of the new balance."""
     resident = _resident(request, pk)
     if resident.is_anonymized:
         raise Http404
-    form = form_class(request.POST or None)
+    form = ChangeBalanceForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         ledger_services.add_manual_entry(
             actor=request.user,
             resident=resident,
-            kind=kind,
-            amount=form.cleaned_data["amount"],
+            kind=form.kind,
+            amount=form.signed_amount,
             note=form.cleaned_data["note"],
         )
-        messages.success(request, done)
+        messages.success(request, _("Balance changed."))
         return redirect("manage:resident", pk=resident.pk)
-    context = {
-        "form": form,
-        "resident": resident,
-        "balance": _balance(resident),
-        "title": title,
-        "submit": submit,
-    }
-    return render(request, "manage/residents/form.html", context)
-
-
-@admin_required
-def resident_payment(request, pk):
-    return _money_form(
-        request,
-        pk,
-        PaymentForm,
-        LedgerEntry.Kind.CREDIT,
-        _("Record a payment"),
-        _("Record payment"),
-        _("Payment recorded."),
-    )
-
-
-@admin_required
-def resident_correction(request, pk):
-    return _money_form(
-        request,
-        pk,
-        CorrectionForm,
-        LedgerEntry.Kind.ADJUSTMENT,
-        _("Correct the balance"),
-        _("Save correction"),
-        _("Balance corrected."),
-    )
+    context = {"form": form, "resident": resident, "balance": _balance(resident)}
+    return render(request, "manage/residents/change_balance.html", context)
 
 
 # --- Login -------------------------------------------------------------------------
 
 
 @admin_required
-@require_POST
 def resident_login_link(request, pk):
-    """A one-time login link. Shown once; never stored."""
-    resident = _resident(request, pk)
-    if resident.is_anonymized or not resident.user.is_active:
-        raise Http404
-    record(actor=request.user, action="resident.activation_link", target=resident)
-    context = {"resident": resident, "link": activation_url(request, resident.user)}
-    return render(request, "manage/residents/login_link.html", context)
-
-
-@admin_required
-def resident_reset_pin(request, pk):
+    """ "Reset PIN / login link": after a warning, a one-time link with which
+    the resident chooses a new PIN. Shown once; never stored. The current PIN
+    keeps working until the link is used, so a mistaken click never locks
+    anyone out (the link stops working once the PIN changes)."""
     resident = _resident(request, pk)
     if resident.is_anonymized or not resident.user.is_active:
         raise Http404
     if request.method == "POST":
-        resident.user.set_unusable_password()
-        resident.user.save(update_fields=["password"])
-        record(actor=request.user, action="resident.pin_reset", target=resident)
-        context = {
-            "resident": resident,
-            "link": activation_url(request, resident.user),
-            "after_reset": True,
-        }
+        record(actor=request.user, action="resident.login_link", target=resident)
+        context = {"resident": resident, "link": activation_url(request, resident.user)}
         return render(request, "manage/residents/login_link.html", context)
     return _confirm(
         request,
         resident,
-        title=_("Reset PIN"),
+        title=_("Reset PIN / login link"),
         text=_(
-            "The current PIN stops working at once. You then get a login link to give to the resident."
+            "You get a one-time link to give to the resident. With it they choose a new PIN. "
+            "Their current PIN keeps working until they use the link."
         ),
-        submit=_("Reset PIN"),
+        submit=_("Create the link"),
+        danger=False,
     )
 
 
@@ -428,7 +423,7 @@ def resident_history_csv(request, pk):
         writer.writerow(
             [
                 formats.date_format(local, "d.m.Y H:i"),
-                _safe(str(entry.get_kind_display()).capitalize()),
+                _safe(str(entry.label).capitalize()),
                 entry.amount,
                 entry.balance_after,
                 _safe(entry.note),

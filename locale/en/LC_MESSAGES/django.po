@@ -848,24 +848,6 @@ msgstr ""
 msgid "For example: cash, 15 October"
 msgstr ""
 
-msgid "Required. Saved in the resident's payment history."
-msgstr ""
-
-msgid "Change, ₽"
-msgstr ""
-
-msgid "Use a minus sign to reduce the balance, e.g. -50."
-msgstr ""
-
-msgid "Why"
-msgstr ""
-
-msgid "Required. Explain the correction."
-msgstr ""
-
-msgid "The change cannot be zero."
-msgstr ""
-
 msgid "Reason (the resident will see it)"
 msgstr ""
 
@@ -899,30 +881,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-msgid "Record a payment"
-msgstr ""
-
-msgid "Record payment"
-msgstr ""
-
-msgid "Payment recorded."
-msgstr ""
-
-msgid "Correct the balance"
-msgstr ""
-
-msgid "Save correction"
-msgstr ""
-
-msgid "Balance corrected."
-msgstr ""
-
 msgid "Reset PIN"
-msgstr ""
-
-msgid ""
-"The current PIN stops working at once. You then get a login link to give to "
-"the resident."
 msgstr ""
 
 msgid "Turn off access"
@@ -1003,9 +962,6 @@ msgstr ""
 msgid "More"
 msgstr ""
 
-msgid "Give a login link"
-msgstr ""
-
 msgid "Download payment history"
 msgstr ""
 
@@ -1067,9 +1023,6 @@ msgid "Next"
 msgstr ""
 
 msgid "Login link"
-msgstr ""
-
-msgid "The PIN was reset."
 msgstr ""
 
 msgid "Copy link"
@@ -1343,4 +1296,70 @@ msgstr ""
 
 #: templates/bookings/_add_to_calendar.html:8
 msgid "Apple / other (file)"
+msgstr ""
+
+#: apps/audit/actions.py:22
+msgid "PIN reset / login link created"
+msgstr ""
+
+#: apps/ledger/models.py:124
+msgid "payment taken back"
+msgstr ""
+
+#: apps/manage/forms.py:52
+msgid "What happened"
+msgstr ""
+
+#: apps/manage/forms.py:53
+msgid "Payment received"
+msgstr ""
+
+#: apps/manage/forms.py:53
+msgid "Correction"
+msgstr ""
+
+#: apps/manage/forms.py:59
+msgid "Add"
+msgstr ""
+
+#: apps/manage/forms.py:59
+msgid "Subtract"
+msgstr ""
+
+#: apps/manage/forms.py:75
+msgid "Required for a correction. Saved in the resident's payment history."
+msgstr ""
+
+#: apps/manage/forms.py:81
+msgid "Explain the correction."
+msgstr ""
+
+#: apps/manage/residents.py:240
+msgid "Balance changed."
+msgstr ""
+
+#: apps/manage/residents.py:265
+msgid "Reset PIN / login link"
+msgstr ""
+
+#: apps/manage/residents.py:267
+msgid ""
+"You get a one-time link to give to the resident. With it they choose a new "
+"PIN. Their current PIN keeps working until they use the link."
+msgstr ""
+
+#: apps/manage/residents.py:271
+msgid "Create the link"
+msgstr ""
+
+#: templates/manage/residents/change_balance.html:3
+msgid "Change balance"
+msgstr ""
+
+#: templates/manage/residents/login_link.html:11
+msgid "Until then, their current PIN keeps working."
+msgstr ""
+
+#: templates/manage/residents/list.html:28
+msgid "Sort by"
 msgstr ""
