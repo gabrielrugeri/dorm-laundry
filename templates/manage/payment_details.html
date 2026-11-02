@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "How residents pay" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:settings' %}" class="text-sm text-link underline">← {% translate "Settings" %}</a></p>
+  <div class="mx-auto max-w-md rounded-lg bg-surface p-4 shadow-sm">
+    <h1 class="mb-1 text-xl font-semibold">{% translate "How residents pay" %}</h1>
+    <p class="mb-4 text-sm text-muted">{% translate "Copy these details exactly from what the administration's bank gave you. Residents will send money to them." %}</p>
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="mb-4 rounded border border-danger-line bg-danger-soft p-3 text-sm text-danger" role="alert">
+          {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+      {% for field in form %}
+        {% if field.name == "remove_qr" %}
+          {% if details.qr_image %}
+            <label class="mb-4 flex items-center gap-2 text-sm">{{ field }} {{ field.label }}</label>
+          {% endif %}
+        {% else %}
+          <div class="mb-4">
+            <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
+            {{ field }}
+            {% if field.name == "qr_image" and details.qr_image %}<p class="mt-1 text-xs text-muted">{% translate "A QR code is saved. Choose a file only to replace it." %}</p>{% endif %}
+            {% if field.help_text %}<p class="mt-1 text-xs text-muted">{{ field.help_text }}</p>{% endif %}
+            {% for error in field.errors %}<p class="mt-1 text-sm text-danger">{{ error }}</p>{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+      <div class="flex flex-wrap gap-3">
+        <button type="submit" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Save" %}</button>
+        <a href="{% url 'manage:settings' %}" class="rounded px-4 py-2 text-ink-soft underline">{% translate "Back" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

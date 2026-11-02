@@ -8,6 +8,13 @@ from django.contrib.auth.models import Group
 from apps.dorms.models import Dormitory, Machine, TimeSlot
 
 
+@pytest.fixture(autouse=True)
+def private_media(settings, tmp_path):
+    """Uploaded receipts and QR codes go to a temporary folder in tests."""
+    settings.PRIVATE_MEDIA_ROOT = tmp_path / "private_media"
+    return settings.PRIVATE_MEDIA_ROOT
+
+
 @pytest.fixture
 def dormitory(db):
     return Dormitory.objects.create(name="Test Dormitory", slug="test")

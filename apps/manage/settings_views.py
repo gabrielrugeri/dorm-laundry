@@ -6,6 +6,7 @@ reason, and big jumps need an extra confirmation. Every change is recorded
 """
 
 from django.contrib import messages
+from django.db.models import Q
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
 
@@ -13,6 +14,7 @@ from apps.audit.display import describe_changes
 from apps.audit.models import AuditEvent
 from apps.core.templatetags.money import rub
 from apps.dorms import rules
+from apps.payments.models import PaymentDetails
 
 from .forms import RulesForm
 from .views import admin_required
@@ -33,7 +35,10 @@ def _shown(name, value):
 def settings_page(request):
     current = rules.current()
     history = (
-        AuditEvent.objects.filter(action="settings.change")
+        AuditEvent.objects.filter(
+            Q(action="settings.change")
+            | Q(action="payments.details_change", dormitory=request.dormitory)
+        )
         .select_related("actor")
         .order_by("-created_at")[:HISTORY_LENGTH]
     )
@@ -42,6 +47,7 @@ def settings_page(request):
             (rules.LABELS[name], _shown(name, getattr(current, name))) for name in rules.FIELDS
         ],
         "history": [(event, describe_changes(event)) for event in history],
+        "payment_details": PaymentDetails.objects.filter(dormitory=request.dormitory).first(),
     }
     return render(request, "manage/settings.html", context)
 

@@ -21,6 +21,7 @@ from datetime import time, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
@@ -33,6 +34,8 @@ from apps.bookings.models import Booking
 from apps.dorms.models import Dormitory, Machine, TimeSlot
 from apps.ledger import services as ledger_services
 from apps.ledger.models import LedgerEntry
+from apps.payments.models import PaymentDetails
+from apps.receipts import services as receipt_services
 
 # Made-up names, stored the way a real list would have them: Russian names in
 # Cyrillic, two foreign residents in Latin script. Shown exactly like this in
@@ -146,8 +149,31 @@ class Command(BaseCommand):
         self._demo_bookings(dorm, slots, machines, residents, rng)
         self._demo_admin_cancellation(dorm)
         self._demo_resident_states(dorm, residents)
+        self._demo_payments(dorm, residents)
 
         self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
+
+    def _demo_payments(self, dorm, residents):
+        """Obviously fake payment details and two receipts. No real bank,
+        account or phone: the BIK, account and INN stay empty."""
+        PaymentDetails.objects.create(
+            dormitory=dorm,
+            recipient="Общежитие № 1 (пример, не платите сюда)",
+            bank="Банк Пример",
+            sbp_phone="+70000000000",
+            purpose_prefix="Стирка",
+        )
+        for resident, amount in ((residents[0], 200), (residents[1], 150)):
+            fake_pdf = (
+                b"%PDF-1.4\n% DEMO receipt, not a real payment: "
+                + resident.student_code.encode()
+                + b"\n%%EOF\n"
+            )
+            receipt_services.submit_receipt(
+                resident=resident,
+                amount=amount,
+                upload=SimpleUploadedFile("demo.pdf", fake_pdf),
+            )
 
     def _staff_user(self, username, role, dorm, password):
         """A dormitory staff account. Not a superuser: Django admin is for

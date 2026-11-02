@@ -35,6 +35,10 @@ packaging==26.3
     #   build
     #   pytest
     #   wheel
+pillow==13.0.0
+    # via
+    #   -c requirements.txt
+    #   -r requirements.in
 pip-tools==7.6.2
     # via -r requirements-dev.in
 pluggy==1.6.0

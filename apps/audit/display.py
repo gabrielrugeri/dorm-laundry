@@ -56,14 +56,17 @@ def _extra_labels():
     """Values services add to snapshots that are not model fields, and plain
     words that replace model field names."""
     from apps.dorms.rules import LABELS
+    from apps.payments.services import LABELS as PAYMENT_LABELS
 
     return {
         **LABELS,
+        **PAYMENT_LABELS,
         "refund_rub": _("Refunded"),
         "full_refund": _("Full refund"),
         "balance": _("Balance"),
         "debt_confirmed": _("Debt seen and confirmed"),
         "groups": _("Role"),
+        "refused_because": _("Why it was refused"),
     }
 
 
@@ -92,6 +95,10 @@ def _field(model, name):
 def _format(name, field, value):
     if name == "credit_limit" and value is None:
         return _("no limit")
+    if name == "sbp_phone" and value:
+        from apps.payments.validators import format_phone
+
+        return format_phone(value)
     if value in (None, "", []):
         return "—"
     if name == "groups":

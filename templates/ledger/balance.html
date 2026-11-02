@@ -6,7 +6,11 @@
     <p class="mb-2 font-medium">{{ resident.full_name }} · {% blocktranslate with room=resident.room %}room {{ room }}{% endblocktranslate %}</p>
     <p class="text-sm text-muted">{% translate "Current balance" %}</p>
     <p class="text-3xl font-semibold">{{ balance|rub }}</p>
-    <p class="mt-2 text-sm text-muted">{% translate "To top up, pay the dormitory administration. They add the money to your balance." %}</p>
+    <p class="mt-2 text-sm text-muted">{% translate "To top up: pay the administration, then send the receipt. The money appears at once." %}</p>
+    <div class="mt-3 flex flex-wrap items-center gap-3">
+      <a href="{% url 'receipts:new' %}" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Send a receipt" %}</a>
+      <a href="{% url 'payments:how_to_pay' %}" class="text-link underline">{% translate "How to pay" %}</a>
+    </div>
   </div>
 
   <h2 class="mb-2 font-medium">{% translate "History" %}</h2>
@@ -20,6 +24,7 @@
               {% if line.machine %}{{ line.machine.name }}, {{ line.starts_at|date:"j E" }} {{ line.starts_at|time:"H:i" }}–{{ line.ends_at|time:"H:i" }}{% else %}{{ line.created_at|date:"j E Y, H:i" }}{% endif %}
             </p>
             {% if line.note %}<p class="text-sm text-muted">{{ line.note }}</p>{% endif %}
+            {% if line.first.receipt_id %}<p class="text-sm"><a href="{% url 'receipts:file' pk=line.first.receipt_id %}" class="text-link underline">{% translate "Receipt" %}</a></p>{% endif %}
           </div>
           <span class="shrink-0 font-medium {% if line.amount > 0 %}text-success{% else %}text-ink{% endif %}">{{ line.amount|rub_signed }}</span>
         </div>

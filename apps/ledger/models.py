@@ -68,6 +68,15 @@ class LedgerEntry(models.Model):
         related_name="ledger_entries",
         verbose_name=_("booking"),
     )
+    receipt = models.ForeignKey(
+        "receipts.Receipt",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="ledger_entries",
+        verbose_name=_("receipt"),
+        help_text=_("The receipt this payment came from, if a resident sent one."),
+    )
     note = models.TextField(_("note"), blank=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -103,6 +112,16 @@ class LedgerEntry(models.Model):
                     | Q(kind__in=["credit", "adjustment"], booking__isnull=True)
                 ),
                 name="ledger_booking_only_for_booking_and_refund",
+            ),
+            # Only a payment can come from a receipt, and a receipt pays once.
+            models.CheckConstraint(
+                condition=Q(receipt__isnull=True) | Q(kind="credit"),
+                name="ledger_receipt_only_for_credit",
+            ),
+            models.UniqueConstraint(
+                fields=["receipt", "kind"],
+                condition=Q(receipt__isnull=False),
+                name="unique_credit_per_receipt",
             ),
             # A booking is charged at most once and refunded at most once.
             models.UniqueConstraint(

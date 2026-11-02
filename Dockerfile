@@ -34,8 +34,10 @@ RUN python scripts/tailwind.py build \
        python manage.py collectstatic --noinput \
     && rm -rf bin /tmp/build.sqlite3
 
-# Run as an unprivileged user.
-RUN useradd --create-home app && chown -R app /app
+# Run as an unprivileged user. private_media holds uploaded receipts; on
+# Railway it is lost on every redeploy unless a volume is mounted there
+# (fine for the demo, which has fake data only).
+RUN mkdir -p /app/private_media && useradd --create-home app && chown -R app /app
 USER app
 
 # Port and worker count come from gunicorn.conf.py ($PORT, $WEB_CONCURRENCY).

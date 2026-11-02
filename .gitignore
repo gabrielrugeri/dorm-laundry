@@ -224,3 +224,6 @@ __marimo__/
 /bin/
 # Compiled CSS (built by scripts/tailwind.py build)
 /static/css/app.css
+
+# Uploaded private files (receipts) in development
+private_media/

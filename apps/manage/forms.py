@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from apps.accounts.models import Resident
 from apps.dorms import rules
 from apps.ledger.models import LedgerEntry
+from apps.payments import validators
+from apps.payments.models import PaymentDetails
 
 INPUT = "w-full rounded border border-line-strong bg-surface px-3 py-2"
 
@@ -194,3 +196,129 @@ class RulesForm(forms.Form):
 
     def values(self):
         return {name: self.cleaned_data[name] for name in rules.FIELDS}
+
+
+class PaymentDetailsForm(forms.Form):
+    """How residents pay. A sensitive setting: the admin's password and a
+    reason are required. Details are checked for typos (INN check digit,
+    account number against the BIK) before residents can copy them."""
+
+    recipient = forms.CharField(max_length=200, widget=_text())
+    bank = forms.CharField(max_length=200, widget=_text())
+    sbp_phone = forms.CharField(
+        required=False,
+        max_length=20,
+        widget=_text(inputmode="tel", placeholder="+7 900 123-45-67"),
+    )
+    payment_link = forms.URLField(
+        required=False,
+        assume_scheme="https",
+        widget=forms.URLInput(attrs={"class": INPUT, "placeholder": "https://"}),
+        help_text=_("Only if the bank gave you a link for payments."),
+    )
+    qr_image = forms.FileField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={"class": INPUT, "accept": "image/png,image/jpeg"}),
+        help_text=_("A picture of the SBP QR code, if the bank gave you one."),
+    )
+    remove_qr = forms.BooleanField(required=False, label=_("Remove the QR code"))
+    bik = forms.CharField(required=False, max_length=20, widget=_text(inputmode="numeric"))
+    account = forms.CharField(required=False, max_length=30, widget=_text(inputmode="numeric"))
+    inn = forms.CharField(required=False, max_length=20, widget=_text(inputmode="numeric"))
+    purpose_prefix = forms.CharField(max_length=60, widget=_text())
+    reason = forms.CharField(
+        label=_("Why are you changing this?"),
+        max_length=500,
+        widget=_text(),
+        help_text=_("Saved in the change history."),
+    )
+    password = forms.CharField(
+        label=_("Your password"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={"class": INPUT, "autocomplete": "current-password"}),
+        help_text=_("To make sure it is really you."),
+    )
+
+    def __init__(self, *args, user, details=None, **kwargs):
+        from apps.payments.services import FIELDS, LABELS
+
+        super().__init__(*args, **kwargs)
+        self.user, self.details = user, details
+        for name in (*FIELDS, "qr_image"):
+            self.fields[name].label = (
+                LABELS.get(name) or PaymentDetails._meta.get_field(name).verbose_name
+            )
+        self.fields["purpose_prefix"].help_text = PaymentDetails._meta.get_field(
+            "purpose_prefix"
+        ).help_text
+        if details is not None:
+            for name in FIELDS:
+                self.initial.setdefault(name, getattr(details, name))
+            self.initial["sbp_phone"] = details.sbp_phone_display if details.sbp_phone else ""
+        else:
+            self.initial.setdefault("purpose_prefix", "Стирка")
+
+    def clean_password(self):
+        password = self.cleaned_data["password"]
+        if not self.user.check_password(password):
+            raise forms.ValidationError(_("Wrong password."))
+        return password
+
+    def clean_sbp_phone(self):
+        value = self.cleaned_data["sbp_phone"].strip()
+        return validators.normalize_phone(value) if value else ""
+
+    def clean_payment_link(self):
+        link = self.cleaned_data["payment_link"]
+        if link and not link.startswith("https://"):
+            raise forms.ValidationError(_("The link must start with https://."))
+        return link
+
+    def clean_bik(self):
+        bik = validators.digits(self.cleaned_data["bik"])
+        if bik:
+            validators.validate_bik(bik)
+        return bik
+
+    def clean_inn(self):
+        inn = validators.digits(self.cleaned_data["inn"])
+        if inn:
+            validators.validate_inn(inn)
+        return inn
+
+    def clean_qr_image(self):
+        from apps.payments.services import QrRefused, clean_qr
+
+        upload = self.cleaned_data.get("qr_image")
+        if not upload:
+            return None
+        try:
+            return clean_qr(upload)
+        except QrRefused as error:
+            raise forms.ValidationError(str(error)) from None
+
+    def clean(self):
+        cleaned_data = super().clean()
+        account = validators.digits(cleaned_data.get("account", ""))
+        cleaned_data["account"] = account
+        if account:
+            bik = cleaned_data.get("bik")
+            if not bik:
+                self.add_error("bik", _("Enter the bank's BIK to check the account number."))
+            else:
+                try:
+                    validators.validate_account(account, bik)
+                except forms.ValidationError as error:
+                    self.add_error("account", error)
+        has_qr = cleaned_data.get("qr_image") or (
+            self.details is not None and self.details.qr_image and not cleaned_data.get("remove_qr")
+        )
+        if not any(
+            [cleaned_data.get("sbp_phone"), cleaned_data.get("payment_link"), has_qr, account]
+        ):
+            raise forms.ValidationError(
+                _(
+                    "Give at least one way to pay: an SBP phone number, a link, a QR code or an account."
+                )
+            )
+        return cleaned_data
