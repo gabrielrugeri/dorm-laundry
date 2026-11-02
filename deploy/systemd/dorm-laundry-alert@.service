@@ -1,0 +1,12 @@
+# Sends an e-mail when another unit fails (OnFailure=dorm-laundry-alert@%n).
+# %i is the failed unit's name. Install as
+# /etc/systemd/system/dorm-laundry-alert@.service.
+
+[Unit]
+Description=Dorm Laundry alert e-mail about %i
+
+[Service]
+Type=oneshot
+User=dorm-laundry
+EnvironmentFile=/etc/dorm-laundry/backup.env
+ExecStart=/srv/dorm-laundry/app/deploy/scripts/alert.sh "%i failed on %H" "%i"
