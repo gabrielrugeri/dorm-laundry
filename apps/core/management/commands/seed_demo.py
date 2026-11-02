@@ -17,6 +17,7 @@ Logins (passwords come from env vars, see .env.example):
 
 import os
 import random
+from contextlib import contextmanager
 from datetime import time, timedelta
 
 from django.conf import settings
@@ -29,6 +30,7 @@ from django.utils import timezone
 from apps.accounts import roles
 from apps.accounts import services as resident_services
 from apps.accounts.models import Resident, StaffProfile, User
+from apps.audit.models import AuditEvent
 from apps.bookings import services as booking_services
 from apps.bookings.models import Booking
 from apps.dorms.models import Dormitory, Machine, TimeSlot
@@ -64,6 +66,8 @@ NAMES = [
 ]
 # Two-hour slots from 10:00; the last one ends at midnight.
 SLOT_HOURS = [10, 12, 14, 16, 18, 20, 22]
+# How likely a machine is booked in each slot of the fake history.
+SLOT_POPULARITY = {10: 0.15, 12: 0.2, 14: 0.3, 16: 0.45, 18: 0.6, 20: 0.55, 22: 0.3}
 MACHINE_COUNT = 6
 # Comments an admin types when recording a payment (fake, in Russian like the real ones).
 PAYMENT_NOTES = ["Наличными на вахте", "Перевод на карту", "Наличными"]
@@ -146,12 +150,119 @@ class Command(BaseCommand):
                 )
             residents.append(resident)
 
+        self._demo_history(dorm, slots, machines, residents, rng)
         self._demo_bookings(dorm, slots, machines, residents, rng)
         self._demo_admin_cancellation(dorm)
         self._demo_resident_states(dorm, residents)
         self._demo_payments(dorm, residents)
 
         self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
+
+    def _demo_history(self, dorm, slots, machines, residents, rng):
+        """Eight weeks of fake past use, so the dashboard's charts make sense:
+        evenings and weekends busier than mornings, residents topping up with
+        receipts or cash when they run low, a few cancellations and two
+        voided receipts. Everything goes through the real services; only
+        the timestamps are moved back (see `_dated`). Residents book only
+        what they can pay, so nobody ends this in debt."""
+        admin = User.objects.get(username="admin")
+        today = timezone.localdate(timezone=dorm.tzinfo)
+        weeks = settings.SEED_DEMO_HISTORY_WEEKS
+        if weeks < 1:
+            return
+        first = today - timedelta(days=today.weekday(), weeks=weeks - 1)
+        regulars = residents[:18]
+        receipts, tag = [], 0
+        day = first
+        while day < today:
+            weekend = day.weekday() >= 5
+            for slot in slots:
+                busy = SLOT_POPULARITY[slot.start_time.hour] * (1.25 if weekend else 1)
+                for machine in machines:
+                    if rng.random() >= busy:
+                        continue
+                    resident = rng.choice(regulars)
+                    starts_at, _ends_at = slot.bounds(day)
+                    if LedgerEntry.objects.balance(resident) < dorm.price_per_slot:
+                        tag += 1
+                        paid_at = starts_at - timedelta(hours=rng.randint(2, 6))
+                        receipt = self._history_top_up(admin, resident, rng, tag, paid_at)
+                        if receipt is not None:
+                            receipts.append((receipt, paid_at))
+                    if LedgerEntry.objects.balance(resident) < dorm.price_per_slot:
+                        continue
+                    booked_at = starts_at - timedelta(hours=1)
+                    with self._dated(booked_at):
+                        try:
+                            [booking] = booking_services.book_slots(
+                                resident, machine, day, [slot], now=booked_at
+                            )
+                        except booking_services.BookingError:
+                            continue
+                    if rng.random() < 0.03:
+                        cancelled_at = booked_at + timedelta(minutes=20)
+                        with self._dated(cancelled_at):
+                            booking_services.cancel_booking(
+                                booking, actor=resident.user, now=cancelled_at
+                            )
+            day += timedelta(days=1)
+        # Two receipts the admin found to be wrong, a few days after they came.
+        for receipt, paid_at in receipts[3:5]:
+            voided_at = paid_at + timedelta(days=2)
+            with self._dated(voided_at):
+                receipt_services.void_receipt(
+                    receipt=receipt,
+                    actor=admin,
+                    reason="Такого платежа нет в выписке банка",
+                    now=voided_at,
+                )
+            # Put the money back as cash, so the resident is not left in debt.
+            with self._dated(voided_at + timedelta(hours=1)):
+                ledger_services.add_manual_entry(
+                    actor=admin,
+                    resident=receipt.resident,
+                    kind=LedgerEntry.Kind.CREDIT,
+                    amount=receipt.amount,
+                    note="Оплатил наличными на вахте",
+                )
+
+    def _history_top_up(self, admin, resident, rng, tag, when):
+        """A past payment: two times out of three a receipt, else cash."""
+        amount = rng.choice([200, 300, 500])
+        with self._dated(when):
+            if rng.random() < 2 / 3:
+                fake_pdf = f"%PDF-1.4\n% DEMO receipt {tag}, not a real payment\n%%EOF\n".encode()
+                try:
+                    return receipt_services.submit_receipt(
+                        resident=resident,
+                        amount=amount,
+                        upload=SimpleUploadedFile("demo.pdf", fake_pdf),
+                        now=when,
+                    )
+                except receipt_services.ReceiptRefused:
+                    pass  # a limit was reached: pay cash instead
+            ledger_services.add_manual_entry(
+                actor=admin,
+                resident=resident,
+                kind=LedgerEntry.Kind.CREDIT,
+                amount=amount,
+                note=rng.choice(PAYMENT_NOTES),
+            )
+        return None
+
+    @contextmanager
+    def _dated(self, when):
+        """Move the automatic timestamps of rows made inside the block to
+        `when`. Seed data only: the database stamps rows with the real time,
+        and history needs past times. Ledger entries stay append-only here;
+        the update only corrects when they were made."""
+        marks = {
+            model: model.objects.order_by("-pk").values_list("pk", flat=True).first() or 0
+            for model in (LedgerEntry, Booking, AuditEvent)
+        }
+        yield
+        for model, last in marks.items():
+            model.objects.filter(pk__gt=last).update(created_at=when)
 
     def _demo_payments(self, dorm, residents):
         """Obviously fake payment details and three receipts, one of them

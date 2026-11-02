@@ -166,6 +166,10 @@ MAX_UPLOAD_BYTES_HARD = env.int("MAX_UPLOAD_BYTES_HARD", default=20 * 1024 * 102
 # before sending them (apps/core/storage.py). Back this folder up in production.
 PRIVATE_MEDIA_ROOT = Path(env("PRIVATE_MEDIA_ROOT", default=str(BASE_DIR / "private_media")))
 
+# Weeks of fake past use seed_demo creates, so the admin dashboard's charts
+# make sense. The tests use fewer to stay fast.
+SEED_DEMO_HISTORY_WEEKS = 8
+
 # True only in config/settings/prod.py (and modules built on it). Guards
 # commands that must behave differently on a real server, e.g. seed_demo.
 IS_PRODUCTION = False
