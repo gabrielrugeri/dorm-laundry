@@ -13,6 +13,9 @@ English) words on the right, and add new concepts here when you add a screen.
 | Credit limit | Можно уйти в минус до | May go into debt up to |
 | Receipt (upload) | Чек / Отправить чек | Receipt / Send a receipt |
 | Receipt credited / voided | Зачислен / Аннулирован | Credited / Voided |
+| Void a receipt (reversal entry) | Аннулировать чек / Чек аннулирован | Void receipt / Receipt voided |
+| Flags on receipts | Отметки | Marks |
+| Reconciliation report | Отчёт по деньгам | Money report |
 | Payment details | Реквизиты для оплаты / Как оплатить | Payment details / How to pay |
 | Payment purpose | Назначение платежа | Payment purpose |
 | Sensitive settings (GlobalSettings) | Настройки → Оплата и чеки | Settings → Money and receipts |

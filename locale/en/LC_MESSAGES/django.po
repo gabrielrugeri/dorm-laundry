@@ -1926,3 +1926,145 @@ msgid "You can send %(left)s more receipt today."
 msgid_plural "You can send %(left)s more receipts today."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Receipt voided"
+msgstr ""
+
+msgid "receipt voided"
+msgstr ""
+
+msgid "Why are you voiding this receipt?"
+msgstr ""
+
+msgid ""
+"For example: no such payment on the bank statement. Saved in the history."
+msgstr ""
+
+msgid "I understand: the money is taken back from the resident's balance."
+msgstr ""
+
+msgid "The receipt was voided and the money taken back."
+msgstr ""
+
+msgid "Voided receipts"
+msgstr ""
+
+msgid "Payments recorded by admins"
+msgstr ""
+
+msgid "Corrections"
+msgstr ""
+
+msgid "Refunds"
+msgstr ""
+
+msgid "week of %(day)s"
+msgstr ""
+
+msgid "Period"
+msgstr ""
+
+msgid "Same amount sent again within 2 days"
+msgstr ""
+
+msgid "Large amount"
+msgstr ""
+
+msgid "Spent on bookings right after"
+msgstr ""
+
+msgid "Resident is in debt now"
+msgstr ""
+
+msgid "Resident had receipts voided before"
+msgstr ""
+
+msgid "Close to the 30-day limit"
+msgstr ""
+
+msgid "voided at"
+msgstr ""
+
+msgid "voided by"
+msgstr ""
+
+msgid "why it was voided"
+msgstr ""
+
+msgid "Voided"
+msgstr ""
+
+msgid "Credited"
+msgstr ""
+
+msgid "balance"
+msgstr ""
+
+msgid "Receipt picture"
+msgstr ""
+
+msgid "Download the receipt file"
+msgstr ""
+
+msgid "The file is no longer kept."
+msgstr ""
+
+msgid "Void receipt"
+msgstr ""
+
+msgid "Recent money movements"
+msgstr ""
+
+msgid "Money report"
+msgstr ""
+
+msgid ""
+"Receipts top up the balance at once. Check them here; marks show which ones "
+"to look at first. Marks never block anything."
+msgstr ""
+
+msgid "Name or room"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "Only with marks"
+msgstr ""
+
+msgid "No receipts found."
+msgstr ""
+
+msgid ""
+"All money movements in the period. Compare receipts and payments recorded by "
+"admins with the bank statement."
+msgstr ""
+
+msgid "Group by"
+msgstr ""
+
+msgid "Day"
+msgstr ""
+
+msgid "Week"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Download (Excel)"
+msgstr ""
+
+msgid "No money movements in this period."
+msgstr ""
+
+msgid ""
+"The balance may become negative. This cannot be undone; the resident can send"
+" a correct receipt again."
+msgstr ""
+
+msgid "Voided on %(day)s by %(who)s."
+msgstr ""
+
+msgid "%(amount)s will be taken back. Balance now: %(before)s."
+msgstr ""

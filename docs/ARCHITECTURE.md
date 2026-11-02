@@ -164,6 +164,19 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   its fingerprint stays even if the file is deleted later, so duplicates
   stay blocked. Nothing is deleted automatically yet (retention is a pending
   policy decision). Voiding and the admin's receipt review are Stage 5.
+- **Receipt review (Stage 5)** (`apps/manage/receipt_views.py`,
+  «Чеки» in the admin navigation): filters, the file next to the resident's
+  balance and recent money movements, and automatic flags
+  (`apps/receipts/flags.py`) that never block anything. Voiding
+  (`receipts.services.void_receipt`) needs a reason and an admin of the
+  resident's dormitory; it adds a `reversal` ledger entry (negative, always
+  linked to the receipt, `UNIQUE(receipt, kind)`), is idempotent, and may
+  leave a negative balance (the credit limit then applies to bookings).
+  Voided receipts stop counting towards the 30-day cap.
+- **Money report** («Отчёт по деньгам»): ledger entries of a period grouped
+  by day, week, month or resident, with receipts, voided receipts, payments
+  recorded by admins, corrections, bookings and refunds in separate columns;
+  CSV export. How the administration should use it: `docs/TRUST-MODEL.md`.
 - **How to pay** (`apps/payments`): `PaymentDetails` per dormitory
   (recipient, bank, SBP phone, https payment link, SBP QR picture, optional
   BIK, account and INN, payment purpose prefix). Typos are caught: the INN

@@ -82,7 +82,9 @@ reason. **Owe money** («С долгом») on the resident list is the debts re
 Residents top up themselves: they pay the administration (details on **How
 to pay** / «Как оплатить», filled in under **Settings**) and send the receipt
 («Отправить чек»); the balance is topped up at once and admins review
-receipts later.
+receipts later under **Receipts** («Чеки»), void wrong ones and compare the
+**Money report** with the bank statement (see
+[docs/TRUST-MODEL.md](docs/TRUST-MODEL.md)).
 
 Money: **Change balance** («Изменить баланс») on the resident's page records a
 payment received or a correction, adding or subtracting, with a preview of the

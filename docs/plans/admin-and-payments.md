@@ -124,6 +124,9 @@ quickly.
 - 152-FZ formalities for real resident data (the university is the operator).
 - Retention of receipt files (proposed: 12 months after upload).
 - Debt settlement when a resident leaves.
+- Per-dormitory money and receipt rules (today they are global).
+
+Written up for the administration in [../TRUST-MODEL.md](../TRUST-MODEL.md).
 - Hosting for the pilot (Russian VPS or university servers) and the domain.
 
 ## Stage 2: machine maintenance and archiving

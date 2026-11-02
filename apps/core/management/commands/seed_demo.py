@@ -154,8 +154,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
 
     def _demo_payments(self, dorm, residents):
-        """Obviously fake payment details and two receipts. No real bank,
-        account or phone: the BIK, account and INN stay empty."""
+        """Obviously fake payment details and three receipts, one of them
+        voided by the admin. No real bank, account or phone: the BIK,
+        account and INN stay empty."""
         PaymentDetails.objects.create(
             dormitory=dorm,
             recipient="Общежитие № 1 (пример, не платите сюда)",
@@ -163,17 +164,25 @@ class Command(BaseCommand):
             sbp_phone="+70000000000",
             purpose_prefix="Стирка",
         )
-        for resident, amount in ((residents[0], 200), (residents[1], 150)):
+        receipts = []
+        for resident, amount in ((residents[0], 200), (residents[1], 150), (residents[2], 1900)):
             fake_pdf = (
                 b"%PDF-1.4\n% DEMO receipt, not a real payment: "
                 + resident.student_code.encode()
                 + b"\n%%EOF\n"
             )
-            receipt_services.submit_receipt(
-                resident=resident,
-                amount=amount,
-                upload=SimpleUploadedFile("demo.pdf", fake_pdf),
+            receipts.append(
+                receipt_services.submit_receipt(
+                    resident=resident,
+                    amount=amount,
+                    upload=SimpleUploadedFile("demo.pdf", fake_pdf),
+                )
             )
+        receipt_services.void_receipt(
+            receipt=receipts[2],
+            actor=User.objects.get(username="admin"),
+            reason="Такого платежа нет в выписке банка",
+        )
 
     def _staff_user(self, username, role, dorm, password):
         """A dormitory staff account. Not a superuser: Django admin is for

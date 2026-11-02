@@ -2049,3 +2049,151 @@ msgstr[0] "Сегодня можно отправить ещё %(left)s чек."
 msgstr[1] "Сегодня можно отправить ещё %(left)s чека."
 msgstr[2] "Сегодня можно отправить ещё %(left)s чеков."
 msgstr[3] "Сегодня можно отправить ещё %(left)s чека."
+
+msgid "Receipt voided"
+msgstr "Чек аннулирован"
+
+msgid "receipt voided"
+msgstr "чек аннулирован"
+
+msgid "Why are you voiding this receipt?"
+msgstr "Почему вы аннулируете этот чек?"
+
+msgid ""
+"For example: no such payment on the bank statement. Saved in the history."
+msgstr "Например: такого платежа нет в выписке банка. Сохраняется в журнале."
+
+msgid "I understand: the money is taken back from the resident's balance."
+msgstr "Понимаю: деньги будут списаны с баланса жильца."
+
+msgid "The receipt was voided and the money taken back."
+msgstr "Чек аннулирован, деньги списаны."
+
+msgid "Voided receipts"
+msgstr "Аннулированные чеки"
+
+msgid "Payments recorded by admins"
+msgstr "Оплаты, внесённые администраторами"
+
+msgid "Corrections"
+msgstr "Исправления"
+
+msgid "Refunds"
+msgstr "Возвраты"
+
+msgid "week of %(day)s"
+msgstr "неделя с %(day)s"
+
+msgid "Period"
+msgstr "Период"
+
+msgid "Same amount sent again within 2 days"
+msgstr "Та же сумма снова в течение 2 дней"
+
+msgid "Large amount"
+msgstr "Большая сумма"
+
+msgid "Spent on bookings right after"
+msgstr "Сразу потрачено на бронирования"
+
+msgid "Resident is in debt now"
+msgstr "Жилец сейчас в долгу"
+
+msgid "Resident had receipts voided before"
+msgstr "У жильца уже аннулировали чеки"
+
+msgid "Close to the 30-day limit"
+msgstr "Близко к пределу за 30 дней"
+
+msgid "voided at"
+msgstr "аннулирован"
+
+msgid "voided by"
+msgstr "кто аннулировал"
+
+msgid "why it was voided"
+msgstr "почему аннулирован"
+
+msgid "Voided"
+msgstr "Аннулирован"
+
+msgid "Credited"
+msgstr "Зачислен"
+
+msgid "balance"
+msgstr "баланс"
+
+msgid "Receipt picture"
+msgstr "Изображение чека"
+
+msgid "Download the receipt file"
+msgstr "Скачать файл чека"
+
+msgid "The file is no longer kept."
+msgstr "Файл больше не хранится."
+
+msgid "Void receipt"
+msgstr "Аннулировать чек"
+
+msgid "Recent money movements"
+msgstr "Последние движения денег"
+
+msgid "Money report"
+msgstr "Отчёт по деньгам"
+
+msgid ""
+"Receipts top up the balance at once. Check them here; marks show which ones "
+"to look at first. Marks never block anything."
+msgstr ""
+"Чеки пополняют баланс сразу. Проверяйте их здесь; отметки подсказывают, какие"
+" посмотреть в первую очередь. Отметки ничего не блокируют."
+
+msgid "Name or room"
+msgstr "Имя или комната"
+
+msgid "All"
+msgstr "Все"
+
+msgid "Only with marks"
+msgstr "Только с отметками"
+
+msgid "No receipts found."
+msgstr "Чеков не найдено."
+
+msgid ""
+"All money movements in the period. Compare receipts and payments recorded by "
+"admins with the bank statement."
+msgstr ""
+"Все движения денег за период. Сверьте чеки и оплаты, внесённые "
+"администраторами, с выпиской банка."
+
+msgid "Group by"
+msgstr "Группировать"
+
+msgid "Day"
+msgstr "По дням"
+
+msgid "Week"
+msgstr "По неделям"
+
+msgid "Month"
+msgstr "По месяцам"
+
+msgid "Download (Excel)"
+msgstr "Скачать (Excel)"
+
+msgid "No money movements in this period."
+msgstr "За этот период движений денег нет."
+
+msgid ""
+"The balance may become negative. This cannot be undone; the resident can send"
+" a correct receipt again."
+msgstr ""
+"Баланс может стать отрицательным. Это нельзя отменить; жилец может отправить "
+"правильный чек заново."
+
+msgid "Voided on %(day)s by %(who)s."
+msgstr "Аннулирован %(day)s, кто: %(who)s."
+
+msgid "%(amount)s will be taken back. Balance now: %(before)s."
+msgstr "Будет списано %(amount)s. Баланс сейчас: %(before)s."
