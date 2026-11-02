@@ -111,3 +111,43 @@ def test_unknown_theme_and_foreign_redirects_are_refused(client, resident):
     response = client.post(THEME, {"theme": "neon", "next": "https://evil.example/"})
     assert response.url == "/"
     assert UserPreferences.objects.get(user=resident.user).theme == "system"
+
+
+def test_service_worker_leaves_form_submissions_alone(client, db):
+    """Regression: an iPhone upload sent through the worker arrived empty and
+    was refused as a CSRF failure. Non-GET requests must never be handled."""
+    body = client.get(SW).content.decode()
+    handler = body[body.index('addEventListener("fetch"') :]
+    guard = handler.index('if (request.method !== "GET")')
+    assert guard < handler.index("respondWith")  # checked before anything is intercepted
+    assert "return;" in handler[guard : guard + 80]
+
+
+def test_service_worker_version_changes_with_the_revision(client, db, monkeypatch):
+    from apps.core import views
+
+    first = re.search(r'dorm-laundry-offline-(\w+)"', client.get(SW).content.decode()).group(1)
+    monkeypatch.setattr(views, "SW_REVISION", views.SW_REVISION + 1)
+    second = re.search(r'dorm-laundry-offline-(\w+)"', client.get(SW).content.decode()).group(1)
+    assert first != second
+
+
+def test_upload_with_a_valid_token_passes_enforced_csrf(resident):
+    """The upload form itself carries the token: with the body intact, CSRF passes."""
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    from django.test import Client
+
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(resident.user)
+    page = client.get(reverse("receipts:new"))
+    token = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', page.content.decode())
+    assert token, "the upload form must contain the CSRF token"
+    response = client.post(
+        reverse("receipts:new"),
+        {
+            "csrfmiddlewaretoken": token.group(1),
+            "amount": 100,
+            "file": SimpleUploadedFile("r.pdf", b"%PDF-1.4\n% test\n%%EOF\n"),
+        },
+    )
+    assert response.status_code == 302  # accepted, back to the balance

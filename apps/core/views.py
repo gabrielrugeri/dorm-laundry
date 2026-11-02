@@ -65,6 +65,8 @@ def robots_txt(request):
 # they are the same for everyone, so caching them is safe.
 
 THEME_COLOR = "#1d4ed8"
+# 2: the worker leaves every non-GET request (form submissions) to the browser.
+SW_REVISION = 2
 
 
 def manifest(request):
@@ -97,7 +99,8 @@ def service_worker(request):
     """Served from the site root so it may handle every page. It only keeps
     the offline page; see templates/core/sw.js."""
     precache = [reverse("core:offline"), static("css/app.css"), static("icons/icon-192.png")]
-    version = hashlib.sha256("|".join(precache).encode()).hexdigest()[:12]
+    # Raise SW_REVISION whenever sw.js changes, so installed copies update.
+    version = hashlib.sha256("|".join([str(SW_REVISION), *precache]).encode()).hexdigest()[:12]
     response = render(
         request,
         "core/sw.js",

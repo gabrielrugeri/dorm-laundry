@@ -37,6 +37,13 @@ self.addEventListener("activate", function (event) {
 
 self.addEventListener("fetch", function (event) {
   var request = event.request;
+  // Only GET requests are ever handled here. Form submissions (POST, e.g. a
+  // receipt upload) go straight from the browser to the server: some mobile
+  // browsers send an empty body when a service worker re-sends a request that
+  // carries a picked file, and the server then refuses the form.
+  if (request.method !== "GET") {
+    return;
+  }
   if (request.mode === "navigate") {
     // A page: always from the network; the offline page only if that fails.
     event.respondWith(
