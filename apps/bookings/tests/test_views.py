@@ -146,7 +146,12 @@ def test_slot_page_lists_every_machine_with_its_state(
     logged_in, dormitory, slots, machine, machine2, other_resident, tomorrow
 ):
     machine3 = Machine.objects.create(dormitory=dormitory, number=3)
-    machine4 = Machine.objects.create(dormitory=dormitory, number=4, active=False)
+    from conftest import out_of_service
+
+    machine4 = Machine.objects.create(dormitory=dormitory, number=4)
+    out_of_service(machine4)  # open-ended maintenance
+    gone = Machine.objects.create(dormitory=dormitory, number=5)
+    out_of_service(gone, kind="archive")  # archived machines are not listed at all
     take(machine2, slots[0], tomorrow, other_resident)  # booked at the start
     take(machine3, slots[1], tomorrow, other_resident)  # free only until 10:00
     form = logged_in.get(book_url(tomorrow, slots[0], length=2)).context["form"]
@@ -155,7 +160,7 @@ def test_slot_page_lists_every_machine_with_its_state(
         machine: ("free", None),
         machine2: ("booked", None),
         machine3: ("free_until", time(10, 0)),
-        machine4: ("out_of_service", None),
+        machine4: ("maintenance", None),
     }
 
 

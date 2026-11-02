@@ -62,13 +62,30 @@ def test_same_dormitory_check(dormitory, other_dormitory, machine, slot):
 
 
 def test_bookable_check(machine, slot):
-    services._check_bookable(machine, [slot])
+    from conftest import out_of_service
+
+    services._check_bookable(machine, DAY, [slot])
+    out_of_service(machine)
+    with pytest.raises(services.MachineUnavailable):
+        services._check_bookable(machine, DAY, [slot])
+
+
+def test_inactive_slot_is_refused(machine, slot):
     slot.active = False
     with pytest.raises(services.SlotUnavailable):
-        services._check_bookable(machine, [slot])
-    machine.active = False
+        services._check_bookable(machine, DAY, [slot])
+
+
+def test_maintenance_period_is_half_open(machine, slot, slot_10):
+    """Maintenance until 10:00 blocks 08:00–10:00 but leaves 10:00 free."""
+    from conftest import out_of_service
+
+    starts, _ends = slot.bounds(DAY)
+    ten, _ = slot_10.bounds(DAY)
+    out_of_service(machine, starts_at=starts - timedelta(hours=5), ends_at=ten)
     with pytest.raises(services.MachineUnavailable):
-        services._check_bookable(machine, [slot])
+        services._check_bookable(machine, DAY, [slot])
+    services._check_bookable(machine, DAY, [slot_10])
 
 
 def test_consecutive_check_accepts_neighbours(dormitory, slot, slot_10, slot_12):
@@ -206,10 +223,11 @@ def test_book_rejects_other_dormitory(resident, other_dormitory, slot):
         services.book_slots(resident, foreign_machine, DAY, [slot], now=NOW)
 
 
-def test_book_rejects_inactive_machine(resident, machine, slot):
+def test_book_rejects_machine_under_maintenance(resident, machine, slot):
+    from conftest import out_of_service
+
     credit(resident, 50)
-    machine.active = False
-    machine.save()
+    out_of_service(machine)
     with pytest.raises(services.MachineUnavailable):
         services.book_slots(resident, machine, DAY, [slot], now=NOW)
 
@@ -431,10 +449,11 @@ def test_same_machine_twice_is_booked_once(resident, machine, slot):
     assert balance(resident) == 50
 
 
-def test_inactive_machine_in_the_list_books_nothing(resident, machine, machine2, slot):
+def test_machine_under_maintenance_in_the_list_books_nothing(resident, machine, machine2, slot):
+    from conftest import out_of_service
+
     credit(resident, 100)
-    machine2.active = False
-    machine2.save()
+    out_of_service(machine2)
     with pytest.raises(services.MachineUnavailable):
         services.book_machines(resident, [machine, machine2], DAY, [slot], now=NOW)
     assert not Booking.objects.exists()

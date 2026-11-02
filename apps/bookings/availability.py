@@ -10,6 +10,8 @@ from datetime import timedelta
 
 from django.utils import timezone
 
+from apps.dorms import machine_state
+
 from .models import Booking
 
 
@@ -79,9 +81,11 @@ def start_options(dormitory, day, length, now=None):
     `length` consecutive slots, and how many machines are. Started slots and
     runs that would not fit before the day ends are left out."""
     now = now or timezone.now()
-    machines = list(dormitory.machines.filter(active=True))
+    machines = machine_state.in_use(list(dormitory.machines.all()), now)
     taken = set(occupied(machines, day).values_list("machine_id", "slot_id"))
     slots = active_slots(dormitory)
+    # Slots under maintenance count as taken.
+    taken |= set(machine_state.unavailable_slots(machines, day, slots))
     options = []
     for slot in slots:
         run = following_slots(dormitory, slot, slots)[:length]
@@ -97,7 +101,7 @@ def start_options(dormitory, day, length, now=None):
 FREE = "free"
 BOOKED = "booked"
 FREE_UNTIL = "free_until"
-OUT_OF_SERVICE = "out_of_service"
+MAINTENANCE = "maintenance"
 
 
 @dataclass
@@ -105,6 +109,7 @@ class MachineChoice:
     machine: object
     state: str
     free_until: object = None  # end time of the last free slot, for FREE_UNTIL
+    until: object = None  # end of the maintenance (a datetime, or None if open), for MAINTENANCE
 
     @property
     def available(self):
@@ -112,19 +117,22 @@ class MachineChoice:
 
 
 def machine_choices(dormitory, day, run):
-    """Every machine of the dormitory (active or not), and whether it is free
+    """Every machine in use (archived ones are gone), and whether it is free
     for all slots in `run`. Machines free at the start but not for the whole
-    run say until when they are free."""
-    machines = list(dormitory.machines.order_by("number"))
+    run say until when they are free; machines under maintenance say until
+    when."""
+    machines = machine_state.in_use(list(dormitory.machines.order_by("number")))
     taken = set(occupied(machines, day).filter(slot__in=run).values_list("machine_id", "slot_id"))
+    blocked = machine_state.unavailable_slots(machines, day, run)
     choices = []
     for machine in machines:
-        if not machine.active:
-            choices.append(MachineChoice(machine, OUT_OF_SERVICE))
+        period = blocked.get((machine.pk, run[0].pk))
+        if period is not None:
+            choices.append(MachineChoice(machine, MAINTENANCE, until=period.ends_at))
             continue
         free_count = 0
         for slot in run:
-            if (machine.pk, slot.pk) in taken:
+            if (machine.pk, slot.pk) in taken or (machine.pk, slot.pk) in blocked:
                 break
             free_count += 1
         if free_count == len(run):

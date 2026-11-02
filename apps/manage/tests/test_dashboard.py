@@ -156,3 +156,13 @@ def test_heat_cells_use_the_full_class_names():
         "fill-heat-1",
         "fill-heat-5",
     ]
+
+
+def test_occupancy_leaves_out_machines_under_maintenance(resident, dormitory, machine, slot):
+    from conftest import out_of_service
+
+    second = Machine.objects.create(dormitory=dormitory, number=2)
+    out_of_service(second)  # under maintenance the whole time
+    booking(resident, machine, slot, TODAY - timedelta(days=1))
+    # Only machine 1 counts: 1 machine × 1 slot × 7 days = 7; 1 booked.
+    assert dashboard.tiles(dormitory, TODAY).occupancy_last_7_days == pytest.approx(1 / 7)

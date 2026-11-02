@@ -6,9 +6,9 @@ template draws the charts as SVG from these numbers.
 recorded by admins (including taken-back payments), minus voided receipts.
 Bookings, refunds and corrections are not money received.
 
-Occupancy: booked machine-slots divided by the machine-slots there were
-(active machines × active slots × days). Machines under maintenance
-(Stage 2) will have to be left out of the second number.
+Occupancy: booked machine-slots divided by the machine-slots there were:
+every active slot of every day, for each machine that was not under
+maintenance or archived at that moment.
 """
 
 from collections import defaultdict
@@ -20,6 +20,7 @@ from django.db.models.functions import Coalesce
 
 from apps.accounts.models import Resident
 from apps.bookings.models import Booking
+from apps.dorms import machine_state
 from apps.dorms.models import Machine, TimeSlot
 from apps.ledger.models import LedgerEntry
 from apps.receipts.models import Receipt
@@ -58,11 +59,28 @@ def _booked(dormitory, first_day, end_day):
     ).exclude(status__in=Booking.CANCELLED_STATUSES)
 
 
+def possible_slots(dormitory, first_day, end_day):
+    """{(day, slot id): machines that could be booked} from first_day up to
+    (not including) end_day: maintenance and archive periods left out."""
+    machines = list(Machine.objects.filter(dormitory=dormitory))
+    slots = list(TimeSlot.objects.filter(dormitory=dormitory, active=True))
+    by_machine = machine_state.periods(machines)
+    possible = {}
+    day = first_day
+    while day < end_day:
+        for slot in slots:
+            starts_at, ends_at = slot.bounds(day)
+            possible[(day, slot.id)] = sum(
+                machine_state.blocking_period(by_machine.get(m.pk, []), starts_at, ends_at) is None
+                for m in machines
+            )
+        day += timedelta(days=1)
+    return possible
+
+
 def occupancy(dormitory, first_day, end_day):
     """Share of machine-slots booked, 0..1 (None when there were none)."""
-    machines = Machine.objects.filter(dormitory=dormitory, active=True).count()
-    slots = TimeSlot.objects.filter(dormitory=dormitory, active=True).count()
-    possible = machines * slots * (end_day - first_day).days
+    possible = sum(possible_slots(dormitory, first_day, end_day).values())
     if not possible:
         return None
     return _booked(dormitory, first_day, end_day).count() / possible
@@ -116,22 +134,23 @@ def heatmap(dormitory, today, weeks=HISTORY_WEEKS):
     the past `weeks` weeks up to yesterday (today is not over yet)."""
     first = history_start(today, weeks)
     slots = list(TimeSlot.objects.filter(dormitory=dormitory, active=True).order_by("start_time"))
-    machines = Machine.objects.filter(dormitory=dormitory, active=True).count()
-    days_per_weekday = defaultdict(int)
-    day = first
-    while day < today:
-        days_per_weekday[day.weekday()] += 1
-        day += timedelta(days=1)
+    possible = defaultdict(int)
+    for (day, slot_id), machines in possible_slots(dormitory, first, today).items():
+        possible[(day.weekday(), slot_id)] += machines
     booked = defaultdict(int)
     for booking_day, slot_id in _booked(dormitory, first, today).values_list("date", "slot_id"):
         booked[(booking_day.weekday(), slot_id)] += 1
     rows = []
     for weekday in range(7):
-        possible = machines * days_per_weekday[weekday]
         rows.append(
             (
                 weekday,
-                [booked[(weekday, slot.id)] / possible if possible else None for slot in slots],
+                [
+                    booked[(weekday, slot.id)] / possible[(weekday, slot.id)]
+                    if possible[(weekday, slot.id)]
+                    else None
+                    for slot in slots
+                ],
             )
         )
     return {"slots": slots, "rows": rows}
@@ -158,9 +177,10 @@ def usage_per_machine(dormitory, today, weeks=HISTORY_WEEKS):
         .annotate(n=Count("id"))
         .values_list("machine", "n")
     )
-    machines = Machine.objects.filter(dormitory=dormitory).order_by("number")
+    machines = list(Machine.objects.filter(dormitory=dormitory).order_by("number"))
+    gone = machine_state.archived_ids(machines)
     return [
         (machine, counts.get(machine.id, 0))
         for machine in machines
-        if machine.active or counts.get(machine.id)
+        if machine.pk not in gone or counts.get(machine.id)
     ]
