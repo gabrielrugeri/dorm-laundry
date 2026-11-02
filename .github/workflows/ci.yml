@@ -39,6 +39,9 @@ jobs:
       - name: Tailwind builds
         run: python scripts/tailwind.py build
 
+      - name: Server scripts pass shellcheck (deploy/scripts)
+        run: shellcheck deploy/scripts/*.sh
+
   tests:
     name: Tests (${{ matrix.database }})
     runs-on: ubuntu-latest
