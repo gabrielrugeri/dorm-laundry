@@ -209,3 +209,9 @@ def test_balance_page_links_how_to_pay_and_receipts(client, resident):
     client.force_login(resident.user)
     html = client.get(reverse("ledger:balance")).content.decode()
     assert PAGE in html and reverse("receipts:new") in html
+
+
+def test_history_shows_the_phone_formatted(boss_client):
+    boss_client.post(EDIT, form_data())
+    html = boss_client.get(reverse("manage:settings")).content.decode()
+    assert "+7 900 000-00-01" in html and "+79000000001" not in html

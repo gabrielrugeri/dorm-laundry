@@ -16,7 +16,7 @@
 
     <div class="mb-4 rounded-lg bg-surface p-4 shadow-sm">
       {% translate "Payment purpose" as purpose_label %}
-      {% include "payments/_copy_field.html" with label=purpose_label value=purpose id="pay-purpose" %}
+      {% include "payments/_copy_field.html" with label=purpose_label value=purpose id="pay-purpose" multiline=True %}
       {% translate "Recipient" as label %}{% include "payments/_copy_field.html" with label=label value=details.recipient id="pay-recipient" %}
       {% translate "Bank" as label %}{% include "payments/_copy_field.html" with label=label value=details.bank id="pay-bank" %}
       {% if details.sbp_phone %}{% translate "Phone number for SBP (fast payments)" as label %}{% include "payments/_copy_field.html" with label=label value=details.sbp_phone_display id="pay-phone" %}{% endif %}

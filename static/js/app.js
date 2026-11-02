@@ -15,7 +15,7 @@
 
   // <input data-select-on-click>: select the whole value (links to copy).
   document.addEventListener("click", function (event) {
-    if (event.target.matches("input[data-select-on-click]")) {
+    if (event.target.matches("input[data-select-on-click], textarea[readonly]")) {
       event.target.select();
     }
   });

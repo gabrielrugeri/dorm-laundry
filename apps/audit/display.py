@@ -95,6 +95,10 @@ def _field(model, name):
 def _format(name, field, value):
     if name == "credit_limit" and value is None:
         return _("no limit")
+    if name == "sbp_phone" and value:
+        from apps.payments.validators import format_phone
+
+        return format_phone(value)
     if value in (None, "", []):
         return "—"
     if name == "groups":
