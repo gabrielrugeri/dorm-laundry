@@ -2197,3 +2197,99 @@ msgstr "Аннулирован %(day)s, кто: %(who)s."
 
 msgid "%(amount)s will be taken back. Balance now: %(before)s."
 msgstr "Будет списано %(amount)s. Баланс сейчас: %(before)s."
+
+msgid "Mon"
+msgstr "Пн"
+
+msgid "Tue"
+msgstr "Вт"
+
+msgid "Wed"
+msgstr "Ср"
+
+msgid "Thu"
+msgstr "Чт"
+
+msgid "Fri"
+msgstr "Пт"
+
+msgid "Sat"
+msgstr "Сб"
+
+msgid "Sun"
+msgstr "Вс"
+
+msgid "Overview"
+msgstr "Обзор"
+
+msgid "Received this month"
+msgstr "Поступило в этом месяце"
+
+msgid "Owed by residents"
+msgstr "Долги жильцов"
+
+msgid "Machines busy this week"
+msgstr "Загрузка машин на этой неделе"
+
+msgid "of all machine slots"
+msgstr "от всех слотов машин"
+
+msgid "Voided receipts this month"
+msgstr "Аннулировано чеков в этом месяце"
+
+msgid "When machines are busy"
+msgstr "Когда машины заняты"
+
+msgid "no data"
+msgstr "нет данных"
+
+msgid "quiet"
+msgstr "свободно"
+
+msgid "busy"
+msgstr "занято"
+
+msgid "Show as a table"
+msgstr "Показать таблицей"
+
+msgid "Money received per week"
+msgstr "Поступления по неделям"
+
+msgid "Bookings per machine"
+msgstr "Бронирования по машинам"
+
+msgid "last month: %(amount)s"
+msgstr "в прошлом месяце: %(amount)s"
+
+msgid "for %(amount)s"
+msgstr "на %(amount)s"
+
+msgid "Busiest: %(day)s, %(slot)s."
+msgstr "Больше всего занято: %(day)s, %(slot)s."
+
+msgid "%(total)s in total."
+msgstr "Всего %(total)s."
+
+#: templates/manage/dashboard.html:1
+msgid "%(n)s resident in debt"
+msgid_plural "%(n)s residents in debt"
+msgstr[0] "%(n)s жилец в долгу"
+msgstr[1] "%(n)s жильца в долгу"
+msgstr[2] "%(n)s жильцов в долгу"
+msgstr[3] "%(n)s жильца в долгу"
+
+#: templates/manage/dashboard.html:1
+msgid "Last %(n)s week, share of machines booked."
+msgid_plural "Last %(n)s weeks, share of machines booked."
+msgstr[0] "За последнюю %(n)s неделю, доля занятых машин."
+msgstr[1] "За последние %(n)s недели, доля занятых машин."
+msgstr[2] "За последние %(n)s недель, доля занятых машин."
+msgstr[3] "За последние %(n)s недели, доля занятых машин."
+
+#: templates/manage/dashboard.html:1
+msgid "%(n)s slot booked in these weeks."
+msgid_plural "%(n)s slots booked in these weeks."
+msgstr[0] "За эти недели забронирован %(n)s слот."
+msgstr[1] "За эти недели забронировано %(n)s слота."
+msgstr[2] "За эти недели забронировано %(n)s слотов."
+msgstr[3] "За эти недели забронировано %(n)s слота."

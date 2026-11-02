@@ -177,6 +177,20 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   by day, week, month or resident, with receipts, voided receipts, payments
   recorded by admins, corrections, bookings and refunds in separate columns;
   CSV export. How the administration should use it: `docs/TRUST-MODEL.md`.
+- **Dashboard** («Обзор», `/manage/overview/`, where `/manage/` starts;
+  `apps/manage/dashboard.py` for the numbers, `charts.py` for the SVG
+  geometry): money received this month and last month (payments from receipts
+  and admins minus voided receipts), what residents owe and how many are in
+  debt, machines busy this week (booked machine-slots over possible ones;
+  maintenance periods must be left out once Stage 2 lands), voided receipts
+  this month. Three charts drawn as SVG on the server, no library and nothing
+  from a CDN: a weekday × slot heat map (one hue in five steps, the `heat-*`
+  colour tokens with separate light and dark values), money received per
+  week, bookings per machine; each with a summary line, hover details (SVG
+  `<title>`) and a table view.
+- **Demo history:** `seed_demo` creates `SEED_DEMO_HISTORY_WEEKS` (8) weeks of
+  fake past use through the real services, then moves the automatic
+  timestamps to the past (seed only). Tests use one week.
 - **How to pay** (`apps/payments`): `PaymentDetails` per dormitory
   (recipient, bank, SBP phone, https payment link, SBP QR picture, optional
   BIK, account and INN, payment purpose prefix). Typos are caught: the INN
