@@ -168,3 +168,54 @@ def _remove(name):
     """Delete a file saved by a transaction that did not commit."""
     if name:
         Receipt._meta.get_field("file").storage.delete(name)
+
+
+# --- Voiding (Stage 5) -----------------------------------------------------------------
+
+
+class NotAllowed(Exception):
+    pass
+
+
+def void_receipt(*, receipt, actor, reason, now=None):
+    """Void a receipt the admin found to be wrong: a reversal ledger entry
+    takes back exactly what it credited. Doing it twice changes nothing.
+    The balance may go negative; the credit limit then applies to bookings.
+    Only an admin of the resident's dormitory may do this."""
+    from apps.accounts import roles
+    from apps.accounts.decorators import get_user_dormitory
+
+    reason = reason.strip()
+    if not reason:
+        raise ValueError("A reason is required to void a receipt.")
+    resident = receipt.resident
+    if not (roles.has_role(actor, roles.ADMIN) and get_user_dormitory(actor) == resident.dormitory):
+        raise NotAllowed
+    now = now or timezone.now()
+    with transaction.atomic():
+        Resident.objects.select_for_update().get(pk=resident.pk)
+        receipt = Receipt.objects.select_for_update().get(pk=receipt.pk)
+        if receipt.status == Receipt.Status.VOIDED:
+            return receipt
+        before = snapshot(receipt, exclude=["file", "sha256"])
+        receipt.status = Receipt.Status.VOIDED
+        receipt.voided_at, receipt.voided_by, receipt.void_reason = now, actor, reason
+        receipt.save(update_fields=["status", "voided_at", "voided_by", "void_reason"])
+        LedgerEntry.objects.create(
+            resident=resident,
+            kind=LedgerEntry.Kind.REVERSAL,
+            amount=-receipt.amount,
+            receipt=receipt,
+            note=reason,
+            created_by=actor,
+        )
+        record(
+            actor=actor,
+            action="receipt.void",
+            target=receipt,
+            before=before,
+            after=snapshot(receipt, exclude=["file", "sha256"]),
+            reason=reason,
+            dormitory=resident.dormitory,
+        )
+    return receipt

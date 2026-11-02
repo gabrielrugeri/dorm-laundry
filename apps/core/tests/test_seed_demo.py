@@ -87,7 +87,8 @@ def test_seed_demo_covers_every_resident_state(db):
     assert not services.has_history(fresh) and not fresh.user.has_usable_password()
     # Payments the admin records carry a comment; receipt payments carry the receipt.
     assert not LedgerEntry.objects.filter(kind="credit", note="", receipt__isnull=True).exists()
-    assert LedgerEntry.objects.filter(kind="credit", receipt__isnull=False).count() == 2
+    assert LedgerEntry.objects.filter(kind="credit", receipt__isnull=False).count() == 3
+    assert LedgerEntry.objects.filter(kind="reversal").count() == 1  # one voided receipt
 
 
 def test_example_import_file_matches_the_demo_data(db):

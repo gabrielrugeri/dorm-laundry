@@ -43,6 +43,7 @@ class LedgerEntry(models.Model):
       booking     < 0  price charged for a booking
       refund      > 0  booking price returned on a valid cancellation
       adjustment != 0  manual correction, with a note
+      reversal    < 0  a voided receipt: takes back exactly what it credited
     """
 
     class Kind(models.TextChoices):
@@ -51,6 +52,7 @@ class LedgerEntry(models.Model):
         BOOKING = "booking", _("booking payment")
         REFUND = "refund", _("refund")
         ADJUSTMENT = "adjustment", _("balance correction")
+        REVERSAL = "reversal", _("receipt voided")
 
     resident = models.ForeignKey(
         Resident,
@@ -101,7 +103,7 @@ class LedgerEntry(models.Model):
                     # A negative payment takes back one recorded by mistake
                     # (or cash handed back); it stays in the payments column.
                     Q(kind="refund", amount__gt=0)
-                    | Q(kind="booking", amount__lt=0)
+                    | Q(kind__in=["booking", "reversal"], amount__lt=0)
                     | (Q(kind__in=["credit", "adjustment"]) & ~Q(amount=0))
                 ),
                 name="ledger_amount_sign_matches_kind",
@@ -109,14 +111,18 @@ class LedgerEntry(models.Model):
             models.CheckConstraint(
                 condition=(
                     Q(kind__in=["booking", "refund"], booking__isnull=False)
-                    | Q(kind__in=["credit", "adjustment"], booking__isnull=True)
+                    | Q(kind__in=["credit", "adjustment", "reversal"], booking__isnull=True)
                 ),
                 name="ledger_booking_only_for_booking_and_refund",
             ),
-            # Only a payment can come from a receipt, and a receipt pays once.
+            # Only a payment (and its reversal) can refer to a receipt; a
+            # reversal always does. A receipt pays once and is voided once.
             models.CheckConstraint(
-                condition=Q(receipt__isnull=True) | Q(kind="credit"),
-                name="ledger_receipt_only_for_credit",
+                condition=(
+                    Q(receipt__isnull=True, kind__in=["credit", "booking", "refund", "adjustment"])
+                    | Q(receipt__isnull=False, kind__in=["credit", "reversal"])
+                ),
+                name="ledger_receipt_only_for_credit_and_reversal",
             ),
             models.UniqueConstraint(
                 fields=["receipt", "kind"],

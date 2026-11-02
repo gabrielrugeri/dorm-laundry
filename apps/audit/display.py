@@ -28,6 +28,7 @@ HIDDEN = {
     "group_id",
     "created_by",
     "recorded_by",
+    "voided_by",
     "password",
     "username",
     "last_login",

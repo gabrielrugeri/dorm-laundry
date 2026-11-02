@@ -1,0 +1,1 @@
+{% load i18n %}{% if receipt.status == "voided" %}<span class="rounded bg-danger-soft px-2 py-0.5 text-sm text-danger">{% translate "Voided" %}</span>{% else %}<span class="rounded bg-success-soft px-2 py-0.5 text-sm text-success">{% translate "Credited" %}</span>{% endif %}

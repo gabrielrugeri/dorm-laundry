@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{% translate "Receipts" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="mb-3 flex items-center justify-between gap-3">
+    <h1 class="text-xl font-semibold">{% translate "Receipts" %}</h1>
+    <a href="{% url 'manage:receipt_report' %}" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Money report" %}</a>
+  </div>
+  <p class="mb-3 text-sm text-muted">{% translate "Receipts top up the balance at once. Check them here; marks show which ones to look at first. Marks never block anything." %}</p>
+
+  <form method="get" class="mb-4 grid grid-cols-2 gap-2 rounded-lg bg-surface p-3 text-sm shadow-sm sm:grid-cols-4">
+    <label class="col-span-2 sm:col-span-4">
+      <span class="sr-only">{% translate "Search" %}</span>
+      <input type="search" name="q" value="{{ filters.q }}" placeholder="{% translate 'Name or room' %}"
+             class="w-full rounded border border-line-strong bg-surface px-3 py-2">
+    </label>
+    <label>
+      <span class="block text-muted">{% translate "Status" %}</span>
+      <select name="status" class="w-full rounded border border-line-strong bg-surface px-2 py-2">
+        <option value="all"{% if filters.status == "all" %} selected{% endif %}>{% translate "All" %}</option>
+        <option value="credited"{% if filters.status == "credited" %} selected{% endif %}>{% translate "Credited" %}</option>
+        <option value="voided"{% if filters.status == "voided" %} selected{% endif %}>{% translate "Voided" %}</option>
+      </select>
+    </label>
+    <label class="flex items-end gap-2 pb-2">
+      <input type="checkbox" name="flagged" value="1"{% if filters.flagged %} checked{% endif %}>
+      <span>{% translate "Only with marks" %}</span>
+    </label>
+    <label>
+      <span class="block text-muted">{% translate "From" %}</span>
+      <input type="date" name="from" value="{{ filters.from }}" class="w-full rounded border border-line-strong bg-surface px-2 py-2">
+    </label>
+    <label>
+      <span class="block text-muted">{% translate "To" %}</span>
+      <input type="date" name="to" value="{{ filters.to }}" class="w-full rounded border border-line-strong bg-surface px-2 py-2">
+    </label>
+    <button type="submit" class="col-span-2 rounded bg-accent px-4 py-2 font-medium text-on-accent sm:col-span-4">{% translate "Filter" %}</button>
+  </form>
+
+  <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
+    {% for receipt, flags in page %}
+      <li>
+        <a href="{% url 'manage:receipt' pk=receipt.pk %}" class="flex items-start justify-between gap-3 px-4 py-3 hover:bg-subtle">
+          <span class="min-w-0">
+            <span class="block font-medium">{% if receipt.resident.is_anonymized %}{% translate "Former resident" %}{% else %}{{ receipt.resident.full_name }}{% endif %}</span>
+            <span class="block text-sm text-muted">{% if receipt.resident.room %}{% blocktranslate with room=receipt.resident.room %}Room {{ room }}{% endblocktranslate %} · {% endif %}{{ receipt.uploaded_at|date:"j E, H:i" }}</span>
+            {% if flags %}
+              <span class="mt-1 flex flex-wrap gap-1">
+                {% for code, label in flags %}<span class="rounded bg-warning-soft px-2 py-0.5 text-xs text-warning">{{ label }}</span>{% endfor %}
+              </span>
+            {% endif %}
+          </span>
+          <span class="shrink-0 text-right">
+            <span class="block font-medium {% if receipt.status == 'voided' %}text-muted line-through{% endif %}">{{ receipt.amount|rub }}</span>
+            {% include "manage/receipts/_status.html" %}
+          </span>
+        </a>
+      </li>
+    {% empty %}
+      <li class="px-4 py-3 text-muted">{% translate "No receipts found." %}</li>
+    {% endfor %}
+  </ul>
+
+  {% if page.has_other_pages %}
+    {% with base="?status="|add:filters.status|add:"&q="|add:filters.q|add:"&from="|add:filters.from|add:"&to="|add:filters.to %}
+    <nav class="mt-4 flex justify-between text-sm" aria-label="{% translate 'Pages' %}">
+      {% if page.has_previous %}<a href="{{ base }}{% if filters.flagged %}&flagged=1{% endif %}&page={{ page.previous_page_number }}" class="text-link underline">← {% translate "Previous" %}</a>{% else %}<span></span>{% endif %}
+      {% if page.has_next %}<a href="{{ base }}{% if filters.flagged %}&flagged=1{% endif %}&page={{ page.next_page_number }}" class="text-link underline">{% translate "Next" %} →</a>{% endif %}
+    </nav>
+    {% endwith %}
+  {% endif %}
+{% endblock %}
