@@ -43,6 +43,12 @@
   --color-warning-line: var(--warning-line);
   --color-warning-strong: var(--warning-strong);
   --color-on-warning: var(--on-warning);
+  /* Dashboard heat map: one hue, five steps from quiet to busy. */
+  --color-heat-1: var(--heat-1);
+  --color-heat-2: var(--heat-2);
+  --color-heat-3: var(--heat-3);
+  --color-heat-4: var(--heat-4);
+  --color-heat-5: var(--heat-5);
 }
 
 /* tokens:light */
@@ -77,6 +83,11 @@
   --warning-line: #fcd34d;
   --warning-strong: #fbbf24;
   --on-warning: #451a03;
+  --heat-1: #dbeafe;
+  --heat-2: #a9c8fb;
+  --heat-3: #6b9ef5;
+  --heat-4: #2f6fe0;
+  --heat-5: #1e3a8a;
 }
 /* end tokens:light */
 
@@ -114,6 +125,11 @@
   --warning-line: #8a5a0f;
   --warning-strong: #fbbf24;
   --on-warning: #451a03;
+  --heat-1: #1b2c4f;
+  --heat-2: #1f4596;
+  --heat-3: #2f6fe0;
+  --heat-4: #6b9ef5;
+  --heat-5: #bcd4fd;
 }
 /* end tokens:dark */
 @media (prefers-color-scheme: dark) {
@@ -148,6 +164,11 @@
     --warning-line: #8a5a0f;
     --warning-strong: #fbbf24;
     --on-warning: #451a03;
+    --heat-1: #1b2c4f;
+    --heat-2: #1f4596;
+    --heat-3: #2f6fe0;
+    --heat-4: #6b9ef5;
+    --heat-5: #bcd4fd;
   }
 }
 

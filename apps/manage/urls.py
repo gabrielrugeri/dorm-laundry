@@ -1,11 +1,20 @@
 from django.urls import path
 
-from . import payment_views, receipt_views, resident_import, residents, settings_views, views
+from . import (
+    dashboard_views,
+    payment_views,
+    receipt_views,
+    resident_import,
+    residents,
+    settings_views,
+    views,
+)
 
 app_name = "manage"
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("overview/", dashboard_views.dashboard, name="dashboard"),
     path("history/", views.audit_log, name="audit"),
     path("receipts/", receipt_views.receipt_list, name="receipts"),
     path("receipts/report/", receipt_views.receipt_report, name="receipt_report"),
