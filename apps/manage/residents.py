@@ -99,7 +99,8 @@ def resident_list(request):
             | Q(room__icontains=query)
             | Q(student_code__iexact=query, anonymized_at__isnull=True)
         )
-    sort = request.GET.get("sort", "room")
+    # "Owe money" is the debts report: the biggest debt first.
+    sort = request.GET.get("sort", "balance" if show == "debt" else "room")
     field = sort.removeprefix("-")
     if field not in SORTS:
         sort = field = "room"
@@ -107,6 +108,12 @@ def resident_list(request):
     # has a few hundred residents at most.
     residents = sorted(residents, key=SORTS[field], reverse=sort.startswith("-"))
     page = Paginator(residents, RESIDENTS_PER_PAGE).get_page(request.GET.get("page"))
+    debts = None
+    if show == "debt":
+        # When each current debt began, and the total owed.
+        for resident in page:
+            resident.debt_since = LedgerEntry.objects.debt_since(resident)
+        debts = {"count": len(residents), "total": -sum(r.balance for r in residents)}
     columns = [
         (name, label, f"-{name}" if sort == name else name, sort.removeprefix("-") == name)
         for name, label in (("room", _("Room")), ("name", _("Name")), ("balance", _("Balance")))
@@ -118,6 +125,7 @@ def resident_list(request):
         "sort": sort,
         "descending": sort.startswith("-"),
         "columns": columns,
+        "debts": debts,
     }
     return render(request, "manage/residents/list.html", context)
 

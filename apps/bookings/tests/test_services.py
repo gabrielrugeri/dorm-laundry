@@ -39,9 +39,9 @@ def slot_12(dormitory):
 def test_error_message_is_translated():
     error = services.InsufficientBalance()
     with translation.override("ru"):
-        assert str(error.message) == "Недостаточно средств на балансе для этого бронирования."
+        assert str(error.message).startswith("Недостаточно средств")
     with translation.override("en"):
-        assert str(error.message) == "Your balance is too low for this booking."
+        assert str(error.message).startswith("Your balance is too low for this booking.")
 
 
 def test_error_message_can_be_overridden():
@@ -113,6 +113,12 @@ def credit(resident, amount):
     LedgerEntry.objects.create(resident=resident, amount=amount, kind=LedgerEntry.Kind.CREDIT)
 
 
+def set_credit_limit(limit):
+    from apps.dorms.models import GlobalSettings
+
+    GlobalSettings.objects.update_or_create(pk=1, defaults={"credit_limit": limit})
+
+
 def balance(resident):
     return LedgerEntry.objects.balance(resident)
 
@@ -147,6 +153,7 @@ def test_separate_bookings_get_separate_groups(resident, machine, slot, slot_10)
 
 
 def test_insufficient_balance_books_nothing(resident, machine, slot, slot_10):
+    set_credit_limit(0)
     credit(resident, 99)
     with pytest.raises(services.InsufficientBalance):
         services.book_slots(resident, machine, DAY, [slot, slot_10], now=NOW)
@@ -397,6 +404,7 @@ def test_book_two_machines_for_two_slots(resident, machine, machine2, slot, slot
 
 
 def test_several_machines_need_the_whole_amount(resident, machine, machine2, slot, slot_10):
+    set_credit_limit(0)
     credit(resident, 199)
     with pytest.raises(services.InsufficientBalance):
         services.book_machines(resident, [machine, machine2], DAY, [slot, slot_10], now=NOW)
@@ -503,3 +511,38 @@ def test_database_requires_reason_for_admin_cancellation(booked):
     booked.cancelled_at = NOW
     with pytest.raises(IntegrityError), transaction.atomic():
         booked.save()
+
+
+# --- Credit limit (how far a resident may go into debt) -----------------------------
+
+
+def test_default_limit_allows_up_to_100_rub_of_debt(resident, machine, slot, slot_10):
+    """The approved default: a resident with 0 RUB may book 2 slots (100 RUB)."""
+    services.book_slots(resident, machine, DAY, [slot, slot_10], now=NOW)
+    assert balance(resident) == -100
+
+
+def test_limit_is_never_exceeded(resident, machine, machine2, slot, slot_10):
+    set_credit_limit(100)
+    credit(resident, 50)
+    with pytest.raises(services.InsufficientBalance):  # 50 - 200 = -150
+        services.book_machines(resident, [machine, machine2], DAY, [slot, slot_10], now=NOW)
+    services.book_slots(resident, machine, DAY, [slot, slot_10], now=NOW)  # 50 - 100 = -50
+    with pytest.raises(services.InsufficientBalance):  # -50 - 100 = -150
+        services.book_slots(resident, machine2, DAY, [slot, slot_10], now=NOW)
+    assert balance(resident) == -50
+
+
+def test_no_limit_allows_any_debt(resident, machine, machine2, slot, slot_10):
+    set_credit_limit(None)
+    services.book_machines(resident, [machine, machine2], DAY, [slot, slot_10], now=NOW)
+    assert balance(resident) == -200
+
+
+def test_limit_is_per_resident_never_per_room(resident, other_resident, machine, machine2, slot):
+    set_credit_limit(50)
+    other_resident.room = resident.room  # roommates
+    other_resident.save()
+    services.book_slots(resident, machine, DAY, [slot], now=NOW)
+    services.book_slots(other_resident, machine2, DAY, [slot], now=NOW)
+    assert balance(resident) == balance(other_resident) == -50

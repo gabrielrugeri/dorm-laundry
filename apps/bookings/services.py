@@ -18,6 +18,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.accounts import roles
 from apps.accounts.models import Resident
 from apps.audit.services import record, snapshot
+from apps.dorms.rules import credit_limit_for
 from apps.ledger.models import LedgerEntry
 
 from .models import Booking
@@ -39,7 +40,9 @@ class SlotUnavailable(BookingError):
 
 
 class InsufficientBalance(BookingError):
-    message = _("Your balance is too low for this booking.")
+    message = _(
+        "Your balance is too low for this booking. Top up your balance with the administration."
+    )
 
 
 class SlotsNotConsecutive(BookingError):
@@ -119,6 +122,17 @@ def _check_booking_window(dormitory, day, first_slot, now):
 # --- Booking --------------------------------------------------------------------
 
 
+def can_afford(resident, cost):
+    """Whether paying `cost` keeps the resident within their credit limit:
+    the balance may go down to minus the limit (0: no debt), and without a
+    limit any booking is allowed. Each resident has their own limit; it is
+    never shared with roommates."""
+    limit = credit_limit_for(resident)
+    if limit is None:
+        return True
+    return LedgerEntry.objects.balance(resident) - cost >= -limit
+
+
 def book_machines(resident, machines, day, slots, *, now=None):
     """Book one or more `machines` for the same consecutive `slots` on `day`.
 
@@ -152,7 +166,8 @@ def book_machines(resident, machines, day, slots, *, now=None):
             # after the other and cannot both spend the same balance. (SQLite already
             # serialises all writes; on PostgreSQL this lock is what does it.)
             Resident.objects.select_for_update().get(pk=resident.pk)
-            if LedgerEntry.objects.balance(resident) < price * len(slots) * len(machines):
+            cost = price * len(slots) * len(machines)
+            if not can_afford(resident, cost):
                 raise InsufficientBalance
             groups = [_create_group(resident, machine, day, slots, price) for machine in machines]
     except IntegrityError:

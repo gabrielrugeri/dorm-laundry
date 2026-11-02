@@ -13,6 +13,7 @@ LABELS = {
     "ledger.payment": _("Payment recorded"),
     "ledger.correction": _("Balance corrected"),
     "ledger.manual_entry": _("Payment or balance correction"),  # stage 1a events
+    "settings.change": _("Money and upload rules changed"),
     "resident.create": _("Resident added"),
     "resident.update": _("Resident details changed"),
     "resident.deactivate": _("Access turned off"),

@@ -56,6 +56,7 @@
       <p class="mb-1 text-sm text-muted">
         {% blocktranslate with price=price_per_machine|rub count n=length %}{{ price }} per machine for {{ n }} slot.{% plural %}{{ price }} per machine for {{ n }} slots.{% endblocktranslate %}
         {% blocktranslate with balance=balance|rub %}Your balance: {{ balance }}.{% endblocktranslate %}
+        {% if credit_limit %}{% blocktranslate with limit=credit_limit|rub %}You may go into debt up to {{ limit }}.{% endblocktranslate %}{% endif %}
       </p>
       {# Filled in by static/js/app.js; without JavaScript the total is checked on submit. #}
       <p class="mb-4 font-medium" id="booking-total" hidden
