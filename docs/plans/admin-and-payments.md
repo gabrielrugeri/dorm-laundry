@@ -89,6 +89,8 @@ Order:
 4. Stage 2.
 5. Before the pilot, in its own PR: the VPS files (nginx config, systemd unit,
    deploy/backup/restore scripts, backup timer) and `docs/DEPLOYMENT.md`.
+   *Done: `deploy/` and [../DEPLOYMENT.md](../DEPLOYMENT.md), which also holds
+   the pilot gate checklist with how to check each item.*
 
 ### Readiness gates
 

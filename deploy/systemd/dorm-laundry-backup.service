@@ -1,0 +1,24 @@
+# Nightly encrypted off-site backup (deploy/scripts/backup.sh), started by
+# dorm-laundry-backup.timer. A failure sends an alert e-mail.
+# Install as /etc/systemd/system/dorm-laundry-backup.service.
+
+[Unit]
+Description=Dorm Laundry backup (database and uploaded files, encrypted, off-site)
+After=network-online.target postgresql.service
+Wants=network-online.target
+OnFailure=dorm-laundry-alert@%n.service
+
+[Service]
+Type=oneshot
+User=dorm-laundry
+Group=dorm-laundry
+EnvironmentFile=/etc/dorm-laundry/env
+EnvironmentFile=/etc/dorm-laundry/backup.env
+ExecStart=/srv/dorm-laundry/app/deploy/scripts/backup.sh
+Nice=10
+IOSchedulingClass=idle
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/srv/dorm-laundry/backups

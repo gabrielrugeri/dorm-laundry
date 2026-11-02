@@ -1,0 +1,14 @@
+# Runs the backup every night at 03:30 Moscow time; a missed run (server
+# off) happens at the next boot. Install as
+# /etc/systemd/system/dorm-laundry-backup.timer and enable it.
+
+[Unit]
+Description=Nightly Dorm Laundry backup
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 Europe/Moscow
+Persistent=true
+RandomizedDelaySec=10m
+
+[Install]
+WantedBy=timers.target

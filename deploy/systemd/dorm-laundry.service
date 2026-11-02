@@ -1,0 +1,45 @@
+# The app (gunicorn) on the pilot VPS. See docs/DEPLOYMENT.md.
+# Install as /etc/systemd/system/dorm-laundry.service.
+
+[Unit]
+Description=Dorm Laundry (gunicorn)
+After=network-online.target postgresql.service
+Wants=network-online.target
+OnFailure=dorm-laundry-alert@%n.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+User=dorm-laundry
+Group=dorm-laundry
+WorkingDirectory=/srv/dorm-laundry/app
+# Secrets and settings; never in the repository.
+EnvironmentFile=/etc/dorm-laundry/env
+Environment=DJANGO_SETTINGS_MODULE=config.settings.prod
+Environment=DJANGO_READ_DOT_ENV=false
+Environment=GUNICORN_BIND=unix:/run/dorm-laundry/gunicorn.sock
+RuntimeDirectory=dorm-laundry
+RuntimeDirectoryMode=0750
+ExecStart=/srv/dorm-laundry/venv/bin/gunicorn config.wsgi
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=30
+
+# Sandboxing: the app may only write to its upload folder.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/srv/dorm-laundry/private_media
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
