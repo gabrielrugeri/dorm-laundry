@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{% translate "Void receipt" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:receipt' pk=receipt.pk %}" class="text-sm text-link underline">← {{ receipt }}</a></p>
+  <div class="mx-auto max-w-md rounded-lg bg-surface p-4 shadow-sm">
+    <h1 class="mb-1 text-xl font-semibold">{% translate "Void receipt" %}</h1>
+    <p class="mb-3 text-muted">{% if receipt.resident.is_anonymized %}{% translate "Former resident" %}{% else %}{{ receipt.resident.full_name }}{% endif %}, {{ receipt.uploaded_at|date:"j E Y" }}</p>
+    <div class="mb-4 rounded-lg border-2 border-danger-strong bg-danger-soft p-3 text-danger" role="alert">
+      <p class="font-semibold">{% blocktranslate with amount=receipt.amount|rub before=balance|rub %}{{ amount }} will be taken back. Balance now: {{ before }}.{% endblocktranslate %}</p>
+      <p class="text-sm">{% translate "The balance may become negative. This cannot be undone; the resident can send a correct receipt again." %}</p>
+    </div>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="mb-4">
+        <label for="{{ form.reason.id_for_label }}" class="mb-1 block text-sm font-medium">{{ form.reason.label }}</label>
+        {{ form.reason }}
+        <p class="mt-1 text-xs text-muted">{{ form.reason.help_text }}</p>
+        {% for error in form.reason.errors %}<p class="mt-1 text-sm text-danger">{{ error }}</p>{% endfor %}
+      </div>
+      <label class="mb-4 flex items-start gap-2">
+        <input type="checkbox" name="confirm" class="mt-1"{% if form.confirm.value %} checked{% endif %}>
+        <span>{{ form.confirm.label }}</span>
+      </label>
+      {% for error in form.confirm.errors %}<p class="mb-3 text-sm text-danger">{{ error }}</p>{% endfor %}
+      <div class="flex flex-wrap gap-3">
+        <button type="submit" class="rounded bg-danger-strong px-4 py-2 font-medium text-on-accent hover:bg-danger-stronger">{% translate "Void receipt" %}</button>
+        <a href="{% url 'manage:receipt' pk=receipt.pk %}" class="rounded px-4 py-2 text-ink-soft underline">{% translate "Back" %}</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

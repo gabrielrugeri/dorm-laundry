@@ -322,3 +322,15 @@ class PaymentDetailsForm(forms.Form):
                 )
             )
         return cleaned_data
+
+
+class VoidReceiptForm(forms.Form):
+    reason = forms.CharField(
+        label=_("Why are you voiding this receipt?"),
+        max_length=500,
+        widget=forms.Textarea(attrs={"class": INPUT, "rows": 3}),
+        help_text=_("For example: no such payment on the bank statement. Saved in the history."),
+    )
+    confirm = forms.BooleanField(
+        label=_("I understand: the money is taken back from the resident's balance."),
+    )

@@ -1,12 +1,16 @@
 from django.urls import path
 
-from . import payment_views, resident_import, residents, settings_views, views
+from . import payment_views, receipt_views, resident_import, residents, settings_views, views
 
 app_name = "manage"
 
 urlpatterns = [
     path("", views.index, name="index"),
     path("history/", views.audit_log, name="audit"),
+    path("receipts/", receipt_views.receipt_list, name="receipts"),
+    path("receipts/report/", receipt_views.receipt_report, name="receipt_report"),
+    path("receipts/<int:pk>/", receipt_views.receipt_detail, name="receipt"),
+    path("receipts/<int:pk>/void/", receipt_views.receipt_void, name="receipt_void"),
     path("settings/", settings_views.settings_page, name="settings"),
     path("settings/change/", settings_views.settings_change, name="settings_change"),
     path("settings/payments/", payment_views.payment_details_edit, name="payment_details"),

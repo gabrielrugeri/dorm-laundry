@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{{ receipt }} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:receipts' %}" class="text-sm text-link underline">← {% translate "Receipts" %}</a></p>
+  <div class="mb-4 rounded-lg bg-surface p-4 shadow-sm">
+    <div class="mb-2 flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h1 class="text-xl font-semibold">{{ receipt.amount|rub }}</h1>
+        <p class="text-sm text-muted">{{ receipt.uploaded_at|date:"j E Y, H:i" }}</p>
+      </div>
+      {% include "manage/receipts/_status.html" %}
+    </div>
+    <p class="mb-3">
+      <a href="{% url 'manage:resident' pk=resident.pk %}" class="font-medium text-link underline">{% if resident.is_anonymized %}{% translate "Former resident" %}{% else %}{{ resident.full_name }}{% endif %}</a>
+      {% if resident.room %}<span class="text-muted">· {% blocktranslate with room=resident.room %}room {{ room }}{% endblocktranslate %}</span>{% endif %}
+      · {% translate "balance" %} <strong class="{% if balance < 0 %}text-danger{% endif %}">{{ balance|rub }}</strong>
+    </p>
+
+    {% if flags %}
+      <ul class="mb-3 space-y-1 rounded border border-warning-line bg-warning-soft p-3 text-sm text-warning">
+        {% for code, label in flags %}<li>{{ label }}</li>{% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if receipt.status == "voided" %}
+      <div class="mb-3 rounded border border-danger-line bg-danger-soft p-3 text-sm text-danger">
+        <p>{% blocktranslate with day=receipt.voided_at|date:"j E Y, H:i" who=receipt.voided_by.get_username %}Voided on {{ day }} by {{ who }}.{% endblocktranslate %}</p>
+        <p>{{ receipt.void_reason }}</p>
+      </div>
+    {% endif %}
+
+    {% if receipt.file %}
+      {% url 'receipts:file' pk=receipt.pk as file_url %}
+      {% if is_image %}<img src="{{ file_url }}" alt="{% translate 'Receipt picture' %}" class="mb-3 max-h-[70vh] w-auto rounded border border-line">{% endif %}
+      <p class="mb-3"><a href="{{ file_url }}" class="text-link underline">{% translate "Download the receipt file" %}</a></p>
+    {% else %}
+      <p class="mb-3 text-muted">{% translate "The file is no longer kept." %}</p>
+    {% endif %}
+
+    {% if receipt.status == "credited" %}
+      <a href="{% url 'manage:receipt_void' pk=receipt.pk %}" class="inline-block rounded bg-danger-strong px-4 py-2 font-medium text-on-accent hover:bg-danger-stronger">{% translate "Void receipt" %}</a>
+    {% endif %}
+  </div>
+
+  <h2 class="mb-2 font-medium">{% translate "Recent money movements" %}</h2>
+  <ul class="divide-y divide-line rounded-lg bg-surface text-sm shadow-sm">
+    {% for entry in recent %}
+      <li class="flex justify-between gap-3 px-4 py-2">
+        <span>{{ entry.label|capfirst }} · {{ entry.created_at|date:"j E, H:i" }}{% if entry.booking %} · {{ entry.booking.machine.name }}{% endif %}</span>
+        <span class="shrink-0 font-medium {% if entry.amount > 0 %}text-success{% endif %}">{{ entry.amount|rub_signed }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

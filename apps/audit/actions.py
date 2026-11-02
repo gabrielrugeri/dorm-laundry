@@ -17,6 +17,7 @@ LABELS = {
     "payments.details_change": _("Payment details changed"),
     "receipt.credit": _("Receipt sent, balance topped up"),
     "receipt.refused": _("Receipt refused"),
+    "receipt.void": _("Receipt voided"),
     "resident.create": _("Resident added"),
     "resident.update": _("Resident details changed"),
     "resident.deactivate": _("Access turned off"),

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{% translate "Money report" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:receipts' %}" class="text-sm text-link underline">← {% translate "Receipts" %}</a></p>
+  <h1 class="mb-1 text-xl font-semibold">{% translate "Money report" %}</h1>
+  <p class="mb-3 text-sm text-muted">{% translate "All money movements in the period. Compare receipts and payments recorded by admins with the bank statement." %}</p>
+
+  <form method="get" class="mb-4 grid grid-cols-2 gap-2 rounded-lg bg-surface p-3 text-sm shadow-sm sm:grid-cols-4">
+    <label>
+      <span class="block text-muted">{% translate "From" %}</span>
+      <input type="date" name="from" value="{{ date_from|date:'Y-m-d' }}" class="w-full rounded border border-line-strong bg-surface px-2 py-2">
+    </label>
+    <label>
+      <span class="block text-muted">{% translate "To" %}</span>
+      <input type="date" name="to" value="{{ date_to|date:'Y-m-d' }}" class="w-full rounded border border-line-strong bg-surface px-2 py-2">
+    </label>
+    <label class="col-span-2">
+      <span class="block text-muted">{% translate "Group by" %}</span>
+      <select name="by" class="w-full rounded border border-line-strong bg-surface px-2 py-2">
+        <option value="day"{% if grouping == "day" %} selected{% endif %}>{% translate "Day" %}</option>
+        <option value="week"{% if grouping == "week" %} selected{% endif %}>{% translate "Week" %}</option>
+        <option value="month"{% if grouping == "month" %} selected{% endif %}>{% translate "Month" %}</option>
+        <option value="resident"{% if grouping == "resident" %} selected{% endif %}>{% translate "Resident" %}</option>
+      </select>
+    </label>
+    <button type="submit" class="col-span-2 rounded bg-accent px-4 py-2 font-medium text-on-accent sm:col-span-3">{% translate "Show" %}</button>
+    <a href="?from={{ date_from|date:'Y-m-d' }}&to={{ date_to|date:'Y-m-d' }}&by={{ grouping }}&format=csv" class="col-span-2 rounded border border-accent px-4 py-2 text-center font-medium text-link sm:col-span-1">{% translate "Download (Excel)" %}</a>
+  </form>
+
+  <div class="overflow-x-auto rounded-lg bg-surface shadow-sm">
+    <table class="w-full text-right text-sm">
+      <thead class="text-muted">
+        <tr class="border-b border-line">
+          <th class="px-3 py-2 text-left font-normal">{% if grouping == "resident" %}{% translate "Resident" %}{% else %}{% translate "Period" %}{% endif %}</th>
+          {% for key, label in columns %}<th class="px-3 py-2 font-normal">{{ label }}</th>{% endfor %}
+          <th class="px-3 py-2 font-normal">{% translate "Total" %}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line">
+        {% for label, values, total in rows %}
+          <tr>
+            <td class="px-3 py-2 text-left">{{ label }}</td>
+            {% for value in values %}<td class="whitespace-nowrap px-3 py-2">{% if value %}{{ value|rub_signed }}{% else %}—{% endif %}</td>{% endfor %}
+            <td class="whitespace-nowrap px-3 py-2 font-medium">{{ total|rub_signed }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="8" class="px-3 py-3 text-left text-muted">{% translate "No money movements in this period." %}</td></tr>
+        {% endfor %}
+      </tbody>
+      {% if rows %}
+        <tfoot class="border-t-2 border-line font-semibold">
+          <tr>
+            <td class="px-3 py-2 text-left">{% translate "Total" %}</td>
+            {% for value in totals.0 %}<td class="whitespace-nowrap px-3 py-2">{{ value|rub_signed }}</td>{% endfor %}
+            <td class="whitespace-nowrap px-3 py-2">{{ totals.1|rub_signed }}</td>
+          </tr>
+        </tfoot>
+      {% endif %}
+    </table>
+  </div>
+{% endblock %}
