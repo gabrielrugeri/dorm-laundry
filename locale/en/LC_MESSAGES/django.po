@@ -575,9 +575,6 @@ msgstr ""
 msgid "Your bookings this day:"
 msgstr ""
 
-msgid "Out of service"
-msgstr ""
-
 msgid "Your bookings"
 msgstr ""
 
@@ -2158,3 +2155,259 @@ msgstr ""
 
 msgid "of machine slots in the last 7 days"
 msgstr ""
+
+msgid "Machine put under maintenance"
+msgstr ""
+
+msgid "Maintenance extended"
+msgstr ""
+
+msgid "Maintenance ended"
+msgstr ""
+
+msgid "Planned maintenance removed"
+msgstr ""
+
+msgid "Machine taken out of use"
+msgstr ""
+
+msgid "Bookings cancelled"
+msgstr ""
+
+msgid "An archived machine has no end date."
+msgstr ""
+
+msgid "The end must be after the start."
+msgstr ""
+
+msgid "The start cannot be in the past. Choose “starting now”."
+msgstr ""
+
+msgid "This machine is archived."
+msgstr ""
+
+msgid ""
+"This overlaps another maintenance period of this machine. Extend or end that "
+"one instead."
+msgstr ""
+
+msgid "The machine was taken out of use"
+msgstr ""
+
+msgid "The machine is under maintenance"
+msgstr ""
+
+msgid "A reason is required."
+msgstr ""
+
+msgid "Only maintenance can be extended."
+msgstr ""
+
+msgid "This maintenance has no end yet."
+msgstr ""
+
+msgid "This maintenance is already over."
+msgstr ""
+
+msgid "The new end must be later than the current one."
+msgstr ""
+
+msgid "An archived machine cannot come back."
+msgstr ""
+
+msgid "maintenance"
+msgstr ""
+
+msgid "archived"
+msgstr ""
+
+msgid "from"
+msgstr ""
+
+msgid "until"
+msgstr ""
+
+msgid "affected residents refunded in full"
+msgstr ""
+
+msgid "If not, the usual cancellation rule decided refunds."
+msgstr ""
+
+msgid "machine out of service"
+msgstr ""
+
+msgid "machines out of service"
+msgstr ""
+
+msgid "Reason (residents whose bookings are cancelled will see it)"
+msgstr ""
+
+msgid "Refund affected residents in full"
+msgstr ""
+
+msgid "If not ticked, the usual cancellation rule decides."
+msgstr ""
+
+msgid "Starting now"
+msgstr ""
+
+msgid "Later"
+msgstr ""
+
+msgid "Start"
+msgstr ""
+
+msgid "Until"
+msgstr ""
+
+msgid "Until I end it"
+msgstr ""
+
+msgid "A set time"
+msgstr ""
+
+msgid "End"
+msgstr ""
+
+msgid "Choose when it starts."
+msgstr ""
+
+msgid "Choose when it ends."
+msgstr ""
+
+msgid "New end"
+msgstr ""
+
+msgid "I understand: the machine is removed for good and cannot come back."
+msgstr ""
+
+msgid "Saved. No bookings were affected."
+msgstr ""
+
+msgid "Put under maintenance"
+msgstr ""
+
+msgid "Take out of use for good"
+msgstr ""
+
+msgid "Extend maintenance"
+msgstr ""
+
+msgid "Planned maintenance removed."
+msgstr ""
+
+msgid "Maintenance ended. The machine can be booked again."
+msgstr ""
+
+msgid "Maintenance"
+msgstr ""
+
+msgid "under maintenance"
+msgstr ""
+
+msgid "They see your reason in their bookings."
+msgstr ""
+
+msgid "No bookings are affected."
+msgstr ""
+
+msgid "Already in progress (not cancelled, decide yourself):"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid ""
+"Times are Moscow time. Next you see which bookings this affects before "
+"anything changes."
+msgstr ""
+
+msgid "Remove planned maintenance"
+msgstr ""
+
+msgid "End maintenance"
+msgstr ""
+
+msgid ""
+"The maintenance will not happen. Bookings it already cancelled stay "
+"cancelled."
+msgstr ""
+
+msgid ""
+"The machine can be booked again from now. Bookings it already cancelled stay "
+"cancelled."
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "End now"
+msgstr ""
+
+msgid ""
+"Put a broken machine under maintenance: residents cannot book it, and "
+"bookings in that time are cancelled with your reason."
+msgstr ""
+
+msgid "Under maintenance until you end it"
+msgstr ""
+
+msgid "In service"
+msgstr ""
+
+msgid "Extend planned maintenance"
+msgstr ""
+
+msgid "Plan another maintenance"
+msgstr ""
+
+msgid "No machines in use."
+msgstr ""
+
+msgid "Full change history"
+msgstr ""
+
+msgid "everything every admin changed"
+msgstr ""
+
+msgid "Maintenance until %(day)s"
+msgstr ""
+
+msgid "maintenance from %(start)s"
+msgstr ""
+
+msgid "until %(end)s"
+msgstr ""
+
+msgid "now until %(day)s"
+msgstr ""
+
+msgid "From %(start)s until %(end)s."
+msgstr ""
+
+msgid "From %(start)s, with no end."
+msgstr ""
+
+msgid "Under maintenance until %(day)s"
+msgstr ""
+
+msgid "Maintenance planned from %(start)s"
+msgstr ""
+
+#: templates/manage/machines/action.html:1
+msgid "Saved. %(count)s booking was cancelled; the resident sees why."
+msgid_plural "Saved. %(count)s bookings were cancelled; the residents see why."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/manage/machines/action.html:1
+msgid "%(n)s booking will be cancelled:"
+msgid_plural "%(n)s bookings will be cancelled:"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/manage/machines/action.html:1
+msgid "%(n)s machine taken out of use"
+msgid_plural "%(n)s machines taken out of use"
+msgstr[0] ""
+msgstr[1] ""

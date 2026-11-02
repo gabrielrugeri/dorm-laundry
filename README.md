@@ -76,6 +76,10 @@ Admins manage residents at `/manage/residents/` (in Russian by default):
 If someone forgets their PIN: the same action, **More → Reset PIN / login
 link**, then give them the new link.
 
+Broken machine? **Machines** («Машины») → **Put under maintenance**: residents
+cannot book it, and bookings in that time are cancelled with your reason (and
+refunded). The change history is under **Settings**.
+
 Rules for money and receipts (how far residents may go into debt, receipt
 limits): **Settings** («Настройки»); changing them asks for your password and a
 reason. **Owe money** («С долгом») on the resident list is the debts report.
