@@ -22,6 +22,8 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env.bool("DJANGO_DEBUG", default=False)
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=[])
+# Plain-language 403 page that also logs why a form was refused (apps/core/views.py).
+CSRF_FAILURE_VIEW = "apps.core.views.csrf_failure"
 
 INSTALLED_APPS = [
     "apps.core.admin_config.SuperuserAdminConfig",  # Django admin, superusers only

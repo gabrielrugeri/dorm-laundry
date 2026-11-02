@@ -2561,3 +2561,21 @@ msgstr[0] "%(n)s машина выведена из работы"
 msgstr[1] "%(n)s машины выведены из работы"
 msgstr[2] "%(n)s машин выведено из работы"
 msgstr[3] "%(n)s машины выведены из работы"
+
+#: templates/core/csrf_failure.html:3
+msgid "The form could not be sent"
+msgstr "Форму не удалось отправить"
+
+#: templates/core/csrf_failure.html:7
+msgid ""
+"For your safety the page was refused. Go back, reload the page and try again."
+" If it keeps happening, tell the administration which phone and browser you "
+"use."
+msgstr ""
+"Ради вашей безопасности страница не принята. Вернитесь, обновите страницу и "
+"попробуйте снова. Если это повторяется, сообщите администрации, какой у вас "
+"телефон и браузер."
+
+#: templates/core/csrf_failure.html:8
+msgid "Reload the page"
+msgstr "Обновить страницу"
