@@ -2,6 +2,14 @@
 {% load i18n %}
 {% block content %}
   <h1 class="mb-3 text-xl font-semibold">{% translate "Book a washing machine" %}</h1>
+  {% if maintenance %}
+    <div class="mb-3 rounded-lg border border-warning-line bg-warning-soft p-3 text-sm" role="status">
+      {% for machine, period, started in maintenance %}
+        <p><strong class="text-warning">{{ machine.name }}:</strong>
+          {% if not started %}{% blocktranslate with start=period.starts_at|date:"j E, H:i" %}maintenance from {{ start }}{% endblocktranslate %}{% else %}{% translate "under maintenance" %}{% endif %}{% if period.ends_at %} {% blocktranslate with end=period.ends_at|date:"j E, H:i" %}until {{ end }}{% endblocktranslate %}{% endif %}.</p>
+      {% endfor %}
+    </div>
+  {% endif %}
   <div id="day-grid">
     {% include "bookings/_day_grid.html" %}
   </div>

@@ -142,3 +142,18 @@ def machine_choices(dormitory, day, run):
         else:
             choices.append(MachineChoice(machine, FREE_UNTIL, run[free_count - 1].end_time))
     return choices
+
+
+def maintenance_notices(dormitory, now=None):
+    """[(machine, period, started)] for maintenance that is on now or starts
+    within the booking horizon, so residents see it before they choose."""
+    now = now or timezone.now()
+    horizon_end = now + timedelta(days=dormitory.booking_horizon_days + 1)
+    machines = machine_state.in_use(list(dormitory.machines.order_by("number")), now)
+    by_machine = machine_state.periods(machines)
+    notices = []
+    for machine in machines:
+        for period in by_machine.get(machine.pk, []):
+            if period.overlaps(now, horizon_end):
+                notices.append((machine, period, period.starts_at <= now))
+    return notices

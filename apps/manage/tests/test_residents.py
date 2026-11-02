@@ -391,7 +391,7 @@ def test_admin_pages_are_in_russian_by_default(client, boss, resident):
     owe(resident, 40)
     html = client.get(url("resident", resident)).content.decode()
     assert "Изменить баланс" in html and "Комната 101" in html and "Долг с" in html
-    assert "Жильцы" in html and "Журнал изменений" in html  # navigation
+    assert "Жильцы" in html and "Машины" in html  # navigation
     erase = client.get(url("resident_erase", resident)).content.decode()
     assert "Имя, комната и студенческий код будут удалены везде" in erase
     assert "Долг жильца: 40" in erase

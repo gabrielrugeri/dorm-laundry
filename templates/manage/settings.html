@@ -30,6 +30,8 @@
     {% endif %}
   </div>
 
+  <p class="mb-6"><a href="{% url 'manage:audit' %}" class="text-link underline">{% translate "Full change history" %}</a> <span class="text-sm text-muted">{% translate "everything every admin changed" %}</span></p>
+
   <h2 class="mb-2 font-medium">{% translate "Earlier changes" %}</h2>
   <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
     {% for event, changes in history %}

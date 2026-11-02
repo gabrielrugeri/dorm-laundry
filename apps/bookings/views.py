@@ -63,6 +63,7 @@ def grid(request):
         "slot_hours": availability.slot_hours(dormitory),
         "options": availability.start_options(dormitory, day, length),
         "own_groups": resident_groups(resident, own),
+        "maintenance": availability.maintenance_notices(dormitory),
     }
     # htmx tabs only need the grid itself, not the whole page.
     if request.headers.get("HX-Request"):
