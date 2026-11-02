@@ -42,7 +42,8 @@
                     <span class="block text-xs">
                       {% if choice.state == "booked" %}{% translate "Booked" context "machine state" %}
                       {% elif choice.state == "free_until" %}{% blocktranslate with time=choice.free_until|time:"H:i" %}Free only until {{ time }}{% endblocktranslate %}
-                      {% else %}{% translate "Out of service" %}{% endif %}
+                      {% elif choice.until %}{% blocktranslate with day=choice.until|date:"j E, H:i" %}Maintenance until {{ day }}{% endblocktranslate %}
+                      {% else %}{% translate "Maintenance" %}{% endif %}
                     </span>
                   </span>
                 </label>

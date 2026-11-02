@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Machines" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <h1 class="mb-1 text-xl font-semibold">{% translate "Machines" %}</h1>
+  <p class="mb-3 text-sm text-muted">{% translate "Put a broken machine under maintenance: residents cannot book it, and bookings in that time are cancelled with your reason." %}</p>
+
+  <ul class="divide-y divide-line rounded-lg bg-surface shadow-sm">
+    {% for row in rows %}
+      <li class="px-4 py-3">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="font-medium">{{ row.machine.name }}</p>
+            {% if row.current %}
+              <p class="text-sm text-warning">
+                {% if row.current.ends_at %}{% blocktranslate with day=row.current.ends_at|date:"j E, H:i" %}Under maintenance until {{ day }}{% endblocktranslate %}{% else %}{% translate "Under maintenance until you end it" %}{% endif %}
+              </p>
+              <p class="text-sm text-muted">{{ row.current.reason }}</p>
+            {% else %}
+              <p class="text-sm text-success">{% translate "In service" %}</p>
+            {% endif %}
+            {% for planned in row.planned %}
+              <p class="text-sm text-muted">{% blocktranslate with start=planned.starts_at|date:"j E, H:i" %}Maintenance planned from {{ start }}{% endblocktranslate %}{% if planned.ends_at %} {% blocktranslate with end=planned.ends_at|date:"j E, H:i" %}until {{ end }}{% endblocktranslate %}{% endif %} · {{ planned.reason }}</p>
+            {% endfor %}
+          </div>
+          <div class="flex flex-wrap items-start gap-2">
+            {% if row.current %}
+              <a href="{% url 'manage:period_end' pk=row.current.pk %}" class="rounded bg-accent px-3 py-2 text-sm font-medium text-on-accent hover:bg-accent-strong">{% translate "End maintenance" %}</a>
+            {% elif not row.planned %}
+              <a href="{% url 'manage:machine_maintenance' pk=row.machine.pk %}" class="rounded bg-accent px-3 py-2 text-sm font-medium text-on-accent hover:bg-accent-strong">{% translate "Put under maintenance" %}</a>
+            {% endif %}
+            <details class="relative">
+              <summary class="cursor-pointer list-none rounded border border-line-strong px-3 py-2 text-sm [&::-webkit-details-marker]:hidden">{% translate "More" %} ▾</summary>
+              <div class="absolute right-0 z-10 mt-1 w-64 rounded-lg border border-line bg-surface py-1 shadow-lg">
+                {% if row.current and row.current.ends_at %}
+                  <a href="{% url 'manage:period_extend' pk=row.current.pk %}" class="block px-4 py-2 hover:bg-subtle">{% translate "Extend maintenance" %}</a>
+                {% endif %}
+                {% for planned in row.planned %}
+                  {% if planned.ends_at %}<a href="{% url 'manage:period_extend' pk=planned.pk %}" class="block px-4 py-2 hover:bg-subtle">{% translate "Extend planned maintenance" %}</a>{% endif %}
+                  <a href="{% url 'manage:period_end' pk=planned.pk %}" class="block px-4 py-2 hover:bg-subtle">{% translate "Remove planned maintenance" %}</a>
+                {% endfor %}
+                {% if row.current or row.planned %}
+                  <a href="{% url 'manage:machine_maintenance' pk=row.machine.pk %}" class="block px-4 py-2 hover:bg-subtle">{% translate "Plan another maintenance" %}</a>
+                {% endif %}
+                <hr class="my-1 border-line">
+                <a href="{% url 'manage:machine_archive' pk=row.machine.pk %}" class="block px-4 py-2 text-danger hover:bg-danger-soft">{% translate "Take out of use for good" %}</a>
+              </div>
+            </details>
+          </div>
+        </div>
+      </li>
+    {% empty %}
+      <li class="px-4 py-3 text-muted">{% translate "No machines in use." %}</li>
+    {% endfor %}
+  </ul>
+
+  {% if archived %}
+    <details class="mt-4 rounded-lg bg-surface shadow-sm">
+      <summary class="cursor-pointer px-4 py-3 font-medium">{% blocktranslate count n=archived|length %}{{ n }} machine taken out of use{% plural %}{{ n }} machines taken out of use{% endblocktranslate %}</summary>
+      <ul class="divide-y divide-line border-t border-line text-sm">
+        {% for machine, period in archived %}
+          <li class="px-4 py-2"><span class="font-medium">{{ machine.name }}</span> · {{ period.starts_at|date:"j E Y" }} · <span class="text-muted">{{ period.reason }}</span></li>
+        {% endfor %}
+      </ul>
+    </details>
+  {% endif %}
+{% endblock %}

@@ -282,6 +282,36 @@ an open question for the dormitory administration.
   midnight; it is shown as 22:00–00:00 and its calendar event ends at 00:00
   of the next day.
 
+### Maintenance and archive (Stage 2)
+
+- `MachineUnavailability` records decide whether a machine can be used:
+  **maintenance** (a start and an optional end; open-ended until someone ends
+  it) or **archive** (no end; the machine is gone for good and never comes
+  back). They replace the old `Machine.active` flag (a migration turned
+  switched-off machines into archive records).
+- Periods are half-open, `[starts_at, ends_at)`: a slot is affected when it
+  overlaps at all, so maintenance ending at 12:00 leaves the 12:00 slot free.
+  Stored in UTC, entered and shown in Moscow time.
+- `apps/dorms/machine_state.py` answers "is this machine available for this
+  slot?" for the booking grid (machines under maintenance count as taken),
+  the machine choice (archived machines are not listed; maintenance shows
+  until when), `book_machines` (refuses with `MachineUnavailable`) and the
+  dashboard (occupancy leaves maintenance out).
+- `apps/dorms/maintenance.py` is the only way to change periods: end after
+  start; no start in the past (an explicit "starting now" is allowed); no
+  overlapping periods on one machine (back to back is fine; extend or end
+  instead); only admins of the machine's dormitory. One transaction with the
+  machine's row locked: the period, cancellation of affected future bookings
+  by the administration (residents see the reason; a full refund while the
+  "Refund affected residents" box stays ticked, else the usual rule), and the
+  history. Bookings already in progress are only listed for the admin.
+  Extending cancels bookings in the added time; ending makes the machine
+  bookable at once; planned maintenance that has not started can be removed.
+- `/manage/machines/` («Машины»): form, then a preview of the affected
+  bookings, then one confirmation. Residents see a highlighted notice on the
+  booking page for maintenance that is on now or starts within the booking
+  horizon.
+
 ## Resident screens
 
 All are behind `resident_required` and use only the resident's own data.

@@ -33,7 +33,8 @@ from apps.accounts.models import Resident, StaffProfile, User
 from apps.audit.models import AuditEvent
 from apps.bookings import services as booking_services
 from apps.bookings.models import Booking
-from apps.dorms.models import Dormitory, Machine, TimeSlot
+from apps.dorms import maintenance
+from apps.dorms.models import Dormitory, Machine, MachineUnavailability, TimeSlot
 from apps.ledger import services as ledger_services
 from apps.ledger.models import LedgerEntry
 from apps.payments.models import PaymentDetails
@@ -153,10 +154,34 @@ class Command(BaseCommand):
         self._demo_history(dorm, slots, machines, residents, rng)
         self._demo_bookings(dorm, slots, machines, residents, rng)
         self._demo_admin_cancellation(dorm)
+        self._demo_maintenance(machines)
         self._demo_resident_states(dorm, residents)
         self._demo_payments(dorm, residents)
 
         self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
+
+    def _demo_maintenance(self, machines):
+        """Machine 6 under maintenance for two days (its bookings in that time
+        are cancelled and refunded), and maintenance planned on machine 5."""
+        admin = User.objects.get(username="admin")
+        now = timezone.now()
+        maintenance.take_out_of_service(
+            actor=admin,
+            machine=machines[5],
+            kind=MachineUnavailability.Kind.MAINTENANCE,
+            starts_at=now,
+            ends_at=now + timedelta(days=2),
+            reason="Течёт насос, ждём мастера",
+        )
+        planned = (now + timedelta(days=5)).replace(minute=0, second=0, microsecond=0)
+        maintenance.take_out_of_service(
+            actor=admin,
+            machine=machines[4],
+            kind=MachineUnavailability.Kind.MAINTENANCE,
+            starts_at=planned,
+            ends_at=planned + timedelta(hours=4),
+            reason="Плановая чистка фильтра",
+        )
 
     def _demo_history(self, dorm, slots, machines, residents, rng):
         """Eight weeks of fake past use, so the dashboard's charts make sense:

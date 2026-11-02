@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{{ title }} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:machines' %}" class="text-sm text-link underline">← {% translate "Machines" %}</a></p>
+  <div class="mx-auto max-w-lg rounded-lg bg-surface p-4 shadow-sm">
+    <h1 class="mb-1 text-xl font-semibold">{{ title }}</h1>
+    <p class="mb-4 text-muted">{{ machine.name }}{% if period and period.ends_at %} · {% blocktranslate with day=period.ends_at|date:"j E, H:i" %}now until {{ day }}{% endblocktranslate %}{% endif %}</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="mb-4 rounded border border-danger-line bg-danger-soft p-3 text-sm text-danger" role="alert">
+          {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+      {% endif %}
+
+      {% if preview %}
+        {# Step 2: what will happen. The form's values travel along hidden. #}
+        {% for field in form %}{% if field.name != "refund" %}{{ field.as_hidden }}{% endif %}{% endfor %}
+        <p class="mb-3">
+          {% if ends_at %}{% blocktranslate with start=starts_at|date:"j E, H:i" end=ends_at|date:"j E, H:i" %}From {{ start }} until {{ end }}.{% endblocktranslate %}{% else %}{% blocktranslate with start=starts_at|date:"j E, H:i" %}From {{ start }}, with no end.{% endblocktranslate %}{% endif %}
+        </p>
+        {% if future %}
+          <div class="mb-4 rounded-lg border-2 border-warning-line bg-warning-soft p-3" role="alert">
+            <p class="mb-2 font-semibold text-warning">{% blocktranslate count n=future|length %}{{ n }} booking will be cancelled:{% plural %}{{ n }} bookings will be cancelled:{% endblocktranslate %}</p>
+            <ul class="space-y-1 text-sm text-ink">
+              {% for booking in future %}
+                <li>{{ booking.date|date:"j E" }}, {{ booking.slot }} · {% if booking.resident.is_anonymized %}{% translate "Former resident" %}{% else %}{{ booking.resident.full_name }} ({{ booking.resident.room }}){% endif %}</li>
+              {% endfor %}
+            </ul>
+            <p class="mt-2 text-sm text-ink-soft">{% translate "They see your reason in their bookings." %}</p>
+          </div>
+          <label class="mb-4 flex items-start gap-2">
+            <input type="checkbox" name="refund" class="mt-1"{% if form.cleaned_data.refund %} checked{% endif %}>
+            <span>{{ form.refund.label }}<span class="block text-xs text-muted">{{ form.refund.help_text }}</span></span>
+          </label>
+        {% else %}
+          <input type="hidden" name="refund" value="on">
+          <p class="mb-4 text-success">{% translate "No bookings are affected." %}</p>
+        {% endif %}
+        {% if in_progress %}
+          <div class="mb-4 rounded border border-line-strong p-3 text-sm">
+            <p class="mb-1 font-medium">{% translate "Already in progress (not cancelled, decide yourself):" %}</p>
+            <ul>
+              {% for booking in in_progress %}
+                <li><a href="{% url 'manage:resident' pk=booking.resident.pk %}" class="text-link underline">{% if booking.resident.is_anonymized %}{% translate "Former resident" %}{% else %}{{ booking.resident.full_name }}{% endif %}</a> · {{ booking.slot }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+        <input type="hidden" name="confirm" value="1">
+        <div class="flex flex-wrap gap-3">
+          <button type="submit" class="rounded {% if form.confirm_forever %}bg-danger-strong hover:bg-danger-stronger{% else %}bg-accent hover:bg-accent-strong{% endif %} px-4 py-2 font-medium text-on-accent">{% translate "Confirm" %}</button>
+          <a href="{% url 'manage:machines' %}" class="rounded px-4 py-2 text-ink-soft underline">{% translate "Back" %}</a>
+        </div>
+      {% else %}
+        {# Step 1: when and why. The refund box comes on the next step. #}
+        {% for field in form %}
+          {% if field.name == "refund" %}
+            <input type="hidden" name="refund" value="on">
+          {% elif field.name == "starts" or field.name == "ends" %}
+            <fieldset class="mb-3">
+              <legend class="mb-1 text-sm font-medium">{{ field.label }}</legend>
+              <div class="flex flex-wrap gap-2">
+                {% for choice in field %}
+                  <label class="flex cursor-pointer items-center gap-2 rounded border border-line-strong px-3 py-2 has-[:checked]:border-accent has-[:checked]:bg-accent-soft">{{ choice.tag }} <span>{{ choice.choice_label }}</span></label>
+                {% endfor %}
+              </div>
+            </fieldset>
+          {% elif field.name == "confirm_forever" %}
+            <label class="mb-4 flex items-start gap-2">{{ field }} <span>{{ field.label }}</span></label>
+            {% for error in field.errors %}<p class="mb-3 text-sm text-danger">{{ error }}</p>{% endfor %}
+          {% else %}
+            <div class="mb-4">
+              <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
+              {{ field }}
+              {% for error in field.errors %}<p class="mt-1 text-sm text-danger">{{ error }}</p>{% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        <p class="mb-4 text-xs text-muted">{% translate "Times are Moscow time. Next you see which bookings this affects before anything changes." %}</p>
+        <div class="flex flex-wrap gap-3">
+          <button type="submit" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Next" %}</button>
+          <a href="{% url 'manage:machines' %}" class="rounded px-4 py-2 text-ink-soft underline">{% translate "Back" %}</a>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+{% endblock %}

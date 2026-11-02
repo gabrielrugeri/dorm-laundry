@@ -602,9 +602,6 @@ msgstr "На сколько?"
 msgid "Your bookings this day:"
 msgstr "Ваши бронирования в этот день:"
 
-msgid "Out of service"
-msgstr "Не работает"
-
 msgid "Your bookings"
 msgstr "Ваши бронирования"
 
@@ -2293,3 +2290,274 @@ msgstr "Загрузка машин"
 
 msgid "of machine slots in the last 7 days"
 msgstr "слотов машин за последние 7 дней"
+
+msgid "Machine put under maintenance"
+msgstr "Машина отправлена на обслуживание"
+
+msgid "Maintenance extended"
+msgstr "Обслуживание продлено"
+
+msgid "Maintenance ended"
+msgstr "Обслуживание завершено"
+
+msgid "Planned maintenance removed"
+msgstr "Запланированное обслуживание отменено"
+
+msgid "Machine taken out of use"
+msgstr "Машина выведена из работы"
+
+msgid "Bookings cancelled"
+msgstr "Отменено бронирований"
+
+msgid "An archived machine has no end date."
+msgstr "У машины, выведенной из работы, нет даты окончания."
+
+msgid "The end must be after the start."
+msgstr "Окончание должно быть позже начала."
+
+msgid "The start cannot be in the past. Choose “starting now”."
+msgstr "Начало не может быть в прошлом. Выберите «Сейчас»."
+
+msgid "This machine is archived."
+msgstr "Эта машина выведена из работы."
+
+msgid ""
+"This overlaps another maintenance period of this machine. Extend or end that "
+"one instead."
+msgstr ""
+"Это пересекается с другим обслуживанием этой машины. Продлите или завершите "
+"то обслуживание."
+
+msgid "The machine was taken out of use"
+msgstr "Машина выведена из работы"
+
+msgid "The machine is under maintenance"
+msgstr "Машина на обслуживании"
+
+msgid "A reason is required."
+msgstr "Укажите причину."
+
+msgid "Only maintenance can be extended."
+msgstr "Продлить можно только обслуживание."
+
+msgid "This maintenance has no end yet."
+msgstr "У этого обслуживания пока нет окончания."
+
+msgid "This maintenance is already over."
+msgstr "Это обслуживание уже закончилось."
+
+msgid "The new end must be later than the current one."
+msgstr "Новое окончание должно быть позже текущего."
+
+msgid "An archived machine cannot come back."
+msgstr "Машину, выведенную из работы, нельзя вернуть."
+
+msgid "maintenance"
+msgstr "обслуживание"
+
+msgid "archived"
+msgstr "выведена из работы"
+
+msgid "from"
+msgstr "с"
+
+msgid "until"
+msgstr "до"
+
+msgid "affected residents refunded in full"
+msgstr "затронутым жильцам вернули всю сумму"
+
+msgid "If not, the usual cancellation rule decided refunds."
+msgstr "Если нет, возврат решало обычное правило отмены."
+
+msgid "machine out of service"
+msgstr "машина не работает"
+
+msgid "machines out of service"
+msgstr "машины не работают"
+
+msgid "Reason (residents whose bookings are cancelled will see it)"
+msgstr "Причина (жильцы с отменёнными бронированиями её увидят)"
+
+msgid "Refund affected residents in full"
+msgstr "Вернуть затронутым жильцам всю сумму"
+
+msgid "If not ticked, the usual cancellation rule decides."
+msgstr "Если не отмечено, действует обычное правило отмены."
+
+msgid "Starting now"
+msgstr "Сейчас"
+
+msgid "Later"
+msgstr "Позже"
+
+msgid "Start"
+msgstr "Начало"
+
+msgid "Until"
+msgstr "До"
+
+msgid "Until I end it"
+msgstr "Пока не завершу"
+
+msgid "A set time"
+msgstr "До определённого времени"
+
+msgid "End"
+msgstr "Окончание"
+
+msgid "Choose when it starts."
+msgstr "Выберите, когда начнётся."
+
+msgid "Choose when it ends."
+msgstr "Выберите, когда закончится."
+
+msgid "New end"
+msgstr "Новое окончание"
+
+msgid "I understand: the machine is removed for good and cannot come back."
+msgstr "Понимаю: машина выводится из работы навсегда и не может вернуться."
+
+msgid "Saved. No bookings were affected."
+msgstr "Сохранено. Бронирования не затронуты."
+
+msgid "Put under maintenance"
+msgstr "Отправить на обслуживание"
+
+msgid "Take out of use for good"
+msgstr "Вывести из работы навсегда"
+
+msgid "Extend maintenance"
+msgstr "Продлить обслуживание"
+
+msgid "Planned maintenance removed."
+msgstr "Запланированное обслуживание отменено."
+
+msgid "Maintenance ended. The machine can be booked again."
+msgstr "Обслуживание завершено. Машину снова можно бронировать."
+
+msgid "Maintenance"
+msgstr "Обслуживание"
+
+msgid "under maintenance"
+msgstr "на обслуживании"
+
+msgid "They see your reason in their bookings."
+msgstr "Жильцы увидят вашу причину в своих бронированиях."
+
+msgid "No bookings are affected."
+msgstr "Бронирования не затронуты."
+
+msgid "Already in progress (not cancelled, decide yourself):"
+msgstr "Уже идут (не отменяются, решите сами):"
+
+msgid "Confirm"
+msgstr "Подтвердить"
+
+msgid ""
+"Times are Moscow time. Next you see which bookings this affects before "
+"anything changes."
+msgstr ""
+"Время московское. Дальше вы увидите, какие бронирования это затронет, прежде "
+"чем что-то изменится."
+
+msgid "Remove planned maintenance"
+msgstr "Отменить запланированное обслуживание"
+
+msgid "End maintenance"
+msgstr "Завершить обслуживание"
+
+msgid ""
+"The maintenance will not happen. Bookings it already cancelled stay "
+"cancelled."
+msgstr ""
+"Обслуживания не будет. Уже отменённые им бронирования остаются отменёнными."
+
+msgid ""
+"The machine can be booked again from now. Bookings it already cancelled stay "
+"cancelled."
+msgstr ""
+"Машину можно бронировать с этого момента. Уже отменённые бронирования "
+"остаются отменёнными."
+
+msgid "Remove"
+msgstr "Отменить"
+
+msgid "End now"
+msgstr "Завершить сейчас"
+
+msgid ""
+"Put a broken machine under maintenance: residents cannot book it, and "
+"bookings in that time are cancelled with your reason."
+msgstr ""
+"Отправьте сломанную машину на обслуживание: жильцы не смогут её бронировать, "
+"а бронирования на это время отменятся с вашей причиной."
+
+msgid "Under maintenance until you end it"
+msgstr "На обслуживании, пока вы не завершите"
+
+msgid "In service"
+msgstr "Работает"
+
+msgid "Extend planned maintenance"
+msgstr "Продлить запланированное обслуживание"
+
+msgid "Plan another maintenance"
+msgstr "Запланировать ещё обслуживание"
+
+msgid "No machines in use."
+msgstr "Работающих машин нет."
+
+msgid "Full change history"
+msgstr "Полный журнал изменений"
+
+msgid "everything every admin changed"
+msgstr "всё, что меняли администраторы"
+
+msgid "Maintenance until %(day)s"
+msgstr "На обслуживании до %(day)s"
+
+msgid "maintenance from %(start)s"
+msgstr "обслуживание с %(start)s"
+
+msgid "until %(end)s"
+msgstr "до %(end)s"
+
+msgid "now until %(day)s"
+msgstr "сейчас до %(day)s"
+
+msgid "From %(start)s until %(end)s."
+msgstr "С %(start)s до %(end)s."
+
+msgid "From %(start)s, with no end."
+msgstr "С %(start)s, без окончания."
+
+msgid "Under maintenance until %(day)s"
+msgstr "На обслуживании до %(day)s"
+
+msgid "Maintenance planned from %(start)s"
+msgstr "Обслуживание запланировано с %(start)s"
+
+#: templates/manage/machines/action.html:1
+msgid "Saved. %(count)s booking was cancelled; the resident sees why."
+msgid_plural "Saved. %(count)s bookings were cancelled; the residents see why."
+msgstr[0] "Сохранено. Отменено %(count)s бронирование; жилец видит причину."
+msgstr[1] "Сохранено. Отменено %(count)s бронирования; жильцы видят причину."
+msgstr[2] "Сохранено. Отменено %(count)s бронирований; жильцы видят причину."
+msgstr[3] "Сохранено. Отменено %(count)s бронирования; жильцы видят причину."
+
+#: templates/manage/machines/action.html:1
+msgid "%(n)s booking will be cancelled:"
+msgid_plural "%(n)s bookings will be cancelled:"
+msgstr[0] "Будет отменено %(n)s бронирование:"
+msgstr[1] "Будет отменено %(n)s бронирования:"
+msgstr[2] "Будет отменено %(n)s бронирований:"
+msgstr[3] "Будет отменено %(n)s бронирования:"
+
+#: templates/manage/machines/action.html:1
+msgid "%(n)s machine taken out of use"
+msgid_plural "%(n)s machines taken out of use"
+msgstr[0] "%(n)s машина выведена из работы"
+msgstr[1] "%(n)s машины выведены из работы"
+msgstr[2] "%(n)s машин выведено из работы"
+msgstr[3] "%(n)s машины выведены из работы"

@@ -68,6 +68,7 @@ def _extra_labels():
         "debt_confirmed": _("Debt seen and confirmed"),
         "groups": _("Role"),
         "refused_because": _("Why it was refused"),
+        "cancelled_bookings": _("Bookings cancelled"),
     }
 
 

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% if planned %}{% translate "Remove planned maintenance" %}{% else %}{% translate "End maintenance" %}{% endif %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2"><a href="{% url 'manage:machines' %}" class="text-sm text-link underline">← {% translate "Machines" %}</a></p>
+  <div class="mx-auto max-w-md rounded-lg bg-surface p-4 shadow-sm">
+    <h1 class="mb-1 text-xl font-semibold">{% if planned %}{% translate "Remove planned maintenance" %}{% else %}{% translate "End maintenance" %}{% endif %}</h1>
+    <p class="mb-3 text-muted">{{ period.machine.name }} · {{ period.reason }}</p>
+    <p class="mb-4">{% if planned %}{% translate "The maintenance will not happen. Bookings it already cancelled stay cancelled." %}{% else %}{% translate "The machine can be booked again from now. Bookings it already cancelled stay cancelled." %}{% endif %}</p>
+    <form method="post" class="flex flex-wrap gap-3">
+      {% csrf_token %}
+      <button type="submit" class="rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% if planned %}{% translate "Remove" %}{% else %}{% translate "End now" %}{% endif %}</button>
+      <a href="{% url 'manage:machines' %}" class="rounded px-4 py-2 text-ink-soft underline">{% translate "Back" %}</a>
+    </form>
+  </div>
+{% endblock %}

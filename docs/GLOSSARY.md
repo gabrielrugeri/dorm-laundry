@@ -17,6 +17,9 @@ English) words on the right, and add new concepts here when you add a screen.
 | Flags on receipts | Отметки | Marks |
 | Reconciliation report | Отчёт по деньгам | Money report |
 | Dashboard | Обзор | Overview |
+| Maintenance (MachineUnavailability, kind maintenance) | Обслуживание / Отправить на обслуживание | Maintenance / Put under maintenance |
+| Archive a machine | Вывести из работы навсегда | Take out of use for good |
+| In service | Работает | In service |
 | Occupancy | Загрузка машин | Machines busy |
 | Payment details | Реквизиты для оплаты / Как оплатить | Payment details / How to pay |
 | Payment purpose | Назначение платежа | Payment purpose |

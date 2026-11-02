@@ -65,15 +65,30 @@ def test_seed_demo_has_an_audited_admin_cancellation(db):
     from apps.audit.models import AuditEvent
 
     call_command("seed_demo")
-    cancelled = Booking.objects.get(status=Booking.Status.CANCELLED_BY_ADMIN)
-    assert cancelled.cancel_reason
-    assert cancelled.ledger_entries.filter(kind="refund").exists()
-    assert (
-        AuditEvent.objects.filter(
-            action="booking.cancel_by_staff", target_id=str(cancelled.pk)
-        ).count()
-        == 1
-    )
+    # One cancelled by hand, and the bookings of the machine under maintenance.
+    cancelled = Booking.objects.filter(status=Booking.Status.CANCELLED_BY_ADMIN)
+    assert cancelled.exists()
+    assert cancelled.filter(cancel_reason__contains="насос").exists()
+    for booking in cancelled:
+        assert booking.cancel_reason
+        assert booking.ledger_entries.filter(kind="refund").exists()
+        assert (
+            AuditEvent.objects.filter(
+                action="booking.cancel_by_staff", target_id=str(booking.pk)
+            ).count()
+            == 1
+        )
+
+
+def test_seed_demo_has_maintenance(db):
+    from apps.dorms import machine_state
+    from apps.dorms.models import Machine
+
+    call_command("seed_demo")
+    machines = list(Machine.objects.order_by("number"))
+    periods = machine_state.periods(machines)
+    assert machine_state.current(periods[machines[5].pk]) is not None  # machine 6, now
+    assert machine_state.upcoming(periods[machines[4].pk])  # machine 5, planned
 
 
 def test_seed_demo_covers_every_resident_state(db):

@@ -334,3 +334,92 @@ class VoidReceiptForm(forms.Form):
     confirm = forms.BooleanField(
         label=_("I understand: the money is taken back from the resident's balance."),
     )
+
+
+class _PeriodFields(forms.Form):
+    """Shared by the maintenance, extend and archive screens."""
+
+    reason = forms.CharField(
+        label=_("Reason (residents whose bookings are cancelled will see it)"),
+        max_length=500,
+        widget=forms.Textarea(attrs={"class": INPUT, "rows": 2}),
+    )
+    refund = forms.BooleanField(
+        label=_("Refund affected residents in full"),
+        required=False,
+        initial=True,
+        help_text=_("If not ticked, the usual cancellation rule decides."),
+    )
+
+
+LOCAL_INPUT = forms.DateTimeInput(
+    attrs={"class": INPUT, "type": "datetime-local"}, format="%Y-%m-%dT%H:%M"
+)
+
+
+class MaintenanceForm(_PeriodFields):
+    """When the machine is out of order. Times are Moscow time."""
+
+    starts = forms.ChoiceField(
+        label=_("From"),
+        choices=[("now", _("Starting now")), ("later", _("Later"))],
+        initial="now",
+        widget=forms.RadioSelect,
+    )
+    starts_at = forms.DateTimeField(
+        label=_("Start"), required=False, widget=LOCAL_INPUT, input_formats=["%Y-%m-%dT%H:%M"]
+    )
+    ends = forms.ChoiceField(
+        label=_("Until"),
+        choices=[("open", _("Until I end it")), ("at", _("A set time"))],
+        initial="open",
+        widget=forms.RadioSelect,
+    )
+    ends_at = forms.DateTimeField(
+        label=_("End"), required=False, widget=LOCAL_INPUT, input_formats=["%Y-%m-%dT%H:%M"]
+    )
+
+    field_order = ["starts", "starts_at", "ends", "ends_at", "reason", "refund"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("starts") == "later" and not cleaned_data.get("starts_at"):
+            self.add_error("starts_at", _("Choose when it starts."))
+        if cleaned_data.get("ends") == "at" and not cleaned_data.get("ends_at"):
+            self.add_error("ends_at", _("Choose when it ends."))
+        return cleaned_data
+
+    def period(self, now):
+        data = self.cleaned_data
+        starts_at = now if data["starts"] == "now" else data["starts_at"]
+        ends_at = data["ends_at"] if data["ends"] == "at" else None
+        return starts_at, ends_at
+
+
+class ExtendForm(_PeriodFields):
+    ends = forms.ChoiceField(
+        label=_("New end"),
+        choices=[("at", _("A set time")), ("open", _("Until I end it"))],
+        initial="at",
+        widget=forms.RadioSelect,
+    )
+    ends_at = forms.DateTimeField(
+        label=_("End"), required=False, widget=LOCAL_INPUT, input_formats=["%Y-%m-%dT%H:%M"]
+    )
+
+    field_order = ["ends", "ends_at", "reason", "refund"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("ends") == "at" and not cleaned_data.get("ends_at"):
+            self.add_error("ends_at", _("Choose when it ends."))
+        return cleaned_data
+
+    def new_end(self):
+        return self.cleaned_data["ends_at"] if self.cleaned_data["ends"] == "at" else None
+
+
+class ArchiveForm(_PeriodFields):
+    confirm_forever = forms.BooleanField(
+        label=_("I understand: the machine is removed for good and cannot come back."),
+    )

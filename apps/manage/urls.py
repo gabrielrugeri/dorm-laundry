@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import (
     dashboard_views,
+    machine_views,
     payment_views,
     receipt_views,
     resident_import,
@@ -15,6 +16,15 @@ app_name = "manage"
 urlpatterns = [
     path("", views.index, name="index"),
     path("overview/", dashboard_views.dashboard, name="dashboard"),
+    path("machines/", machine_views.machine_list, name="machines"),
+    path(
+        "machines/<int:pk>/maintenance/",
+        machine_views.machine_maintenance,
+        name="machine_maintenance",
+    ),
+    path("machines/<int:pk>/archive/", machine_views.machine_archive, name="machine_archive"),
+    path("machines/periods/<int:pk>/extend/", machine_views.period_extend, name="period_extend"),
+    path("machines/periods/<int:pk>/end/", machine_views.period_end, name="period_end"),
     path("history/", views.audit_log, name="audit"),
     path("receipts/", receipt_views.receipt_list, name="receipts"),
     path("receipts/report/", receipt_views.receipt_report, name="receipt_report"),

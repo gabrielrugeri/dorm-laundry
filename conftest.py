@@ -95,3 +95,19 @@ def _clear_cache():
     cache.clear()
     yield
     cache.clear()
+
+
+def out_of_service(machine, kind="maintenance", starts_at=None, ends_at=None, reason="Repairs"):
+    """Put `machine` under maintenance (or archive it), from long ago unless
+    told otherwise. Tests only: the real path is apps/dorms/maintenance.py."""
+    from datetime import UTC, datetime
+
+    from apps.dorms.models import MachineUnavailability
+
+    return MachineUnavailability.objects.create(
+        machine=machine,
+        kind=kind,
+        starts_at=starts_at or datetime(2020, 1, 1, tzinfo=UTC),
+        ends_at=ends_at,
+        reason=reason,
+    )

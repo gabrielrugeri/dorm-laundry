@@ -18,6 +18,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.accounts import roles
 from apps.accounts.models import Resident
 from apps.audit.services import record, snapshot
+from apps.dorms import machine_state
 from apps.dorms.rules import credit_limit_for
 from apps.ledger.models import LedgerEntry
 
@@ -87,8 +88,10 @@ def _check_same_dormitory(dormitory, machine, slots):
         raise WrongDormitory
 
 
-def _check_bookable(machine, slots):
-    if not machine.active:
+def _check_bookable(machine, day, slots):
+    """The machine must be in service (no maintenance or archive period
+    touching these slots), and the slots must be active."""
+    if not machine_state.is_available(machine, day, slots):
         raise MachineUnavailable
     if any(not slot.active for slot in slots):
         raise SlotUnavailable
@@ -155,7 +158,7 @@ def book_machines(resident, machines, day, slots, *, now=None):
 
     for machine in machines:
         _check_same_dormitory(dormitory, machine, slots)
-        _check_bookable(machine, slots)
+        _check_bookable(machine, day, slots)
     _check_consecutive(dormitory, slots)
     _check_booking_window(dormitory, day, slots[0], now)
 

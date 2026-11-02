@@ -140,9 +140,6 @@ class Machine(models.Model):
     number = models.PositiveSmallIntegerField(
         _("number"), help_text=_("Shown as “Machine 3” in the selected language.")
     )
-    active = models.BooleanField(
-        _("active"), default=True, help_text=_("Inactive machines cannot be booked.")
-    )
 
     class Meta:
         verbose_name = _("machine")
@@ -200,3 +197,70 @@ class GlobalSettings(models.Model):
 
     def __str__(self):
         return str(_("Money and upload rules"))
+
+
+class MachineUnavailability(models.Model):
+    """A period when a machine cannot be booked: maintenance (with an end,
+    or open-ended until someone ends it) or archive (the machine is gone for
+    good; no end, never restored).
+
+    A machine's state is worked out from these records. Periods are
+    half-open, [starts_at, ends_at): a slot is affected when it overlaps at
+    all, so maintenance ending at 12:00 leaves the 12:00 slot free. Change
+    them only through apps/dorms/maintenance.py, which cancels affected
+    bookings and records everything in the history.
+    """
+
+    class Kind(models.TextChoices):
+        MAINTENANCE = "maintenance", _("maintenance")
+        ARCHIVE = "archive", _("archived")
+
+    machine = models.ForeignKey(
+        Machine,
+        on_delete=models.PROTECT,
+        related_name="unavailabilities",
+        verbose_name=_("machine"),
+    )
+    kind = models.CharField(_("kind"), max_length=16, choices=Kind.choices)
+    starts_at = models.DateTimeField(_("from"))
+    ends_at = models.DateTimeField(_("until"), null=True, blank=True)
+    reason = models.TextField(_("reason"))
+    refund = models.BooleanField(
+        _("affected residents refunded in full"),
+        default=True,
+        help_text=_("If not, the usual cancellation rule decided refunds."),
+    )
+    created_by = models.ForeignKey(
+        "accounts.User",
+        on_delete=models.PROTECT,
+        null=True,
+        related_name="+",
+        verbose_name=_("created by"),
+    )
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("machine out of service")
+        verbose_name_plural = _("machines out of service")
+        ordering = ["machine", "starts_at"]
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(ends_at__isnull=True)
+                | models.Q(ends_at__gt=models.F("starts_at")),
+                name="unavailability_ends_after_start",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(kind="archive") | models.Q(ends_at__isnull=True),
+                name="archive_has_no_end",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(reason=""), name="unavailability_has_reason"
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.machine}: {self.get_kind_display()}"
+
+    def overlaps(self, starts_at, ends_at):
+        """Whether [starts_at, ends_at) overlaps this period."""
+        return self.starts_at < ends_at and (self.ends_at is None or starts_at < self.ends_at)
