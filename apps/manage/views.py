@@ -20,8 +20,8 @@ EVENTS_PER_PAGE = 50
 
 @admin_required
 def index(request):
-    """The admin area starts on the resident list."""
-    return redirect("manage:residents")
+    """The admin area starts on the overview."""
+    return redirect("manage:dashboard")
 
 
 def _date(value):

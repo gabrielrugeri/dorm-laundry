@@ -157,6 +157,8 @@ App service → **Settings** → **Networking** → **Public Networking** →
   a new one (sections 3 and 4: update `DATABASE_URL` if the name changed),
   then redeploy. All demo data is lost; it is all fake.
 
+- The first pre-deploy also creates eight weeks of fake history for the
+  dashboard; on Railway's database that can take a minute or two.
 - **Uploaded receipts** are stored on the app's disk, which Railway wipes on
   every redeploy unless you attach a volume at `/app/private_media`. For the
   demo that is fine: the receipts and their balances stay, only the files

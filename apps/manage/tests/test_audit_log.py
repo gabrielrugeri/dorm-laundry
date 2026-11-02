@@ -97,6 +97,6 @@ def test_admin_area_loads_nothing_from_third_party_hosts(boss_client, room_chang
         assert not external.search(boss_client.get(url).content.decode())
 
 
-def test_manage_starts_on_the_resident_list(boss_client):
+def test_manage_starts_on_the_overview(boss_client):
     response = boss_client.get(INDEX)
-    assert response.status_code == 302 and response.url == RESIDENTS
+    assert response.status_code == 302 and response.url == reverse("manage:dashboard")

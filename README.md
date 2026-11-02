@@ -43,7 +43,8 @@ python manage.py seed_demo
 python manage.py runserver
 ```
 
-Then open <http://127.0.0.1:8000/>. Dormitory admins work at `/manage/`.
+Then open <http://127.0.0.1:8000/>. Dormitory admins work at `/manage/`, which opens on an overview with the
+month's money, debts and how busy the machines are.
 On a phone the site can be installed on the home screen (it shows how); it
 follows the phone's dark mode, or the choice in the header menu.
 Django admin (`/admin/`) is for developers only: create a superuser with

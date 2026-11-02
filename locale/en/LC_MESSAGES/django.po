@@ -2068,3 +2068,93 @@ msgstr ""
 
 msgid "%(amount)s will be taken back. Balance now: %(before)s."
 msgstr ""
+
+msgid "Mon"
+msgstr ""
+
+msgid "Tue"
+msgstr ""
+
+msgid "Wed"
+msgstr ""
+
+msgid "Thu"
+msgstr ""
+
+msgid "Fri"
+msgstr ""
+
+msgid "Sat"
+msgstr ""
+
+msgid "Sun"
+msgstr ""
+
+msgid "Overview"
+msgstr ""
+
+msgid "Received this month"
+msgstr ""
+
+msgid "Owed by residents"
+msgstr ""
+
+msgid "Voided receipts this month"
+msgstr ""
+
+msgid "When machines are busy"
+msgstr ""
+
+msgid "no data"
+msgstr ""
+
+msgid "quiet"
+msgstr ""
+
+msgid "busy"
+msgstr ""
+
+msgid "Show as a table"
+msgstr ""
+
+msgid "Money received per week"
+msgstr ""
+
+msgid "Bookings per machine"
+msgstr ""
+
+msgid "last month: %(amount)s"
+msgstr ""
+
+msgid "for %(amount)s"
+msgstr ""
+
+msgid "Busiest: %(day)s, %(slot)s."
+msgstr ""
+
+msgid "%(total)s in total."
+msgstr ""
+
+#: templates/manage/dashboard.html:1
+msgid "%(n)s resident in debt"
+msgid_plural "%(n)s residents in debt"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/manage/dashboard.html:1
+msgid "Last %(n)s week, share of machines booked."
+msgid_plural "Last %(n)s weeks, share of machines booked."
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/manage/dashboard.html:1
+msgid "%(n)s slot booked in these weeks."
+msgid_plural "%(n)s slots booked in these weeks."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Machines busy"
+msgstr ""
+
+msgid "of machine slots in the last 7 days"
+msgstr ""

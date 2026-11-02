@@ -10,6 +10,9 @@ os.environ.setdefault("DJANGO_ALLOWED_HOSTS", "testserver,localhost")
 
 from .base import *  # noqa: E402, F403
 
+# A short fake history keeps seed_demo fast; one test runs the full eight weeks.
+SEED_DEMO_HISTORY_WEEKS = 1
+
 # Hashing passwords properly is slow; tests don't need it.
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 

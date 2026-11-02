@@ -16,6 +16,8 @@ English) words on the right, and add new concepts here when you add a screen.
 | Void a receipt (reversal entry) | Аннулировать чек / Чек аннулирован | Void receipt / Receipt voided |
 | Flags on receipts | Отметки | Marks |
 | Reconciliation report | Отчёт по деньгам | Money report |
+| Dashboard | Обзор | Overview |
+| Occupancy | Загрузка машин | Machines busy |
 | Payment details | Реквизиты для оплаты / Как оплатить | Payment details / How to pay |
 | Payment purpose | Назначение платежа | Payment purpose |
 | Sensitive settings (GlobalSettings) | Настройки → Оплата и чеки | Settings → Money and receipts |

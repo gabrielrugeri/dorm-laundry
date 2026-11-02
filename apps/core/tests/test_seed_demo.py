@@ -87,8 +87,9 @@ def test_seed_demo_covers_every_resident_state(db):
     assert not services.has_history(fresh) and not fresh.user.has_usable_password()
     # Payments the admin records carry a comment; receipt payments carry the receipt.
     assert not LedgerEntry.objects.filter(kind="credit", note="", receipt__isnull=True).exists()
-    assert LedgerEntry.objects.filter(kind="credit", receipt__isnull=False).count() == 3
-    assert LedgerEntry.objects.filter(kind="reversal").count() == 1  # one voided receipt
+    # Receipts from the fake history plus the three of today; one voided today.
+    assert LedgerEntry.objects.filter(kind="credit", receipt__isnull=False).count() >= 3
+    assert LedgerEntry.objects.filter(kind="reversal").count() >= 1
 
 
 def test_example_import_file_matches_the_demo_data(db):
@@ -123,3 +124,30 @@ def test_demo_names_are_stored_as_a_real_list_would_have_them(db):
     names = set(Resident.objects.values_list("full_name", flat=True))
     assert "Иван Тестов" in names
     assert "Carlos Ejemplo" in names
+
+
+def test_eight_weeks_of_history_for_the_dashboard(db, settings):
+    """Busier evenings than mornings, payments spread over the weeks, two
+    voided receipts in the past, and nobody left in debt by it."""
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from apps.bookings.models import Booking
+    from apps.dorms.models import Dormitory
+    from apps.manage import dashboard
+
+    settings.SEED_DEMO_HISTORY_WEEKS = 8
+    call_command("seed_demo")
+    dorm = Dormitory.objects.get(slug="demo")
+    today = timezone.localdate(timezone=dorm.tzinfo)
+    first = today - timedelta(days=today.weekday(), weeks=7)
+    past = Booking.objects.filter(machine__dormitory=dorm, date__gte=first, date__lt=today)
+    morning = past.filter(slot__start_time__hour=10).count()
+    evening = past.filter(slot__start_time__hour=18).count()
+    assert evening > 2 * morning > 0
+    weeks = dashboard.received_per_week(dorm, today)
+    assert sum(1 for _monday, amount in weeks if amount > 0) >= 7
+    assert LedgerEntry.objects.filter(kind="reversal", created_at__date__lt=today).count() == 2
+    debts = sorted(LedgerEntry.objects.balance(r) for r in Resident.objects.filter(dormitory=dorm))
+    assert [d for d in debts if d < 0] == [-150, -80]
