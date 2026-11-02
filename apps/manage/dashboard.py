@@ -74,7 +74,7 @@ class Tiles:
     received_last_month: int
     debt_total: int
     debtors: int
-    occupancy_this_week: float | None
+    occupancy_last_7_days: float | None
     voided_count: int
     voided_total: int
 
@@ -89,7 +89,6 @@ def tiles(dormitory, today):
         .filter(balance__lt=0)
         .values_list("balance", flat=True)
     )
-    monday = today - timedelta(days=today.weekday())
     voided = Receipt.objects.filter(
         resident__dormitory=dormitory,
         status=Receipt.Status.VOIDED,
@@ -100,7 +99,8 @@ def tiles(dormitory, today):
         received_last_month=money_received(dormitory, last_month, month),
         debt_total=-sum(balances),
         debtors=len(balances),
-        occupancy_this_week=occupancy(dormitory, monday, monday + timedelta(days=7)),
+        # The last 7 whole days: "this week" would be nearly empty on a Monday.
+        occupancy_last_7_days=occupancy(dormitory, today - timedelta(days=7), today),
         voided_count=voided["count"],
         voided_total=voided["total"] or 0,
     )

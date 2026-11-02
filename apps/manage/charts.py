@@ -41,7 +41,7 @@ def _round_right(x, y, w, h):
     )
 
 
-def column_chart(points, width=640, height=200, left=48, bottom=24, top=12):
+def column_chart(points, width=360, height=180, left=44, bottom=22, top=10):
     """Vertical bars for [(label, value)]: shapes, gridlines and the plot box."""
     top_value = nice_max(max((value for _label, value in points), default=0))
     plot_h = height - top - bottom
@@ -76,7 +76,7 @@ def column_chart(points, width=640, height=200, left=48, bottom=24, top=12):
     }
 
 
-def bar_chart(points, width=640, row=28, left=96, right=56):
+def bar_chart(points, width=360, row=26, left=80, right=44):
     """Horizontal bars for [(label, value)], one row each."""
     top_value = nice_max(max((value for _label, value in points), default=0))
     plot_w = width - left - right
@@ -98,6 +98,17 @@ def bar_chart(points, width=640, row=28, left=96, right=56):
     return {"width": width, "height": max(len(points), 1) * row, "left": left, "rows": rows}
 
 
+# Written out in full so Tailwind finds and generates every class.
+HEAT_FILLS = (
+    "fill-subtle",
+    "fill-heat-1",
+    "fill-heat-2",
+    "fill-heat-3",
+    "fill-heat-4",
+    "fill-heat-5",
+)
+
+
 def heat_level(share):
     """0 (none or no data) … 5 (busiest) for an occupancy share 0..1."""
     if share is None or share <= 0:
@@ -115,6 +126,7 @@ def heatmap(rows, slots, cell=36, gap=GAP, left=40, top=24):
                     "x": left + c * (cell + gap),
                     "y": top + r * (cell + gap),
                     "level": heat_level(share),
+                    "fill": HEAT_FILLS[heat_level(share)],
                     "share": share,
                     "weekday": weekday,
                     "slot": slots[c],

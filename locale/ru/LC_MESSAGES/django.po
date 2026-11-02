@@ -2228,12 +2228,6 @@ msgstr "Поступило в этом месяце"
 msgid "Owed by residents"
 msgstr "Долги жильцов"
 
-msgid "Machines busy this week"
-msgstr "Загрузка машин на этой неделе"
-
-msgid "of all machine slots"
-msgstr "от всех слотов машин"
-
 msgid "Voided receipts this month"
 msgstr "Аннулировано чеков в этом месяце"
 
@@ -2293,3 +2287,9 @@ msgstr[0] "За эти недели забронирован %(n)s слот."
 msgstr[1] "За эти недели забронировано %(n)s слота."
 msgstr[2] "За эти недели забронировано %(n)s слотов."
 msgstr[3] "За эти недели забронировано %(n)s слота."
+
+msgid "Machines busy"
+msgstr "Загрузка машин"
+
+msgid "of machine slots in the last 7 days"
+msgstr "слотов машин за последние 7 дней"

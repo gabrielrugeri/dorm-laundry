@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n money %}
+{% load i18n l10n money %}
 {% block title %}{% translate "Overview" %} · {{ block.super }}{% endblock %}
 {% block content %}
   <h1 class="mb-3 text-xl font-semibold">{% translate "Overview" %}</h1>
@@ -17,9 +17,9 @@
       <p class="text-xs text-muted">{% blocktranslate count n=tiles.debtors %}{{ n }} resident in debt{% plural %}{{ n }} residents in debt{% endblocktranslate %}</p>
     </a>
     <div class="rounded-lg bg-surface p-3 shadow-sm">
-      <p class="text-sm text-muted">{% translate "Machines busy this week" %}</p>
-      <p class="text-2xl font-semibold">{% if tiles.occupancy_this_week is None %}—{% else %}{% widthratio tiles.occupancy_this_week 1 100 %}%{% endif %}</p>
-      <p class="text-xs text-muted">{% translate "of all machine slots" %}</p>
+      <p class="text-sm text-muted">{% translate "Machines busy" %}</p>
+      <p class="text-2xl font-semibold">{% if tiles.occupancy_last_7_days is None %}—{% else %}{% widthratio tiles.occupancy_last_7_days 1 100 %}%{% endif %}</p>
+      <p class="text-xs text-muted">{% translate "of machine slots in the last 7 days" %}</p>
     </div>
     <a href="{% url 'manage:receipts' %}?status=voided" class="rounded-lg bg-surface p-3 shadow-sm hover:bg-subtle">
       <p class="text-sm text-muted">{% translate "Voided receipts this month" %}</p>
@@ -36,7 +36,7 @@
       {% if busiest and busiest.share %}{% blocktranslate with day=busiest.weekday_name slot=busiest.slot %}Busiest: {{ day }}, {{ slot }}.{% endblocktranslate %}{% endif %}
     </p>
     <div class="overflow-x-auto">
-      <svg viewBox="0 0 {{ heat.width }} {{ heat.height }}" width="{{ heat.width }}" height="{{ heat.height }}" role="img" aria-labelledby="heat-title" class="max-w-none text-muted">
+      {% localize off %}<svg viewBox="0 0 {{ heat.width }} {{ heat.height }}" width="{{ heat.width }}" height="{{ heat.height }}" role="img" aria-labelledby="heat-title" class="max-w-none text-muted">
         {% for column in heat.columns %}
           <text x="{{ column.x }}" y="14" text-anchor="middle" font-size="11" fill="currentColor">{{ column.slot.start_time|time:"H:i" }}</text>
         {% endfor %}
@@ -45,11 +45,11 @@
         {% endfor %}
         {% for cell in heat.cells %}
           <rect x="{{ cell.x }}" y="{{ cell.y }}" width="{{ heat.cell }}" height="{{ heat.cell }}" rx="4"
-                class="{% if cell.level %}fill-heat-{{ cell.level }}{% else %}fill-subtle{% endif %}">
+                class="{{ cell.fill }}">
             <title>{{ cell.weekday_name }}, {{ cell.slot }}: {% if cell.share is None %}{% translate "no data" %}{% else %}{% widthratio cell.share 1 100 %}%{% endif %}</title>
           </rect>
         {% endfor %}
-      </svg>
+      </svg>{% endlocalize %}
     </div>
     <p class="mt-2 flex items-center gap-1 text-xs text-muted" aria-hidden="true">
       {% translate "quiet" %}
@@ -76,20 +76,20 @@
     <section class="rounded-lg bg-surface p-4 shadow-sm" aria-labelledby="pay-title">
       <h2 id="pay-title" class="font-medium">{% translate "Money received per week" %}</h2>
       <p class="mb-2 text-sm text-muted">{% blocktranslate with total=payments_total|rub %}{{ total }} in total.{% endblocktranslate %}</p>
-      <svg viewBox="0 0 {{ payments.width }} {{ payments.height }}" role="img" aria-labelledby="pay-title" class="h-auto w-full text-muted">
+      {% localize off %}<svg viewBox="0 0 {{ payments.width }} {{ payments.height }}" role="img" aria-labelledby="pay-title" class="h-auto w-full max-w-md text-muted">
         {% for line in payments.grid %}
           <line x1="{{ payments.left }}" x2="{{ payments.width }}" y1="{{ line.y }}" y2="{{ line.y }}" stroke="currentColor" stroke-opacity="0.25" stroke-width="1"/>
-          <text x="{{ payments.left|add:'-6' }}" y="{{ line.y }}" text-anchor="end" dominant-baseline="middle" font-size="12" fill="currentColor">{{ line.value|floatformat:"0" }}</text>
+          <text x="{{ payments.left|add:'-6' }}" y="{{ line.y }}" text-anchor="end" dominant-baseline="middle" font-size="11" fill="currentColor">{{ line.value|floatformat:"0" }}</text>
         {% endfor %}
         {% for bar in payments.bars %}
           <g>
             <title>{{ bar.label }}: {{ bar.value|rub }}</title>
             <rect x="{{ bar.hit_x }}" y="{{ payments.top }}" width="{{ bar.hit_w }}" height="{{ payments.base }}" fill="transparent"/>
             {% if bar.path %}<path d="{{ bar.path }}" class="fill-accent"/>{% endif %}
-            <text x="{{ bar.x_mid }}" y="{{ payments.height|add:'-6' }}" text-anchor="middle" font-size="12" fill="currentColor">{{ bar.label }}</text>
+            <text x="{{ bar.x_mid }}" y="{{ payments.height|add:'-6' }}" text-anchor="middle" font-size="10" fill="currentColor">{{ bar.label }}</text>
           </g>
         {% endfor %}
-      </svg>
+      </svg>{% endlocalize %}
       <details class="mt-2 text-sm">
         <summary class="cursor-pointer text-link">{% translate "Show as a table" %}</summary>
         <table class="mt-2 w-full">
@@ -102,16 +102,16 @@
     <section class="rounded-lg bg-surface p-4 shadow-sm" aria-labelledby="mach-title">
       <h2 id="mach-title" class="font-medium">{% translate "Bookings per machine" %}</h2>
       <p class="mb-2 text-sm text-muted">{% blocktranslate count n=machines_total %}{{ n }} slot booked in these weeks.{% plural %}{{ n }} slots booked in these weeks.{% endblocktranslate %}</p>
-      <svg viewBox="0 0 {{ machines.width }} {{ machines.height }}" role="img" aria-labelledby="mach-title" class="h-auto w-full text-muted">
+      {% localize off %}<svg viewBox="0 0 {{ machines.width }} {{ machines.height }}" role="img" aria-labelledby="mach-title" class="h-auto w-full max-w-md text-muted">
         {% for row in machines.rows %}
           <g>
             <title>{{ row.label }}: {{ row.value }}</title>
-            <text x="0" y="{{ row.y_mid }}" dominant-baseline="middle" font-size="13" fill="currentColor">{{ row.label }}</text>
+            <text x="0" y="{{ row.y_mid }}" dominant-baseline="middle" font-size="12" fill="currentColor">{{ row.label }}</text>
             {% if row.path %}<path d="{{ row.path }}" class="fill-accent"/>{% endif %}
-            <text x="{{ row.label_x }}" y="{{ row.y_mid }}" dominant-baseline="middle" font-size="13" class="fill-ink">{{ row.value }}</text>
+            <text x="{{ row.label_x }}" y="{{ row.y_mid }}" dominant-baseline="middle" font-size="12" class="fill-ink">{{ row.value }}</text>
           </g>
         {% endfor %}
-      </svg>
+      </svg>{% endlocalize %}
     </section>
   </div>
 {% endblock %}

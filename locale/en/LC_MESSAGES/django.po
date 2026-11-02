@@ -2099,12 +2099,6 @@ msgstr ""
 msgid "Owed by residents"
 msgstr ""
 
-msgid "Machines busy this week"
-msgstr ""
-
-msgid "of all machine slots"
-msgstr ""
-
 msgid "Voided receipts this month"
 msgstr ""
 
@@ -2158,3 +2152,9 @@ msgid "%(n)s slot booked in these weeks."
 msgid_plural "%(n)s slots booked in these weeks."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Machines busy"
+msgstr ""
+
+msgid "of machine slots in the last 7 days"
+msgstr ""

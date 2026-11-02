@@ -56,13 +56,14 @@ def test_debt_and_debtors(resident, other_resident, dormitory):
     assert (tiles.debt_total, tiles.debtors) == (80, 1)
 
 
-def test_occupancy_this_week(resident, dormitory, machine, slot):
+def test_occupancy_last_7_days(resident, dormitory, machine, slot):
     Machine.objects.create(dormitory=dormitory, number=2)
-    monday = TODAY - timedelta(days=TODAY.weekday())
-    booking(resident, machine, slot, monday)
-    booking(resident, machine, slot, monday + timedelta(days=1), status="cancelled")
+    booking(resident, machine, slot, TODAY - timedelta(days=1))
+    booking(resident, machine, slot, TODAY - timedelta(days=2), status="cancelled")
+    booking(resident, machine, slot, TODAY)  # today is not over: not counted
+    booking(resident, machine, slot, TODAY - timedelta(days=8))  # too long ago
     # 2 machines × 1 slot × 7 days = 14 machine-slots; 1 booked.
-    assert dashboard.tiles(dormitory, TODAY).occupancy_this_week == pytest.approx(1 / 14)
+    assert dashboard.tiles(dormitory, TODAY).occupancy_last_7_days == pytest.approx(1 / 14)
 
 
 def test_heatmap_by_weekday_and_slot(resident, dormitory, machine, slot):
@@ -135,3 +136,23 @@ def test_dashboard_page(client, dormitory, resident, machine, slot):
         assert words in html
     assert "<svg" in html and "Show as a table" in html
     assert 'href="http' not in html  # nothing loaded from elsewhere
+
+
+def test_chart_numbers_use_a_dot_in_russian(client, dormitory, resident, machine, slot):
+    """Russian formatting prints 56,5; in SVG that would scatter the letters."""
+    import re
+
+    client.force_login(make_staff(dormitory, "boss", role=roles.ADMIN))
+    client.cookies["django_language"] = "ru"
+    html = client.get(DASHBOARD).content.decode()
+    svg = "".join(re.findall(r"<svg.*?</svg>", html, re.S))
+    assert not re.search(r'(?:x|y|width|height|x1|x2|y1|y2)="-?\d+,\d', svg)
+
+
+def test_heat_cells_use_the_full_class_names():
+    chart = charts.heatmap([(0, [None, 0.05, 1.0])], ["a", "b", "c"])
+    assert [cell["fill"] for cell in chart["cells"]] == [
+        "fill-subtle",
+        "fill-heat-1",
+        "fill-heat-5",
+    ]
