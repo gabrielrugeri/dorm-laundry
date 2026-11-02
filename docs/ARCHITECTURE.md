@@ -181,7 +181,7 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   `apps/manage/dashboard.py` for the numbers, `charts.py` for the SVG
   geometry): money received this month and last month (payments from receipts
   and admins minus voided receipts), what residents owe and how many are in
-  debt, machines busy this week (booked machine-slots over possible ones;
+  debt, machines busy in the last 7 days (booked machine-slots over possible ones;
   maintenance periods must be left out once Stage 2 lands), voided receipts
   this month. Three charts drawn as SVG on the server, no library and nothing
   from a CDN: a weekday × slot heat map (one hue in five steps, the `heat-*`
