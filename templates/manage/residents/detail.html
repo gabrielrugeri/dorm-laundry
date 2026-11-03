@@ -88,7 +88,7 @@
           <span>
             <span class="block">{{ entry.created_at|date:"j E Y" }}</span>
             {% if entry.note %}<span class="block text-sm text-muted">{{ entry.note }}</span>{% endif %}
-            {% if entry.receipt_id %}<a href="{% url 'receipts:file' pk=entry.receipt_id %}" class="block text-sm text-link underline">{% translate "Sent with a receipt" %}</a>{% endif %}
+            {% if entry.receipt_id %}<a href="{% url 'receipts:view' pk=entry.receipt_id %}" class="block text-sm text-link underline">{% translate "Sent with a receipt" %}</a>{% endif %}
           </span>
           <span class="font-medium {% if entry.amount > 0 %}text-success{% else %}text-danger{% endif %}">{{ entry.amount|rub_signed }}</span>
         </li>

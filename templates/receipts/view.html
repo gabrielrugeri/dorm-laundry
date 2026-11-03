@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n money %}
+{% block title %}{{ receipt }} · {{ block.super }}{% endblock %}
+{% block content %}
+  <p class="mb-2">
+    {% if back == "admin" %}
+      <a href="{% url 'manage:receipt' pk=receipt.pk %}" class="text-sm text-link underline">← {{ receipt }}</a>
+    {% else %}
+      <a href="{% url 'ledger:balance' %}" class="text-sm text-link underline">← {% translate "Balance" %}</a>
+    {% endif %}
+  </p>
+  <div class="rounded-lg bg-surface p-4 shadow-sm">
+    <div class="mb-3 flex flex-wrap items-baseline justify-between gap-3">
+      <h1 class="text-xl font-semibold">{{ receipt.amount|rub }}</h1>
+      <p class="text-sm text-muted">{{ receipt.uploaded_at|date:"j E Y, H:i" }}{% if receipt.status == "voided" %} · <span class="text-danger">{% translate "Voided" %}</span>{% endif %}</p>
+    </div>
+    {% if stored %}
+      {% url 'receipts:inline' pk=receipt.pk as inline_url %}
+      {# The file comes from a sandboxed address: no scripts, nothing from elsewhere. #}
+      {% if is_image %}
+        <img src="{{ inline_url }}" alt="{% translate 'Receipt picture' %}" class="mb-3 max-h-[75vh] w-auto rounded border border-line">
+      {% else %}
+        <iframe src="{{ inline_url }}" title="{% translate 'Receipt' %}" class="mb-3 h-[75vh] w-full rounded border border-line bg-on-accent"></iframe>
+      {% endif %}
+      <a href="{% url 'receipts:file' pk=receipt.pk %}" class="inline-block rounded border border-accent px-4 py-2 font-medium text-link hover:bg-accent-soft">{% translate "Download" %}</a>
+    {% else %}
+      <p class="text-muted">{% translate "The file is no longer kept." %}</p>
+    {% endif %}
+  </div>
+{% endblock %}

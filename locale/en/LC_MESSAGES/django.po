@@ -2426,3 +2426,7 @@ msgstr ""
 #: templates/core/csrf_failure.html:8
 msgid "Reload the page"
 msgstr ""
+
+#: templates/receipts/view.html:25
+msgid "Download"
+msgstr ""

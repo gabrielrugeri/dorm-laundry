@@ -39,6 +39,7 @@ from apps.ledger import services as ledger_services
 from apps.ledger.models import LedgerEntry
 from apps.payments.models import PaymentDetails
 from apps.receipts import services as receipt_services
+from apps.receipts.demo_files import demo_receipt_pdf
 
 # Made-up names, stored the way a real list would have them: Russian names in
 # Cyrillic, two foreign residents in Latin script. Shown exactly like this in
@@ -256,7 +257,7 @@ class Command(BaseCommand):
         amount = rng.choice([200, 300, 500])
         with self._dated(when):
             if rng.random() < 2 / 3:
-                fake_pdf = f"%PDF-1.4\n% DEMO receipt {tag}, not a real payment\n%%EOF\n".encode()
+                fake_pdf = demo_receipt_pdf(f"history-{tag}", amount)
                 try:
                     return receipt_services.submit_receipt(
                         resident=resident,
@@ -302,11 +303,7 @@ class Command(BaseCommand):
         )
         receipts = []
         for resident, amount in ((residents[0], 200), (residents[1], 150), (residents[2], 1900)):
-            fake_pdf = (
-                b"%PDF-1.4\n% DEMO receipt, not a real payment: "
-                + resident.student_code.encode()
-                + b"\n%%EOF\n"
-            )
+            fake_pdf = demo_receipt_pdf(resident.student_code, amount)
             receipts.append(
                 receipt_services.submit_receipt(
                     resident=resident,
