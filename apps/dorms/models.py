@@ -63,6 +63,14 @@ class Dormitory(models.Model):
         default=7,
         help_text=_("How many days ahead residents can book."),
     )
+    help_contact = models.TextField(
+        _("where residents get help"),
+        max_length=300,
+        blank=True,
+        help_text=_(
+            "Printed on the poster, e.g. room 105, Mon–Fri 18:00–20:00, or a phone number."
+        ),
+    )
 
     class Meta:
         verbose_name = _("dormitory")

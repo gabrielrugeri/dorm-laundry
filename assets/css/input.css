@@ -210,6 +210,24 @@
   padding-left: max(env(safe-area-inset-left), 1rem);
   padding-right: max(env(safe-area-inset-right), 1rem);
 }
+/* The residents' poster (templates/manage/poster.html) fills one A4 page. */
+@page {
+  size: A4;
+  margin: 12mm;
+}
+@utility poster-qr {
+  & svg {
+    width: 100%;
+    height: auto;
+  }
+}
+@media print {
+  .poster-page {
+    max-width: none;
+    padding: 0;
+  }
+}
+
 /* Dims the page behind a bottom sheet (the calendar menu on phones). The same
    in both themes: it darkens whatever is behind it. */
 @utility sheet-backdrop {

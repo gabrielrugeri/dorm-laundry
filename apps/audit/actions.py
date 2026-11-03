@@ -16,6 +16,7 @@ LABELS = {
     "ledger.manual_entry": _("Payment or balance correction"),  # stage 1a events
     "settings.change": _("Money and upload rules changed"),
     "payments.details_change": _("Payment details changed"),
+    "dormitory.help_contact": _("Where residents get help changed"),
     "receipt.credit": _("Receipt sent, balance topped up"),
     "receipt.refused": _("Receipt refused"),
     "receipt.void": _("Receipt voided"),

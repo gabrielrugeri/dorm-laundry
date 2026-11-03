@@ -67,6 +67,10 @@ pytest-django==4.14.0
     # via -r requirements-dev.in
 ruff==0.17.0
     # via -r requirements-dev.in
+segno==1.6.6
+    # via
+    #   -c requirements.txt
+    #   -r requirements.in
 sqlparse==0.6.0
     # via
     #   -c requirements.txt

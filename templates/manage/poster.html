@@ -1,0 +1,66 @@
+{% load i18n static %}<!doctype html>
+{# A printable A4 poster for the residents (apps/manage/poster_views.py). #}
+{# Its own page, without the app's header and navigation; always light, for paper. #}
+<html lang="{{ poster_language }}" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% translate "Poster" %} · {{ dormitory.name }}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="{% static 'js/app.js' %}" defer></script>
+</head>
+<body class="bg-canvas text-ink font-sans print:bg-surface">
+  <nav class="mx-auto flex max-w-[210mm] flex-wrap items-center gap-3 p-4 text-sm print:hidden" aria-label="{% translate 'Poster' %}">
+    <a href="{% url 'manage:settings' %}" class="text-link underline">← {% translate "Settings" %}</a>
+    <a href="?lang=ru" class="{% if poster_language == 'ru' %}font-semibold{% else %}text-link underline{% endif %}" lang="ru">Русский</a>
+    <a href="?lang=en" class="{% if poster_language == 'en' %}font-semibold{% else %}text-link underline{% endif %}" lang="en">English</a>
+    <button type="button" data-print class="ml-auto rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Print" %}</button>
+  </nav>
+
+  <main class="poster-page mx-auto flex max-w-[210mm] flex-col gap-4 bg-surface p-10 shadow-sm print:shadow-none">
+    <header class="text-center">
+      <h1 class="text-3xl font-bold leading-tight">{% translate "Book the washing machine from your phone" %}</h1>
+      <p class="mt-2 text-xl text-ink-soft">{{ dormitory.name }}</p>
+    </header>
+
+    <section class="flex flex-col items-center gap-2">
+      <div class="poster-qr w-48">{{ qr }}</div>
+      <p class="text-lg font-medium break-all">{{ app_url }}</p>
+      <p class="text-ink-soft">{% translate "Scan the code with your phone's camera, or type the address." %}</p>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-xl font-semibold">1. {% translate "Put it on your home screen" %}</h2>
+      <div class="grid gap-4 sm:grid-cols-2 print:grid-cols-2">
+        <div class="rounded-lg border border-line-strong p-4">
+          <p class="mb-1 font-semibold">iPhone</p>
+          <p>{% translate "In Safari, tap «Share» (the square with an arrow), then «Add to Home Screen»." %}</p>
+        </div>
+        <div class="rounded-lg border border-line-strong p-4">
+          <p class="mb-1 font-semibold">Android</p>
+          <p>{% translate "In Chrome, tap ⋮, then «Install app» or «Add to Home screen»." %}</p>
+        </div>
+      </div>
+      <p class="mt-2 text-ink-soft">{% translate "No app store needed. It also works in the browser." %}</p>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-xl font-semibold">2. {% translate "Log in the first time" %}</h2>
+      <p class="text-lg">{% translate "Student code, and your date of birth as DDMMYY." %}</p>
+      <p class="mt-1 text-lg">{% translate "Example: born 5 March 2004 → 050304." %}</p>
+      <p class="mt-2">{% blocktranslate with days=initial_pin_days %}Then choose your own PIN. The date of birth works only for the first {{ days }} days.{% endblocktranslate %}</p>
+    </section>
+
+    <section>
+      <h2 class="mb-2 text-xl font-semibold">3. {% translate "Book and pay" %}</h2>
+      <p>{% translate "Pick a free time, top up your balance, send the receipt. Other residents never see your name or room." %}</p>
+    </section>
+
+    <section class="rounded-lg bg-subtle p-4">
+      <h2 class="mb-1 text-xl font-semibold">{% translate "Need help?" %}</h2>
+      <p class="whitespace-pre-line text-lg">{% if dormitory.help_contact %}{{ dormitory.help_contact }}{% else %}{% translate "Ask the dormitory administration." %}{% endif %}</p>
+    </section>
+  </main>
+</body>
+</html>

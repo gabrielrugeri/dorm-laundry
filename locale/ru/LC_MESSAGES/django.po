@@ -2914,3 +2914,115 @@ msgstr[1] ""
 msgstr[2] ""
 "Дать новый первый PIN-код (дата рождения) %(n)s жильцам, которые ещё не "
 "выбрали свой"
+
+#: apps/audit/actions.py:19
+msgid "Where residents get help changed"
+msgstr "Изменено, где жильцам получить помощь"
+
+#: apps/dorms/models.py:67
+msgid "where residents get help"
+msgstr "где жильцам получить помощь"
+
+#: apps/dorms/models.py:70
+msgid ""
+"Printed on the poster, e.g. room 105, Mon–Fri 18:00–20:00, or a phone number."
+msgstr ""
+"Печатается на плакате, например: комната 105, пн–пт 18:00–20:00, или номер "
+"телефона."
+
+#: templates/manage/settings.html:34
+msgid "Poster for the residents"
+msgstr "Плакат для жильцов"
+
+#: templates/manage/settings.html:35
+msgid "Change where to get help"
+msgstr "Изменить, где получить помощь"
+
+#: templates/manage/help_contact.html:3
+msgid "Where residents get help"
+msgstr "Где жильцам получить помощь"
+
+#: templates/manage/settings.html:39
+msgid "Not filled in: the poster says to ask the dormitory administration."
+msgstr "Не заполнено: на плакате будет «Обратитесь в администрацию общежития»."
+
+#: templates/manage/settings.html:40
+msgid "Open the poster to print"
+msgstr "Открыть плакат для печати"
+
+#: apps/manage/poster_views.py:61
+msgid "Saved. It is on the poster now."
+msgstr "Сохранено. Теперь это на плакате."
+
+#: templates/manage/poster.html:9
+msgid "Poster"
+msgstr "Плакат"
+
+#: templates/manage/poster.html:18
+msgid "Print"
+msgstr "Печать"
+
+#: templates/manage/poster.html:23
+msgid "Book the washing machine from your phone"
+msgstr "Записывайтесь на стирку с телефона"
+
+#: templates/manage/poster.html:30
+msgid "Scan the code with your phone's camera, or type the address."
+msgstr "Наведите камеру телефона на код или наберите адрес."
+
+#: templates/manage/poster.html:34
+msgid "Put it on your home screen"
+msgstr "Добавьте на экран «Домой»"
+
+#: templates/manage/poster.html:38
+msgid ""
+"In Safari, tap «Share» (the square with an arrow), then «Add to Home Screen»."
+msgstr ""
+"В Safari нажмите «Поделиться» (квадрат со стрелкой), затем «На экран "
+"„Домой“»."
+
+#: templates/manage/poster.html:42
+msgid "In Chrome, tap ⋮, then «Install app» or «Add to Home screen»."
+msgstr ""
+"В Chrome нажмите ⋮, затем «Установить приложение» или «Добавить на главный "
+"экран»."
+
+#: templates/manage/poster.html:45
+msgid "No app store needed. It also works in the browser."
+msgstr "Магазин приложений не нужен. Работает и просто в браузере."
+
+#: templates/manage/poster.html:49
+msgid "Log in the first time"
+msgstr "Первый вход"
+
+#: templates/manage/poster.html:50
+msgid "Student code, and your date of birth as DDMMYY."
+msgstr "Студенческий код и дата рождения в виде ДДММГГ."
+
+#: templates/manage/poster.html:52
+msgid ""
+"Then choose your own PIN. The date of birth works only for the first %(days)s"
+" days."
+msgstr ""
+"Затем выберите свой PIN-код. Дата рождения работает только первые %(days)s "
+"дней."
+
+#: templates/manage/poster.html:56
+msgid "Book and pay"
+msgstr "Запись и оплата"
+
+#: templates/manage/poster.html:57
+msgid ""
+"Pick a free time, top up your balance, send the receipt. Other residents "
+"never see your name or room."
+msgstr ""
+"Выберите свободное время, пополните баланс, отправьте чек. Другие жильцы не "
+"видят ваше имя и комнату."
+
+#: templates/manage/poster.html:61
+msgid "Need help?"
+msgstr "Нужна помощь?"
+
+#: templates/manage/poster.html:62
+msgid "Ask the dormitory administration."
+msgstr "Обратитесь в администрацию общежития."

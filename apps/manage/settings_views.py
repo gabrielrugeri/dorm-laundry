@@ -37,7 +37,10 @@ def settings_page(request):
     history = (
         AuditEvent.objects.filter(
             Q(action="settings.change")
-            | Q(action="payments.details_change", dormitory=request.dormitory)
+            | Q(
+                action__in=["payments.details_change", "dormitory.help_contact"],
+                dormitory=request.dormitory,
+            )
         )
         .select_related("actor")
         .order_by("-created_at")[:HISTORY_LENGTH]
@@ -48,6 +51,7 @@ def settings_page(request):
         ],
         "history": [(event, describe_changes(event)) for event in history],
         "payment_details": PaymentDetails.objects.filter(dormitory=request.dormitory).first(),
+        "dormitory": request.dormitory,
     }
     return render(request, "manage/settings.html", context)
 
