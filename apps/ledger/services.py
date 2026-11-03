@@ -30,3 +30,24 @@ def add_manual_entry(*, actor, resident, kind, amount, note=""):
             dormitory=resident.dormitory,
         )
     return entry
+
+
+def set_opening_balance(*, actor, resident, amount):
+    """The balance a resident had before the app (from the residents import):
+    positive for money already paid, negative for an old debt. At most once
+    per resident (the database refuses a second one). The credit limit
+    applies from then on, like after any other entry."""
+    if not amount:
+        raise ValueError("An opening balance is never 0.")
+    with transaction.atomic():
+        entry = LedgerEntry.objects.create(
+            resident=resident, kind=LedgerEntry.Kind.OPENING, amount=amount, created_by=actor
+        )
+        record(
+            actor=actor,
+            action="ledger.opening",
+            target=entry,
+            after=snapshot(entry),
+            dormitory=resident.dormitory,
+        )
+    return entry

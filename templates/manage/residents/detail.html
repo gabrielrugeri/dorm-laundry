@@ -14,6 +14,11 @@
       <p class="text-muted">{% blocktranslate with room=resident.room %}Room {{ room }}{% endblocktranslate %} · {% translate "student code" %} {{ resident.student_code }}</p>
       {% if not resident.user.is_active %}
         <p class="mt-2 inline-block rounded bg-subtle-strong px-2 py-0.5 text-sm">{% translate "Access turned off" %}</p>
+      {% elif login_status != "activated" %}
+        {# Not logged in yet: first-time PIN (until a date), login link, or expired. #}
+        <p class="mt-2 inline-block rounded px-2 py-0.5 text-sm {% if login_status == 'expired' %}bg-danger-soft text-danger{% else %}bg-subtle-strong{% endif %}">
+          {{ login_status_label|capfirst }}{% if login_status == "pending" %} · {% blocktranslate with day=resident.initial_pin_expires_at|date:"j E" %}until {{ day }}{% endblocktranslate %}{% endif %}
+        </p>
       {% endif %}
     {% endif %}
 

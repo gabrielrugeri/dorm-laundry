@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from . import pins, ratelimit
+from . import initial_pins, pins, ratelimit
 from .validators import validate_pin
 
 # Tailwind classes shared by the text inputs of our forms.
@@ -113,6 +113,9 @@ class SetPinForm(forms.Form):
     def save(self):
         pins.set_pin(self.user, self.cleaned_data["pin1"])
         self.user.save(update_fields=["password"])
+        resident = getattr(self.user, "resident", None)
+        if resident is not None:
+            initial_pins.clear(resident)  # their own PIN replaces a first-time one
         return self.user
 
 
@@ -140,6 +143,8 @@ class ChangePinForm(SetPinForm):
     def __init__(self, user, *args, request=None, **kwargs):
         self.request = request
         super().__init__(user, *args, **kwargs)
+        if user.resident.must_change_pin:
+            self.fields["current"].label = _("The PIN you logged in with (date of birth)")
 
     def clean_current(self):
         current = self.cleaned_data["current"]

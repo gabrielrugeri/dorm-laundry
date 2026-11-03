@@ -69,7 +69,7 @@ def test_anonymize_erases_personal_data_everywhere(boss, resident, make_booking)
     make_booking()
     LedgerEntry.objects.create(resident=resident, kind="credit", amount=100, note="cash")
     before = snapshot(resident)
-    resident.room = "999"
+    resident.room = "Room-K17"
     resident.save()
     record(
         actor=boss,
@@ -97,7 +97,7 @@ def test_anonymize_erases_personal_data_everywhere(boss, resident, make_booking)
     assert resident.bookings.count() == 1
     # Old audit snapshots no longer contain the name, room, code or username.
     dump = str(list(AuditEvent.objects.values("before", "after", "target_repr")))
-    for secret in ("Ivan Testov", "999", "S0001", "test-S0001"):
+    for secret in ("Ivan Testov", "Room-K17", "S0001", "test-S0001"):
         assert secret not in dump
     assert actions()[-1] == "resident.anonymize"
 

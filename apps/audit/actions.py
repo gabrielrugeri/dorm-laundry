@@ -12,6 +12,7 @@ LABELS = {
     "booking.cancel_by_staff": _("Booking cancelled by the administration"),
     "ledger.payment": _("Payment recorded"),
     "ledger.correction": _("Balance corrected"),
+    "ledger.opening": _("Opening balance entered"),
     "ledger.manual_entry": _("Payment or balance correction"),  # stage 1a events
     "settings.change": _("Money and upload rules changed"),
     "payments.details_change": _("Payment details changed"),
@@ -33,6 +34,9 @@ LABELS = {
     "resident.activation_link": _("Login link created"),  # before the two were merged
     "resident.pin_reset": _("PIN reset"),  # before the two were merged
     "resident.pin_change": _("PIN changed by the resident"),
+    "resident.initial_pin": _("First-time PIN from the date of birth set"),
+    "resident.initial_pin_login": _("Logged in with the first-time PIN"),
+    "resident.initial_pin_changed": _("Own PIN chosen after the first login"),
     "user.password_change": _("Password changed"),
     # Changes made by developers in the technical admin (/admin/).
     "admin.add": _("Added by a developer"),

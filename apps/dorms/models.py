@@ -209,6 +209,9 @@ class GlobalSettings(models.Model):
     login_address_hourly_limit = models.PositiveIntegerField(
         _("failed logins from one address in an hour before it is blocked"), default=1000
     )
+    initial_pin_days = models.PositiveSmallIntegerField(
+        _("days a first-time PIN from the date of birth stays valid"), default=14
+    )
     updated_at = models.DateTimeField(_("changed at"), auto_now=True)
 
     class Meta:

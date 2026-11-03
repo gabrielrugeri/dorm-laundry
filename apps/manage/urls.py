@@ -37,6 +37,7 @@ urlpatterns = [
     path("residents/new/", residents.resident_add, name="resident_add"),
     path("residents/import/", resident_import.upload, name="resident_import"),
     path("residents/import/confirm/", resident_import.confirm, name="resident_import_confirm"),
+    path("residents/import/cancel/", resident_import.cancel, name="resident_import_cancel"),
     path("residents/import/done/", resident_import.done, name="resident_import_done"),
     path(
         "residents/import/login-links.csv",

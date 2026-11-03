@@ -50,7 +50,13 @@ def test_confirm_imports_the_previewed_file(boss_client, resident):
     assert resident.room == "999"
     assert Resident.objects.filter(student_code="S5").exists()
     done = boss_client.get(DONE)
-    assert done.context["summary"] == {"created": 1, "changed": 1, "skipped": 0}
+    assert done.context["summary"] == {
+        "created": 1,
+        "changed": 1,
+        "skipped": 0,
+        "initial_pins": 0,
+        "openings": 0,
+    }
 
     # Pressing confirm again does not import twice.
     again = boss_client.post(CONFIRM, {"token": page.context["token"]})

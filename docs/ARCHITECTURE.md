@@ -105,10 +105,39 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   code (new / changed with before and after / unchanged / error) and writes
   nothing; `apply()` repeats the comparison and, in one transaction, creates
   and updates residents through the resident services, skipping error rows.
-  The previewed file stays in the admin's session (tied to their dormitory
-  and a one-time token) until it is confirmed. Excel files are read as UTF-8
-  (with or without BOM) or Windows-1251, separated by ";" or ",". Login links
-  for the new residents are generated when downloaded and never stored.
+  Between preview and confirm the session keeps only `importing.stored()`
+  (codes, names, rooms, opening balances, hashed first-time PINs; tied to the
+  dormitory and a one-time token), never the uploaded file; it is removed on
+  confirm and on "Cancel". Excel files are read as UTF-8 (with or without
+  BOM) or Windows-1251, separated by ";" or ",". Login links for the new
+  residents without a date of birth are generated when downloaded and never
+  stored.
+- **Optional "date of birth" column** (`apps/accounts/initial_pins.py`):
+  accepted only as DD.MM.YYYY, YYYY-MM-DD or DD/MM/YYYY; Excel day numbers,
+  two-digit years, month/day order, impossible dates and ages outside 14–100
+  are row errors, never guessed. The first-time PIN is the date as DDMMYY.
+  The date is dropped as soon as `pepper(PIN)` is computed: no field, never
+  in the preview (only "logs in with the date of birth"), the session, the
+  history or the logs. On confirm the digest is finished with the PIN hasher
+  at 20,000 rounds (see docs/SECURITY.md). `Resident.must_change_pin` and
+  `initial_pin_expires_at` (`initial_pin_days`, 14, superusers only) drive
+  the rest: login refuses an expired first-time PIN (generic error, so a
+  guessed date is never confirmed); after logging in with it,
+  `ForcePinChangeMiddleware` sends every page to "Choose your own PIN"; the
+  new PIN follows the usual rules and differs from the first one.
+  `manage.py expire_initial_pins` (daily timer, every deploy) deletes expired
+  hashes; login is correct without it. Re-importing gives a new first-time
+  PIN only to residents who have not chosen their own, and only if the admin
+  ticks that option. Audited: first-time PIN set (no date), first login, own
+  PIN chosen.
+- **Login status** (`Resident.activation()`): activated / first-time PIN not
+  used yet / first-time PIN expired / no PIN yet; a filter in the residents
+  list and a badge on the profile.
+- **Optional "opening balance" column:** whole rubles, negative for an old
+  debt. A ledger entry of kind `opening` («начальный баланс»), unique per
+  resident in the database, so a re-import never adds it twice; audited;
+  its own column in the money report, apart from payments. The credit limit
+  applies from then on.
 - `apps/audit/display.py` shows audit snapshots in plain words (no field
   names, codes, ids or UTC times) on the change history page.
 

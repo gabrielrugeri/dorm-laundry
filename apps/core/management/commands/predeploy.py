@@ -4,6 +4,7 @@
 
 1. migrate: bring the database schema up to date;
 2. createcachetable: the shared cache table (login lockout across workers);
+   expire_initial_pins: removes expired first-time PINs (login refuses them anyway);
 3. in demo mode only, seed_demo: fake demo data. It is idempotent: once the
    demo dormitory exists it changes nothing, so running this on every deploy
    never duplicates data and never undoes what testers did.
@@ -23,6 +24,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         call_command("migrate", interactive=False, verbosity=1)
         call_command("createcachetable", verbosity=1)
+        call_command("expire_initial_pins")
         if settings.DEMO_MODE:
             call_command("seed_demo")
         else:

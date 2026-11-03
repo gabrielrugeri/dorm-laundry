@@ -36,6 +36,7 @@ SUPERUSER_FIELDS = (
     "login_address_free_failures",
     "login_address_max_delay_seconds",
     "login_address_hourly_limit",
+    "initial_pin_days",
 )
 ALL_FIELDS = FIELDS + SUPERUSER_FIELDS
 
@@ -52,6 +53,7 @@ LABELS = {
     "login_address_free_failures": _("Wrong PINs from one address before waits start"),
     "login_address_max_delay_seconds": _("Longest wait for one address, seconds"),
     "login_address_hourly_limit": _("Wrong PINs from one address per hour before blocking"),
+    "initial_pin_days": _("Days a first-time PIN stays valid"),
 }
 MONEY_FIELDS = {"credit_limit", "max_receipt_amount", "max_credit_per_30_days"}
 
@@ -75,6 +77,7 @@ def bounds():
         "login_address_free_failures": (10, 10_000),
         "login_address_max_delay_seconds": (1, 60),
         "login_address_hourly_limit": (100, 100_000),
+        "initial_pin_days": (1, 60),
     }
 
 

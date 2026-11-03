@@ -155,12 +155,14 @@ def _column(entry):
         LedgerEntry.Kind.ADJUSTMENT: "corrections",
         LedgerEntry.Kind.BOOKING: "bookings",
         LedgerEntry.Kind.REFUND: "refunds",
+        LedgerEntry.Kind.OPENING: "opening",
     }[kind]
 
 
 def _column_labels():
     """The report's columns. Receipts and payments recorded by admins stay in
-    separate columns, so each can be checked against the bank statement."""
+    separate columns, so each can be checked against the bank statement.
+    Opening balances (money from before the app) are not payments either."""
     return [
         ("receipts", _("Receipts")),
         ("voided", _("Voided receipts")),
@@ -168,6 +170,7 @@ def _column_labels():
         ("corrections", _("Corrections")),
         ("bookings", _("Bookings")),
         ("refunds", _("Refunds")),
+        ("opening", _("Opening balances")),
     ]
 
 

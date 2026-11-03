@@ -10,6 +10,11 @@
       <thead class="text-muted"><tr><th class="font-normal">{% translate "Student code" %}</th><th class="font-normal">{% translate "Full name" %}</th><th class="font-normal">{% translate "Room" %}</th></tr></thead>
       <tbody><tr><td>S12345</td><td>Ivanova Maria</td><td>214</td></tr></tbody>
     </table>
+    <p class="mb-3 text-sm text-muted">{% translate "Two more columns are optional:" %}</p>
+    <ul class="mb-3 list-disc space-y-1 pl-5 text-sm text-muted">
+      <li>{% translate "Date of birth, as 05.03.2004: the resident's first PIN is then the date as DDMMYY (050304). The date itself is not saved anywhere. Without a date, the resident gets a login link." %}</li>
+      <li>{% translate "Opening balance in whole rubles: money the resident already had, or an old debt with a minus (-150). It is entered only once per resident." %}</li>
+    </ul>
     <p class="mb-4 text-sm"><a href="{% url 'manage:resident_import_sample' %}" class="text-link underline">{% translate "Download an example file" %}</a></p>
     <p class="mb-4 text-sm text-muted">{% translate "Nothing is changed yet: first you see what will happen, then you confirm." %}</p>
 

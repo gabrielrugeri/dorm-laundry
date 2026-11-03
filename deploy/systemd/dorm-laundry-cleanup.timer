@@ -1,0 +1,13 @@
+# Runs the clean-up every day at 04:15 Moscow time; a missed run happens at
+# the next boot. Install as /etc/systemd/system/dorm-laundry-cleanup.timer
+# and enable it.
+
+[Unit]
+Description=Daily Dorm Laundry clean-up
+
+[Timer]
+OnCalendar=*-*-* 04:15:00 Europe/Moscow
+Persistent=true
+
+[Install]
+WantedBy=timers.target

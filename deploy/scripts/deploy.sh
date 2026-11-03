@@ -41,6 +41,7 @@ log "Building CSS, translations and static files"
 log "Updating the database"
 "$VENV/bin/python" manage.py migrate --noinput
 "$VENV/bin/python" manage.py createcachetable
+"$VENV/bin/python" manage.py expire_initial_pins
 
 log "Checking production settings"
 "$VENV/bin/python" manage.py check --deploy --fail-level WARNING

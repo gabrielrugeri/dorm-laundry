@@ -86,7 +86,11 @@ class LoginView(auth_views.LoginView):
     redirect_authenticated_user = True
 
     def form_valid(self, form):
-        return remember_language(super().form_valid(form), form.get_user())
+        user = form.get_user()
+        resident = getattr(user, "resident", None)
+        if resident is not None and resident.must_change_pin:
+            record(actor=user, action="resident.initial_pin_login", target=resident)
+        return remember_language(super().form_valid(form), user)
 
 
 class ActivateView(auth_views.PasswordResetConfirmView):
@@ -124,16 +128,19 @@ class ActivateView(auth_views.PasswordResetConfirmView):
 def change_pin(request):
     """The resident changes their own PIN. Every other device they are
     logged in on is logged out; this one stays logged in."""
+    resident = request.user.resident
+    forced = resident.must_change_pin
     form = ChangePinForm(request.user, request.POST or None, request=request)
     if request.method == "POST" and form.is_valid():
         with transaction.atomic():
             form.save()
-            record(actor=request.user, action="resident.pin_change", target=request.user.resident)
+            action = "resident.initial_pin_changed" if forced else "resident.pin_change"
+            record(actor=request.user, action=action, target=resident)
         ratelimit.reset(request.user.resident.student_code, request)
         update_session_auth_hash(request, request.user)
         messages.success(request, _("Your PIN was changed. Other devices were logged out."))
         return redirect("core:home")
-    return render(request, "accounts/change_pin.html", {"form": form})
+    return render(request, "accounts/change_pin.html", {"form": form, "forced": forced})
 
 
 class ChangePasswordView(auth_views.PasswordChangeView):
