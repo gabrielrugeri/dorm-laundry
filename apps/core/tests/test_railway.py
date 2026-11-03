@@ -108,6 +108,11 @@ def test_dockerfile_builds_everything_without_a_database():
     for step in ("tailwind.py build", "compilemessages", "collectstatic", "gettext"):
         assert step in dockerfile, step
     assert "config.settings.railway" in dockerfile
+    # Build steps load the production settings, which need a pepper; a
+    # throwaway one (no PIN is hashed during the build), in every such step.
+    assert dockerfile.count("PIN_PEPPER=build-only") == dockerfile.count(
+        "DJANGO_SECRET_KEY=build-only"
+    )
     assert 'CMD ["/app/deploy/scripts/railway-start.sh"]' in dockerfile
 
 
