@@ -35,6 +35,7 @@ def load_settings(**overrides):
     }
     env.update(RAILWAY_ENV)
     env.update(overrides)
+    env = {k: v for k, v in env.items() if v is not None}  # None: leave the variable unset
     code = (
         "import json, django; django.setup(); from django.conf import settings as s; "
         "print(json.dumps({'hosts': s.ALLOWED_HOSTS, 'csrf': s.CSRF_TRUSTED_ORIGINS, "
@@ -70,6 +71,28 @@ def test_railway_refuses_to_run_without_demo_mode(pilot_ready):
     code, _output, stderr = load_settings(DEMO_MODE="false", PILOT_READY=pilot_ready)
     assert code != 0
     assert "Refusing to start" in stderr
+
+
+@pytest.mark.parametrize("database_url", ["", None])
+def test_production_refuses_to_start_without_a_database_url(database_url):
+    """No silent fallback to a SQLite file that a redeploy would throw away."""
+    code, _output, stderr = load_settings(DATABASE_URL=database_url)
+    assert code != 0
+    assert "DATABASE_URL is not set" in stderr
+
+
+def test_deploy_check_refuses_sqlite_in_production():
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("DJANGO_", "DATABASE_URL"))}
+    env.update(RAILWAY_ENV, DATABASE_URL="sqlite:////tmp/never-in-production.sqlite3")
+    result = subprocess.run(
+        [sys.executable, "manage.py", "check", "--deploy"],
+        cwd=ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0
+    assert "dorm_laundry.E001" in result.stderr + result.stdout
 
 
 def test_gunicorn_binds_to_railway_port(monkeypatch):

@@ -131,7 +131,8 @@ def test_production_check_is_clean_so_deploy_can_stop_on_warnings():
             "DEMO_MODE": "false",
             "PILOT_READY": "true",
             "DJANGO_ALLOWED_HOSTS": "laundry.example.ru",
-            "DATABASE_URL": "sqlite:///:memory:",
+            # Never connected to: the checks only read the settings.
+            "DATABASE_URL": "postgres://u:p@db.invalid:5432/laundry",
         },
     )
     assert result.returncode == 0, result.stdout + result.stderr
