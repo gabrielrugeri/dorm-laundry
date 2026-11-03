@@ -48,17 +48,42 @@ def test_seed_demo_roles(db):
 
 
 def test_seed_demo_slots_run_from_10_to_midnight(db):
-    from datetime import time
-
-    from apps.dorms.models import Dormitory
-
-    old = Dormitory.objects.create(name="Demo", slug="demo")
-    TimeSlot.objects.create(dormitory=old, start_time=time(8, 0))
     call_command("seed_demo")
     active = TimeSlot.objects.filter(active=True).order_by("start_time")
     assert [s.start_time.hour for s in active] == [10, 12, 14, 16, 18, 20, 22]
     assert str(active.last()) == "22:00–00:00"
-    assert not TimeSlot.objects.get(start_time=time(8, 0)).active
+
+
+def test_seed_demo_never_changes_an_existing_demo(db):
+    """Every deploy runs seed_demo: what people changed in the demo stays."""
+    from apps.dorms.models import Dormitory
+
+    call_command("seed_demo")
+    dorm = Dormitory.objects.get(slug="demo")
+    slot = TimeSlot.objects.get(dormitory=dorm, start_time__hour=10)
+    slot.active = False
+    slot.save()
+    Machine.objects.filter(dormitory=dorm, number=6).update(number=7)  # renumbered
+    admin = User.objects.get(username="admin")
+    admin.set_password("changed-by-a-person")
+    admin.is_staff = True
+    admin.save()
+    Resident.objects.filter(student_code="D0002").update(full_name="Renamed", room="999")
+    User.objects.filter(username="manager").delete()
+    entries = LedgerEntry.objects.count()
+
+    call_command("seed_demo")
+
+    slot.refresh_from_db()
+    assert not slot.active
+    assert sorted(dorm.machines.values_list("number", flat=True)) == [1, 2, 3, 4, 5, 7]
+    admin.refresh_from_db()
+    assert admin.is_staff
+    assert admin.check_password("changed-by-a-person")
+    assert Resident.objects.get(student_code="D0002").full_name == "Renamed"
+    assert LedgerEntry.objects.count() == entries
+    # A missing staff account is the one thing that is added back.
+    assert roles.has_role(User.objects.get(username="manager"), roles.MANAGER)
 
 
 def test_seed_demo_has_an_audited_admin_cancellation(db):
