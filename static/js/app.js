@@ -103,6 +103,11 @@
     });
   });
 
+  // <button data-print>: print the page (the residents' poster).
+  document.addEventListener("click", function (event) {
+    if (event.target.closest("[data-print]")) window.print();
+  });
+
   // --- Installable app ---------------------------------------------------------
 
   // The service worker only keeps an offline page (templates/core/sw.js).

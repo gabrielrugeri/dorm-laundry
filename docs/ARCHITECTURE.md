@@ -130,6 +130,11 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   PIN only to residents who have not chosen their own, and only if the admin
   ticks that option. Audited: first-time PIN set (no date), first login, own
   PIN chosen.
+- **Poster** (`/manage/poster/`, `apps/manage/poster_views.py`): one printable
+  A4 page in Russian or English (`?lang=`), with a QR code to the app made as
+  inline SVG on our server (`segno`), install steps for iPhone and Android,
+  the first login with the date of birth, and `Dormitory.help_contact`, which
+  admins edit under «Настройки» (not sensitive; recorded in the history).
 - **Login status** (`Resident.activation()`): activated / first-time PIN not
   used yet / first-time PIN expired / no PIN yet; a filter in the residents
   list and a badge on the profile.

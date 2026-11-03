@@ -2730,3 +2730,105 @@ msgid_plural ""
 "chosen their own PIN yet"
 msgstr[0] ""
 msgstr[1] ""
+
+#: apps/audit/actions.py:19
+msgid "Where residents get help changed"
+msgstr ""
+
+#: apps/dorms/models.py:67
+msgid "where residents get help"
+msgstr ""
+
+#: apps/dorms/models.py:70
+msgid ""
+"Printed on the poster, e.g. room 105, Mon–Fri 18:00–20:00, or a phone number."
+msgstr ""
+
+#: templates/manage/settings.html:34
+msgid "Poster for the residents"
+msgstr ""
+
+#: templates/manage/settings.html:35
+msgid "Change where to get help"
+msgstr ""
+
+#: templates/manage/help_contact.html:3
+msgid "Where residents get help"
+msgstr ""
+
+#: templates/manage/settings.html:39
+msgid "Not filled in: the poster says to ask the dormitory administration."
+msgstr ""
+
+#: templates/manage/settings.html:40
+msgid "Open the poster to print"
+msgstr ""
+
+#: apps/manage/poster_views.py:61
+msgid "Saved. It is on the poster now."
+msgstr ""
+
+#: templates/manage/poster.html:9
+msgid "Poster"
+msgstr ""
+
+#: templates/manage/poster.html:18
+msgid "Print"
+msgstr ""
+
+#: templates/manage/poster.html:23
+msgid "Book the washing machine from your phone"
+msgstr ""
+
+#: templates/manage/poster.html:30
+msgid "Scan the code with your phone's camera, or type the address."
+msgstr ""
+
+#: templates/manage/poster.html:34
+msgid "Put it on your home screen"
+msgstr ""
+
+#: templates/manage/poster.html:38
+msgid ""
+"In Safari, tap «Share» (the square with an arrow), then «Add to Home Screen»."
+msgstr ""
+
+#: templates/manage/poster.html:42
+msgid "In Chrome, tap ⋮, then «Install app» or «Add to Home screen»."
+msgstr ""
+
+#: templates/manage/poster.html:45
+msgid "No app store needed. It also works in the browser."
+msgstr ""
+
+#: templates/manage/poster.html:49
+msgid "Log in the first time"
+msgstr ""
+
+#: templates/manage/poster.html:50
+msgid "Student code, and your date of birth as DDMMYY."
+msgstr ""
+
+#: templates/manage/poster.html:52
+msgid ""
+"Then choose your own PIN. The date of birth works only for the first %(days)s"
+" days."
+msgstr ""
+
+#: templates/manage/poster.html:56
+msgid "Book and pay"
+msgstr ""
+
+#: templates/manage/poster.html:57
+msgid ""
+"Pick a free time, top up your balance, send the receipt. Other residents "
+"never see your name or room."
+msgstr ""
+
+#: templates/manage/poster.html:61
+msgid "Need help?"
+msgstr ""
+
+#: templates/manage/poster.html:62
+msgid "Ask the dormitory administration."
+msgstr ""
