@@ -1,10 +1,19 @@
 {% load i18n %}
 {# "Add to calendar" menu. Google and Outlook are plain links opened in a new tab: nothing is loaded from them. #}
-<details class="relative inline-block">
+{# On phones (below md) it opens as a sheet from the bottom of the screen, with big rows and a "Close" button; #}
+{# on wider screens it is a small dropdown. A tap outside or Escape closes it (static/js/app.js, data-menu). #}
+<details class="relative inline-block" data-menu>
   <summary class="cursor-pointer list-none rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong [&::-webkit-details-marker]:hidden">{% translate "Add to calendar" %} ▾</summary>
-  <ul class="absolute right-0 z-20 mt-1 w-60 rounded-lg border border-line bg-surface py-1 text-ink shadow-lg">
-    <li><a href="{{ cal.google }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-subtle">{% translate "Google Calendar" %}</a></li>
-    <li><a href="{{ cal.outlook }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-subtle">Outlook</a></li>
-    <li><a href="{{ cal.ics }}" class="block px-4 py-2 hover:bg-subtle">{% translate "Apple / other (file)" %}</a></li>
-  </ul>
+  <div class="sheet-backdrop fixed inset-0 z-40 md:hidden" data-menu-close aria-hidden="true"></div>
+  <div class="safe-bottom fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-line bg-surface text-ink shadow-lg md:absolute md:inset-x-auto md:bottom-auto md:right-0 md:mt-1 md:w-60 md:rounded-lg md:border md:pb-0">
+    <p class="px-4 pt-4 pb-1 text-sm text-muted md:hidden">{% translate "Add to calendar" %}</p>
+    <ul class="py-1">
+      <li><a href="{{ cal.google }}" target="_blank" rel="noopener noreferrer" class="flex min-h-12 items-center px-4 hover:bg-subtle md:min-h-0 md:py-2">{% translate "Google Calendar" %}</a></li>
+      <li><a href="{{ cal.outlook }}" target="_blank" rel="noopener noreferrer" class="flex min-h-12 items-center px-4 hover:bg-subtle md:min-h-0 md:py-2">Outlook</a></li>
+      <li><a href="{{ cal.ics }}" class="flex min-h-12 items-center px-4 hover:bg-subtle md:min-h-0 md:py-2">{% translate "Apple / other (file)" %}</a></li>
+    </ul>
+    <div class="border-t border-line p-2 md:hidden">
+      <button type="button" data-menu-close class="min-h-12 w-full rounded font-medium text-link hover:bg-subtle">{% translate "Close" %}</button>
+    </div>
+  </div>
 </details>

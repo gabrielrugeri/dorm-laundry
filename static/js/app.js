@@ -74,6 +74,35 @@
   });
   document.addEventListener("DOMContentLoaded", updateBalancePreview);
 
+  // Menus (<details data-menu>: the calendar menu, the header menu): a tap
+  // outside, a [data-menu-close] element (the sheet's backdrop and "Close"
+  // button on phones) or Escape closes them. Without JavaScript the summary
+  // still opens and closes them.
+  function closeMenu(menu, focus) {
+    menu.open = false;
+    if (focus) {
+      var summary = menu.querySelector("summary");
+      if (summary) summary.focus();
+    }
+  }
+  document.addEventListener("click", function (event) {
+    var closer = event.target.closest("[data-menu-close]");
+    document.querySelectorAll("details[data-menu][open]").forEach(function (menu) {
+      if (closer && menu.contains(closer)) {
+        event.preventDefault();
+        closeMenu(menu, true);
+      } else if (!menu.contains(event.target)) {
+        closeMenu(menu, false);
+      }
+    });
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape") return;
+    document.querySelectorAll("details[data-menu][open]").forEach(function (menu) {
+      closeMenu(menu, true);
+    });
+  });
+
   // --- Installable app ---------------------------------------------------------
 
   // The service worker only keeps an offline page (templates/core/sw.js).

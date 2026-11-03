@@ -92,7 +92,7 @@
 /* end tokens:light */
 
 /* Dark: chosen by the user (data-theme="dark"), or by the phone when the
-   user left it on "like the phone". The two blocks must stay identical. */
+   user left it on "Match device". The two blocks must stay identical. */
 /* tokens:dark */
 :root[data-theme="dark"] {
   color-scheme: dark;
@@ -209,6 +209,11 @@
 @utility safe-x {
   padding-left: max(env(safe-area-inset-left), 1rem);
   padding-right: max(env(safe-area-inset-right), 1rem);
+}
+/* Dims the page behind a bottom sheet (the calendar menu on phones). The same
+   in both themes: it darkens whatever is behind it. */
+@utility sheet-backdrop {
+  background-color: rgb(0 0 0 / 0.45);
 }
 /* Room for the fixed bottom navigation, so the last item is never hidden. */
 @utility pb-nav {
