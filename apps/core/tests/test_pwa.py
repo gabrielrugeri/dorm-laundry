@@ -82,6 +82,21 @@ def test_install_guide_is_on_the_page_but_hidden(client, resident):
 # --- Light / dark ------------------------------------------------------------------
 
 
+def test_theme_choices_light_dark_then_match_device(client, resident):
+    import re
+
+    client.force_login(resident.user)
+    for language, labels in (
+        ("en", ["Light", "Dark", "Match device"]),
+        ("ru", ["Светлое", "Тёмное", "Как на устройстве"]),
+    ):
+        client.cookies["django_language"] = language
+        html = client.get(reverse("bookings:mine")).content.decode()
+        select = html[html.index('id="theme-select"') :]
+        select = select[: select.index("</select>")]
+        assert re.findall(r"<option[^>]*>([^<]+)</option>", select) == labels
+
+
 def test_theme_follows_the_phone_by_default(client, resident):
     client.force_login(resident.user)
     assert "data-theme" not in client.get(reverse("bookings:mine")).content.decode()[:300]

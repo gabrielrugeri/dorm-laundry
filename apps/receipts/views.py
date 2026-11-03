@@ -45,7 +45,7 @@ def new(request):
         "form": form,
         "balance": LedgerEntry.objects.balance(resident),
         "max_amount": current.max_receipt_amount,
-        "max_mb": current.max_upload_mb,
+        "max_mb": rules.max_upload_bytes(current) // (1024 * 1024),
         "left_today": left_today,
     }
     return render(request, "receipts/new.html", context)

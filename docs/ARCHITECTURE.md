@@ -131,12 +131,17 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
 ## Money and upload rules (sensitive settings)
 
 - One `dorms.GlobalSettings` row (created by a migration) holds the credit
-  limit, the largest amount per receipt (2000 ₽), the most money credited to
-  one resident in 30 days (5000 ₽), receipts per resident per day (3) and the
-  largest receipt file (10 MB, never above `MAX_UPLOAD_BYTES_HARD`). The last
-  four are used from Stage 4 (receipts).
-- `/manage/settings/` («Настройки») shows them in plain words with their
-  history. Changing them (`apps/dorms/rules.change_settings`) needs the
+  limit, the largest amount per receipt (600 ₽), the most money credited to
+  one resident in 30 days (1500 ₽), receipts per resident per day (3) and the
+  largest receipt file (10 MB, never above `MAX_UPLOAD_BYTES_HARD`).
+  Migration `dorms.0006` lowered the receipt amounts from 2000/5000 only where
+  those old defaults were still in place, and recorded it in the history.
+- The largest receipt file is a technical limit: only superusers change it,
+  in Django admin, with a reason, through the same `change_settings` (checked
+  and recorded the same way). `rules.max_upload_bytes()` caps it at
+  `MAX_UPLOAD_BYTES_HARD` even if the server limit is lowered later.
+- `/manage/settings/` («Настройки») shows the other four in plain words with
+  their history. Changing them (`apps/dorms/rules.change_settings`) needs the
   admin's own password and a reason, refuses values outside sensible bounds
   (`rules.bounds()`), and asks for an extra tick when a value changes more
   than 10 times either way, goes to or from zero, or becomes "no limit". The
@@ -339,6 +344,10 @@ All are behind `resident_required` and use only the resident's own data.
   Microsoft, so the CSP stays self-only; the event text names the machines,
   time and dormitory, never the resident. `Dormitory.code` (e.g. `DEM`,
   set by superusers in `/admin/`) goes into the file name.
+  On phones (below the `md` width) the menu opens as a bottom sheet: full
+  width, 48 px rows, clear of the home indicator, a dimmed backdrop and a
+  «Закрыть» button; on wider screens it is a dropdown. Menus marked
+  `data-menu` close on a tap outside and on Escape (`static/js/app.js`).
 - *Later option, not built:* a personal calendar feed
   (`/calendar/<token>.ics`) with a random, hashed, revocable token, so new
   bookings appear by themselves. Trade-offs: the URL works like a password;
@@ -421,8 +430,12 @@ yet" page. The tests in `apps/keylog/tests/` switch it on.
   cancel and see their own bookings and balance, and residents won't put up
   with typing a PIN every day. Staff pages show residents' names and rooms,
   so a forgotten staff login must end the same day.
-- **Header menu:** "Name · room" for residents (only their own), the username
-  for staff; it holds My balance, the language switch and Log out.
+- **Header menu:** "Name · room" for residents (only their own), "Name ·
+  Dormitory" for staff (their name, or the username if none is set); it
+  holds My balance, the language switch, the colours and Log out. Names are
+  shown exactly as stored, never split; a long one is cut off with an
+  ellipsis and the tooltip shows it in full. The balance page shows the full
+  name with the room and the dormitory.
 
 ## Roles and privacy
 
@@ -449,7 +462,8 @@ yet" page. The tests in `apps/keylog/tests/` switch it on.
   background pair against WCAG AA (4.5:1) and form-field borders against 3:1,
   in both modes.
 - **Dark mode** follows the phone (`prefers-color-scheme`) unless the user
-  picks "Light" or "Dark" in the header menu («Оформление»). The choice is
+  picks "Light" or "Dark" in the header menu (the third choice is «Как на
+  устройстве» / "Match device") («Оформление»). The choice is
   saved in `accounts.UserPreferences` for a logged-in user (all their
   devices) and in a `theme` cookie; the server writes it as
   `<html data-theme="…">`, so the page never flashes the wrong colours and no

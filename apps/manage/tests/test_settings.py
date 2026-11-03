@@ -85,7 +85,7 @@ def test_change_is_saved_and_shown_in_the_history(boss_client):
         {"credit_limit": 2000},
         {"credit_limit": 0},
         {"credit_limit": ""},
-        {"max_receipt_amount": 100},
+        {"max_receipt_amount": 50},
     ],
     ids=["20x-up", "to-zero", "no-limit", "below-a-tenth"],
 )
@@ -127,3 +127,10 @@ def test_nothing_changed_is_not_saved(boss_client):
 
 def test_admin_navigation_has_settings(boss_client):
     assert f'href="{PAGE}"' in boss_client.get(reverse("manage:residents")).content.decode()
+
+
+def test_file_size_is_not_on_the_admin_screens(boss_client):
+    for url in (PAGE, CHANGE):
+        html = boss_client.get(url).content.decode()
+        assert "Largest receipt file" not in html
+        assert "max_upload_mb" not in html

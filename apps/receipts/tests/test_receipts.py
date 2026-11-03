@@ -141,8 +141,8 @@ def test_daily_limit_counts_accepted_receipts_only(resident):
 def test_thirty_day_cap(resident):
     GlobalSettings.objects.filter(pk=1).update(max_uploads_per_day=20)
     for n in range(2):
-        submit(resident, amount=2000, data=pdf(f"a{n}".encode()))
-    submit(resident, amount=1000, data=pdf(b"b"))  # 5000 in 30 days: the cap
+        submit(resident, amount=600, data=pdf(f"a{n}".encode()))
+    submit(resident, amount=300, data=pdf(b"b"))  # 1500 in 30 days: the cap
     with pytest.raises(services.ReceiptRefused) as refused:
         submit(resident, amount=1, data=pdf(b"c"))
     assert refused.value.code == "30_day_cap"

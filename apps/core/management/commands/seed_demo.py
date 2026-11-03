@@ -298,7 +298,7 @@ class Command(BaseCommand):
             purpose_prefix="Стирка",
         )
         receipts = []
-        for resident, amount in ((residents[0], 200), (residents[1], 150), (residents[2], 1900)):
+        for resident, amount in ((residents[0], 200), (residents[1], 150), (residents[2], 550)):
             fake_pdf = demo_receipt_pdf(resident.student_code, amount)
             receipts.append(
                 receipt_services.submit_receipt(

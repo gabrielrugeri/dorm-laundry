@@ -3,6 +3,7 @@
 from datetime import date, time, timedelta
 
 import pytest
+from django.conf import settings
 from django.urls import reverse
 
 from apps.bookings import calendar, ics, services
@@ -144,6 +145,25 @@ def test_google_and_outlook_links_match_the_file(client, resident, group):
     html = response.content.decode()
     assert 'rel="noopener noreferrer"' in html
     assert resident.full_name not in links["google"] + links["outlook"]
+
+
+def test_calendar_menu_is_a_bottom_sheet_on_phones(client, resident, group):
+    """Below md: full width at the bottom, 48 px rows, a backdrop and a
+    "Close" button; app.js closes it on a tap outside and on Escape."""
+    client.force_login(resident.user)
+    client.cookies["django_language"] = "ru"
+    response = client.get(reverse("bookings:detail", kwargs={"group_id": group[0].group_id}))
+    html = response.content.decode()
+    menu = html[html.index("<details", html.index("<main")) :]
+    menu = menu[: menu.index("</details>")]
+    assert "data-menu" in menu
+    assert "fixed inset-x-0 bottom-0" in menu and "safe-bottom" in menu
+    assert "md:absolute" in menu  # a dropdown on wider screens
+    assert menu.count("min-h-12") == 4  # three calendars and "Close"
+    assert "sheet-backdrop" in menu and "data-menu-close" in menu
+    assert "Закрыть" in menu
+    app_js = (settings.BASE_DIR / "static/js/app.js").read_text(encoding="utf-8")
+    assert "details[data-menu][open]" in app_js and '"Escape"' in app_js
 
 
 def test_cancelled_booking_has_no_calendar_menu(client, resident, group):

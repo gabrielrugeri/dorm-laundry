@@ -3,7 +3,9 @@
 {% block title %}{% translate "Balance" %} · {{ block.super }}{% endblock %}
 {% block content %}
   <div class="mb-4 rounded-lg bg-surface p-4 shadow-sm">
-    <p class="mb-2 font-medium">{{ resident.full_name }} · {% blocktranslate with room=resident.room %}room {{ room }}{% endblocktranslate %}</p>
+    {# The name exactly as stored; a long one is cut off, the tooltip shows it in full. #}
+    <p class="truncate font-medium" title="{{ resident.full_name }}">{{ resident.full_name }}</p>
+    <p class="mb-2 text-sm text-muted">{% blocktranslate with room=resident.room %}Room {{ room }}{% endblocktranslate %} · {{ resident.dormitory.name }}</p>
     <p class="text-sm text-muted">{% translate "Current balance" %}</p>
     <p class="text-3xl font-semibold">{{ balance|rub }}</p>
     <p class="mt-2 text-sm text-muted">{% translate "To top up: pay the administration, then send the receipt. The money appears at once." %}</p>

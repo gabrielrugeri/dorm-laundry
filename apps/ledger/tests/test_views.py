@@ -112,5 +112,5 @@ def test_balance_page_shows_own_name_and_room(client, resident, other_resident, 
     client.force_login(resident.user)
     client.cookies["django_language"] = "en"
     html = client.get(BALANCE).content.decode()
-    assert resident.full_name in html and f"room {resident.room}" in html
+    assert resident.full_name in html and f"Room {resident.room}" in html
     assert other_resident.full_name not in html

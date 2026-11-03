@@ -120,7 +120,8 @@ class ConfirmDebtForm(forms.Form):
 
 class RulesForm(forms.Form):
     """Change the money and upload rules: a sensitive setting. Needs the
-    admin's own password and a reason; big jumps need an extra tick."""
+    admin's own password and a reason; big jumps need an extra tick. The
+    largest receipt file is not here: only superusers change it."""
 
     credit_limit = forms.IntegerField(
         required=False,
@@ -136,9 +137,6 @@ class RulesForm(forms.Form):
         help_text=_("In rubles, counted over the last 30 days."),
     )
     max_uploads_per_day = forms.IntegerField(
-        widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
-    )
-    max_upload_mb = forms.IntegerField(
         widget=forms.NumberInput(attrs={"class": INPUT, "inputmode": "numeric"}),
     )
     reason = forms.CharField(

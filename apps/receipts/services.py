@@ -29,8 +29,6 @@ from apps.ledger.models import LedgerEntry
 from . import files
 from .models import Receipt
 
-MB = 1024 * 1024
-
 
 class ReceiptRefused(Exception):
     """`message` is translatable and safe to show to the resident."""
@@ -118,7 +116,7 @@ def submit_receipt(*, resident, amount, upload, now=None):
 def _submit(resident, amount, upload, now):
     current = rules.current()
     try:
-        data, content_type, digest = files.check(upload, current.max_upload_mb * MB)
+        data, content_type, digest = files.check(upload, rules.max_upload_bytes(current))
     except files.FileRefused as refused:
         raise ReceiptRefused(refused.message, refused.code) from None
     stored_name = None

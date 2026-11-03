@@ -100,8 +100,8 @@ def test_voided_receipts_free_the_30_day_cap(resident, boss):
     from apps.dorms.models import GlobalSettings
 
     GlobalSettings.objects.filter(pk=1).update(max_uploads_per_day=20)
-    receipts = [send(resident, 2000, tag=str(n)) for n in range(2)]
-    send(resident, 1000, tag="c")
+    receipts = [send(resident, 600, tag=str(n)) for n in range(2)]
+    send(resident, 300, tag="c")  # 1500 in 30 days: the cap
     with pytest.raises(services.ReceiptRefused):
         send(resident, 500, tag="d")
     services.void_receipt(receipt=receipts[0], actor=boss, reason="Duplicate payment")
@@ -135,12 +135,12 @@ def codes(receipt):
 def test_flags_explain_what_to_check(resident, boss):
     from apps.dorms.models import GlobalSettings
 
-    GlobalSettings.objects.filter(pk=1).update(max_uploads_per_day=20, max_credit_per_30_days=4000)
-    first = send(resident, 1800, tag="a")  # 80% of the 2000 RUB maximum
+    GlobalSettings.objects.filter(pk=1).update(max_uploads_per_day=20, max_credit_per_30_days=1200)
+    first = send(resident, 480, tag="a")  # 80% of the 600 RUB maximum
     assert ("large", "Large amount") in [(c, str(label)) for c, label in flags_for(first)]
-    second = send(resident, 1800, tag="b", now=NOW + timedelta(hours=3))
+    second = send(resident, 480, tag="b", now=NOW + timedelta(hours=3))
     assert "repeat" in codes(second)
-    assert "near_cap" in codes(second)  # 3600 of 4000 in 30 days
+    assert "near_cap" in codes(second)  # 960 of 1200 in 30 days
     services.void_receipt(receipt=first, actor=boss, reason="x")
     third = send(resident, 100, tag="c", now=NOW + timedelta(days=40))
     assert "earlier_voids" in codes(third)
@@ -181,7 +181,7 @@ def test_admins_only(client, dormitory, resident, name):
 def test_list_and_detail(boss_client, resident, other_dormitory):
     from conftest import make_resident
 
-    receipt = send(resident, 1900)
+    receipt = send(resident, 550)
     elsewhere = send(make_resident(other_dormitory, "Z1", name="Elsewhere"), 100)
     html = boss_client.get(LIST).content.decode()
     assert resident.full_name in html and "Large amount" in html
