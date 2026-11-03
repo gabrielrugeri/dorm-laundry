@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "The form could not be sent" %} · {{ block.super }}{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-md rounded-lg bg-surface p-4 shadow-sm">
+    <h1 class="mb-2 text-xl font-semibold">{% translate "The form could not be sent" %}</h1>
+    <p class="mb-3 text-muted">{% translate "For your safety the page was refused. Go back, reload the page and try again. If it keeps happening, tell the administration which phone and browser you use." %}</p>
+    <a href="{{ request.path }}" class="inline-block rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">{% translate "Reload the page" %}</a>
+  </div>
+{% endblock %}

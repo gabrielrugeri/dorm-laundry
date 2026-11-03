@@ -1,5 +1,6 @@
 import hashlib
 import json
+import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -114,3 +115,45 @@ def offline(request):
     """Shown by the service worker when there is no connection. It must stay
     free of personal data (it is cached), so it does not use base.html."""
     return render(request, "core/offline.html")
+
+
+# --- CSRF failures ------------------------------------------------------------------
+
+csrf_log = logging.getLogger("dorm_laundry.csrf")
+
+
+def csrf_failure(request, reason=""):
+    """Shown instead of Django's technical 403 page, in plain words. Also logs
+    what is needed to tell a lost request body (e.g. a browser dropping a file
+    upload) from a wrong or missing token. Never logs token values, cookies,
+    form contents or who the user is."""
+    try:
+        post_fields = len(request.POST)
+        file_fields = len(request.FILES)
+        token_field = "csrfmiddlewaretoken" in request.POST
+    except Exception:  # an unreadable body is itself the finding
+        post_fields = file_fields = -1
+        token_field = False
+    origin = request.headers.get("Origin", "")
+    csrf_log.warning(
+        "CSRF failure: reason=%r method=%s path=%s content_type=%s content_length=%s "
+        "post_fields=%s file_fields=%s token_field=%s csrf_cookie=%s origin_trusted=%s "
+        "sec_fetch_mode=%s sec_fetch_dest=%s logged_in=%s user_agent=%r",
+        reason,
+        request.method,
+        request.path,
+        request.content_type,
+        request.headers.get("Content-Length", ""),
+        post_fields,
+        file_fields,
+        token_field,
+        settings.CSRF_COOKIE_NAME in request.COOKIES,
+        (origin in settings.CSRF_TRUSTED_ORIGINS or origin == f"https://{request.get_host()}")
+        if origin
+        else "no-origin",
+        request.headers.get("Sec-Fetch-Mode", ""),
+        request.headers.get("Sec-Fetch-Dest", ""),
+        request.user.is_authenticated if hasattr(request, "user") else "?",
+        request.headers.get("User-Agent", "")[:200],
+    )
+    return render(request, "core/csrf_failure.html", status=403)

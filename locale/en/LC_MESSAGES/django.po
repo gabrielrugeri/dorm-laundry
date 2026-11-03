@@ -2411,3 +2411,18 @@ msgid "%(n)s machine taken out of use"
 msgid_plural "%(n)s machines taken out of use"
 msgstr[0] ""
 msgstr[1] ""
+
+#: templates/core/csrf_failure.html:3
+msgid "The form could not be sent"
+msgstr ""
+
+#: templates/core/csrf_failure.html:7
+msgid ""
+"For your safety the page was refused. Go back, reload the page and try again."
+" If it keeps happening, tell the administration which phone and browser you "
+"use."
+msgstr ""
+
+#: templates/core/csrf_failure.html:8
+msgid "Reload the page"
+msgstr ""
