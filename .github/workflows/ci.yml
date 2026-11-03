@@ -128,8 +128,9 @@ jobs:
         run: |
           docker exec app sh -c 'test "$(stat -c %U /app/private_media)" = app'
           docker exec app sh -c 'test -n "$(find /app/private_media/receipts -name "*.pdf" | head -1)"'
-          docker top app -o user,args | grep gunicorn
-          if docker top app -o user,args | grep gunicorn | grep -q '^root'; then
+          # docker top needs the pid column; the user is the 2nd column.
+          docker top app -o pid,user,args | grep gunicorn
+          if docker top app -o pid,user,args | grep gunicorn | awk '{print $2}' | grep -qx root; then
             echo "gunicorn must not run as root"; exit 1
           fi
       - name: Container logs
