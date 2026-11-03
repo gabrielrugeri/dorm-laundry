@@ -39,6 +39,33 @@ not covered, how to report a problem).
 - There is no rotation procedure: change it only if it leaked, and then plan
   for every resident needing a new link.
 
+## First-time PINs from the date of birth
+
+For the rollout the administration provides residents' dates of birth once, in
+the import file. A resident's first PIN is the date as DDMMYY.
+
+- **The date is never stored.** It is parsed strictly, turned into
+  `HMAC(PIN_PEPPER, DDMMYY)` straight away and dropped: no model field, masked
+  in the preview, never in the session (which keeps only those digests until
+  "Import" or "Cancel"), the history or the logs. A test searches every table
+  and the logs for the date in every format and for the PIN.
+- **Weak by nature, so short-lived and single-use.** People close to a
+  resident know their birthday, and there are only about 30,000 plausible
+  dates. So the first-time PIN expires after 14 days (superusers can change
+  this), is checked at every login (an expired one fails with the usual
+  generic error, so a guessed date is never confirmed), falls under the same
+  login limits, and must be replaced by the resident's own PIN before anything
+  else. A daily clean-up deletes expired hashes.
+- **Hashing:** the digest is finished with the same PIN hasher, at 20,000
+  PBKDF2 rounds instead of the default 1,000,000, so that an import of a few
+  hundred residents completes in one request (1,000,000 rounds take about
+  2 seconds per PIN). Against a stolen database the pepper is what protects
+  it; the rounds only slow down someone who also has the pepper, and for a
+  6-digit PIN no number of rounds is enough on its own. Chosen PINs keep the
+  full count. At most 500 dates per file (about 20 seconds of hashing on a
+  modest server); a bigger list is imported in several files.
+- No date in the file: no first-time PIN; the resident gets a login link.
+
 ## Login limits
 
 Kept in the shared cache (`apps/accounts/ratelimit.py`). The numbers are

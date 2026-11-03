@@ -28,6 +28,10 @@ English) words on the right, and add new concepts here when you add a screen.
 | Credit (manual, after a payment) | Поступила оплата (тип) / Оплата внесена (в истории) | Payment received |
 | Negative credit | Оплата отменена | Payment taken back |
 | Adjustment | Исправление (тип) / Исправление баланса (в истории) | Correction / Balance correction |
+| Opening balance (ledger kind `opening`) | Начальный баланс | Opening balance |
+| Initial PIN (from the date of birth) | Первый PIN-код | First-time PIN |
+| Activation status | Вход | Login |
+| Activated / initial PIN pending / expired / no credential | Вход выполнен / первый PIN-код ещё не использован / срок первого PIN-кода истёк / PIN-кода ещё нет | Activated / first-time PIN not used yet / first-time PIN expired / no PIN yet |
 | Add / subtract | Добавить / Вычесть | Add / Subtract |
 | Amount field | Сумма, ₽ (never «Изменение») | Amount, ₽ (never "Change") |
 | Booking charge | Оплата бронирования | Booking payment |

@@ -28,6 +28,7 @@ Everything below assumes Ubuntu 24.04 LTS and the paths used by the files in
 | `nginx/dorm-laundry.conf` | `/etc/nginx/sites-available/` | HTTPS, static files, upload limit 20 MB, private files never served. |
 | `systemd/dorm-laundry.service` | `/etc/systemd/system/` | gunicorn on a local socket, sandboxed. |
 | `systemd/dorm-laundry-backup.service` + `.timer` | `/etc/systemd/system/` | Nightly backup at 03:30 Moscow time. |
+| `systemd/dorm-laundry-cleanup.service` + `.timer` | `/etc/systemd/system/` | Daily: removes expired first-time PINs. |
 | `systemd/dorm-laundry-alert@.service` | `/etc/systemd/system/` | E-mails when the app or the backup fails. |
 | `scripts/deploy.sh` | (run from the checkout) | Updates the app and restarts it. |
 | `scripts/backup.sh` | (run by the timer) | Database + uploads, encrypted with `age`, copied off-site with `rclone`. |
@@ -116,7 +117,7 @@ certbot renews by itself (`systemctl list-timers | grep certbot`).
 ```bash
 sudo cp /srv/dorm-laundry/app/deploy/systemd/* /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable dorm-laundry.service dorm-laundry-backup.timer
+sudo systemctl enable dorm-laundry.service dorm-laundry-backup.timer dorm-laundry-cleanup.timer
 ```
 
 The first deploy needs the app to be allowed to start, which it is not yet
