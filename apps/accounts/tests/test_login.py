@@ -1,5 +1,4 @@
 import pytest
-from django.forms.forms import NON_FIELD_ERRORS
 from django.urls import reverse
 
 PIN = "123456"  # The conftest fixtures' PIN.
@@ -13,10 +12,6 @@ def login_dormitory(settings, dormitory):
 
 def post_login(client, code, pin, **extra):
     return client.post(LOGIN, {"username": code, "password": pin}, **extra)
-
-
-def is_locked_out(response):
-    return response.context["form"].has_error(NON_FIELD_ERRORS, "locked")
 
 
 def test_login_page_renders(client):
@@ -63,39 +58,7 @@ def test_inactive_resident_gets_generic_error(client, resident):
     assert not response.wsgi_request.user.is_authenticated
 
 
-def test_lockout_after_repeated_failures(client, resident, settings):
-    settings.LOGIN_MAX_FAILURES = 3
-    for _ in range(3):
-        post_login(client, resident.student_code, "999999")
-    # Even the right PIN is refused while locked.
-    response = post_login(client, resident.student_code, PIN)
-    assert not response.wsgi_request.user.is_authenticated
-    assert is_locked_out(response)
-
-
-def test_lockout_is_per_ip(client, resident, settings):
-    settings.LOGIN_MAX_FAILURES = 2
-    for _ in range(2):
-        post_login(client, resident.student_code, "999999", REMOTE_ADDR="10.0.0.1")
-    response = post_login(client, resident.student_code, PIN, REMOTE_ADDR="10.0.0.2")
-    assert response.wsgi_request.user == resident.user
-
-
-def test_unknown_codes_are_locked_too(client, settings):
-    settings.LOGIN_MAX_FAILURES = 2
-    for _ in range(3):
-        response = post_login(client, "NOSUCHCODE", PIN)
-    assert is_locked_out(response)
-
-
-def test_success_resets_failure_count(client, resident, settings):
-    settings.LOGIN_MAX_FAILURES = 2
-    post_login(client, resident.student_code, "999999")
-    post_login(client, resident.student_code, PIN)
-    client.logout()
-    post_login(client, resident.student_code, "999999")
-    response = post_login(client, resident.student_code, PIN)
-    assert response.wsgi_request.user == resident.user
+# Login limits: apps/accounts/tests/test_ratelimit.py.
 
 
 def test_logout_requires_post(client, resident):

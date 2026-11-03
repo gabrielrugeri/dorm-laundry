@@ -36,10 +36,12 @@ def machine(dormitory):
 
 
 def make_resident(dormitory, code, name="Test Resident", room="101"):
-    from apps.accounts import roles
+    from apps.accounts import pins, roles
     from apps.accounts.models import Resident, User
 
-    user = User.objects.create_user(username=f"{dormitory.slug}-{code}", password="123456")
+    user = User(username=f"{dormitory.slug}-{code}")
+    pins.set_pin(user, "123456")  # with the pepper, like every real PIN
+    user.save()
     user.groups.add(Group.objects.get(name=roles.RESIDENT))
     return Resident.objects.create(
         user=user, dormitory=dormitory, student_code=code, full_name=name, room=room

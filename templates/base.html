@@ -44,7 +44,12 @@
           <span aria-hidden="true">▾</span>
         </summary>
         <div class="absolute right-0 z-30 mt-1 w-64 space-y-3 rounded-lg border border-line bg-surface p-3 shadow-lg">
-          {% if user.resident %}<a href="{% url 'ledger:balance' %}" class="block text-link underline">{% translate "My balance" %}</a>{% endif %}
+          {% if user.resident %}
+            <a href="{% url 'ledger:balance' %}" class="block text-link underline">{% translate "My balance" %}</a>
+            <a href="{% url 'accounts:change_pin' %}" class="block text-link underline">{% translate "Change PIN" %}</a>
+          {% elif is_staff_member %}
+            <a href="{% url 'accounts:change_password' %}" class="block text-link underline">{% translate "Change password" %}</a>
+          {% endif %}
           {% include "core/_language_switch.html" %}
           {% include "core/_theme_switch.html" %}
           <form action="{% url 'accounts:logout' %}" method="post">

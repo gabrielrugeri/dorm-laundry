@@ -11,5 +11,7 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("language/", views.set_language, name="set_language"),
     path("theme/", views.set_theme, name="set_theme"),
+    path("pin/", views.change_pin, name="change_pin"),
+    path("password/", views.change_password, name="change_password"),
     path("activate/<uidb64>/<token>/", views.ActivateView.as_view(), name="activate"),
 ]

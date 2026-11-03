@@ -186,6 +186,29 @@ class GlobalSettings(models.Model):
         _("receipts one resident may send per day"), default=3
     )
     max_upload_mb = models.PositiveSmallIntegerField(_("largest receipt file (MB)"), default=10)
+    # Login limits (apps/accounts/ratelimit.py). Superusers only, in Django admin.
+    login_account_failures = models.PositiveSmallIntegerField(
+        _("failed logins before an account is locked"), default=5
+    )
+    login_account_lock_seconds = models.PositiveIntegerField(
+        _("first account lock (seconds)"),
+        default=60,
+        help_text=_("Each further lock lasts twice as long, up to the longest lock."),
+    )
+    login_account_max_lock_seconds = models.PositiveIntegerField(
+        _("longest account lock (seconds)"), default=30 * 60
+    )
+    login_address_free_failures = models.PositiveIntegerField(
+        _("failed logins from one address in 15 minutes before waits start"),
+        default=30,
+        help_text=_("A whole dormitory can share one address: keep this generous."),
+    )
+    login_address_max_delay_seconds = models.PositiveSmallIntegerField(
+        _("longest wait between attempts from one address (seconds)"), default=10
+    )
+    login_address_hourly_limit = models.PositiveIntegerField(
+        _("failed logins from one address in an hour before it is blocked"), default=1000
+    )
     updated_at = models.DateTimeField(_("changed at"), auto_now=True)
 
     class Meta:

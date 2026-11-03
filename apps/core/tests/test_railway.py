@@ -20,6 +20,7 @@ RAILWAY_ENV = {
     "DJANGO_READ_DOT_ENV": "false",
     "DJANGO_SETTINGS_MODULE": "config.settings.railway",
     "DJANGO_SECRET_KEY": "x" * 60,
+    "PIN_PEPPER": "test-only-pin-pepper-" + "p" * 30,
     "DEMO_MODE": "true",
     "PORT": "8080",
     "RAILWAY_PUBLIC_DOMAIN": "dorm-laundry-demo.up.railway.app",

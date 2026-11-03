@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth import hashers
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -13,6 +14,17 @@ class User(AbstractUser):
     without a painful migration. Profile data lives in `Resident` / `StaffProfile`.
     Roles are Django groups; see `apps.accounts.roles`.
     """
+
+    def check_password(self, raw_password):
+        """Django re-hashes a password with its default hasher after a
+        successful check; for a resident's PIN that would drop the pepper.
+        So peppered PINs are only ever checked here, never re-hashed (set and
+        check PINs with apps/accounts/pins.py)."""
+        from .hashers import ALGORITHM
+
+        if self.password.startswith(ALGORITHM + "$"):
+            return hashers.check_password(raw_password, self.password)
+        return super().check_password(raw_password)
 
 
 class Resident(models.Model):

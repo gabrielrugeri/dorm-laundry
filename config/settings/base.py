@@ -117,10 +117,25 @@ PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 7
 # residents' names and rooms, so they end 12 hours after logging in.
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30
 STAFF_SESSION_SECONDS = 60 * 60 * 12
-# After this many failed logins for one student code from one IP address,
-# login is blocked for LOGIN_LOCKOUT_SECONDS.
-LOGIN_MAX_FAILURES = 5
-LOGIN_LOCKOUT_SECONDS = 15 * 60
+# Login limits are GlobalSettings fields (superusers change them in Django
+# admin); see apps/accounts/ratelimit.py. They count per client address: the
+# one header our reverse proxy sets (apps/core/client_ip.py). Empty: the
+# connection's own address (development without a proxy).
+CLIENT_IP_HEADER = env("CLIENT_IP_HEADER", default="")
+
+# Server-side secret mixed into every resident PIN hash (apps/accounts/hashers.py).
+# Production refuses to start without a real one (config/settings/prod.py).
+# Back it up safely: losing or changing it makes every PIN invalid.
+DEV_PIN_PEPPER = "development-only-pin-pepper-never-use-on-a-server"
+PIN_PEPPER = env("PIN_PEPPER", default=DEV_PIN_PEPPER)
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",  # staff passwords
+    "apps.accounts.hashers.PinHasher",  # residents' PINs, with the pepper
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
+]
 
 # Staff passwords (residents use PINs, see apps/accounts/validators.py).
 AUTH_PASSWORD_VALIDATORS = [
