@@ -402,17 +402,22 @@ yet" page. The tests in `apps/keylog/tests/` switch it on.
 
 - **Residents** log in with student code + 6-digit PIN
   (`apps.accounts.backends.ResidentBackend`). The PIN is the user's password,
-  stored hashed. Until the pilot has more than one dormitory, the dormitory
+  hashed with a server-side pepper (`apps/accounts/hashers.py`,
+  `apps/accounts/pins.py`; docs/SECURITY.md). Until the pilot has more than one dormitory, the dormitory
   comes from the `DEFAULT_DORMITORY_SLUG` setting.
 - **Staff** log in on the same form with username and password
   (Django's `ModelBackend`).
 - **No hints:** every failed login shows the same message. Unknown codes cost
   the same hashing time as wrong PINs, so the form cannot reveal which codes
   exist.
-- **Lockout:** `LOGIN_MAX_FAILURES` failures for one code from one IP block
-  login for `LOGIN_LOCKOUT_SECONDS` (`apps/accounts/ratelimit.py`). The default
-  cache is per process; use a shared cache when running several workers.
-  Behind a proxy, the real client IP must reach `REMOTE_ADDR`.
+- **Login limits** (`apps/accounts/ratelimit.py`, docs/SECURITY.md): per
+  account, locks that double from 1 to 30 minutes after 5 wrong PINs; per
+  address, short waits and then an hourly limit, generous enough for a whole
+  dormitory behind one address. Superusers change the numbers in Django
+  admin. The address comes from the one header our proxy overwrites
+  (`CLIENT_IP_HEADER`, `apps/core/client_ip.py`), never `X-Forwarded-For`.
+- **Changing credentials:** residents at `/account/pin/`, staff at
+  `/account/password/` (header menu). Other sessions are logged out.
 - **Activation links** are Django password-reset tokens (no extra table). They
   are valid for `PASSWORD_RESET_TIMEOUT` (7 days) and stop working once the
   PIN is set. Admins create them, or reset a PIN, with actions on the

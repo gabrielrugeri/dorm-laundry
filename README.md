@@ -10,6 +10,7 @@ Works in Russian and English, and loads nothing from third-party servers.
 
 - Scope: [docs/MVP-SPEC.md](docs/MVP-SPEC.md)
 - How it works: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Security (PINs, login limits): [docs/SECURITY.md](docs/SECURITY.md)
 - Contributor and AI-assistant guide: [docs/CLAUDE.md](docs/CLAUDE.md)
 
 > Status: early development. Residents can log in, see free machines, book,

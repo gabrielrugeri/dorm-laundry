@@ -76,12 +76,14 @@ line (the **Raw Editor** lets you paste them all at once):
 |---|---|---|
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` | Connects to the database. Type it exactly like this: Railway fills in the real address. If your database service has another name, use that name instead of `Postgres`. |
 | `DJANGO_SECRET_KEY` | a long random text (see below) | Signs logins. Keep it secret. |
+| `PIN_PEPPER` | another long random text (see below) | Mixed into every resident PIN hash. The app refuses to start without it. Back it up: losing or changing it makes every PIN invalid (docs/SECURITY.md). |
 | `DEMO_MODE` | `true` | Demo banner, no search engines. **Must** be `true` on Railway. |
 | `SEED_DEMO_STAFF_PASSWORD` | a password you choose | Password of the demo accounts `admin` and `manager`. The default from the README is refused. |
 | `SEED_DEMO_RESIDENT_PIN` | 6 digits you choose, not `123456` | PIN of the demo residents D0001 … D0020. |
 | `PORT` | `8080` | The port the app listens on (makes section 6 predictable). |
 
-Generate the secret key on your own computer:
+Generate the secret key and, separately, the PIN pepper on your own
+computer (run it twice; never use the same value for both):
 
 ```bash
 python -c "import secrets; print(secrets.token_urlsafe(50))"
@@ -93,7 +95,7 @@ Do **not** set `PILOT_READY`. You never need `RAILWAY_PUBLIC_DOMAIN`
 Write the demo passwords down somewhere private: you will share them with the
 people testing the demo, and changing them later is a manual step (section 8).
 
-**Check:** the Variables tab lists the six variables; `DATABASE_URL` shows a
+**Check:** the Variables tab lists the seven variables; `DATABASE_URL` shows a
 resolved value when you hover or reveal it.
 
 ## 5. Pre-deploy command and health check
@@ -251,6 +253,7 @@ opens.
 | Logs say "Refusing to start: the Railway demo must run with DEMO_MODE=true" | Section 4: set `DEMO_MODE` to `true`. |
 | Receipt pictures do not show | Section 6b: the volume must be attached at `/app/private_media`. Redeploy after attaching it. |
 | Upload says "The form could not be sent" | Look for `CSRF failure:` in the runtime logs: it says why. Reload the page first; on an iPhone, update the app (it refreshes by itself after a redeploy). |
+| Logs say "Refusing to start: set PIN_PEPPER …" | Section 4: add `PIN_PEPPER`. On an existing demo, residents' PINs keep working (they are re-hashed with the pepper at their next login). |
 | Logs say "Refusing to start: DATABASE_URL is not set" | Section 4: add `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`. |
 | Health check fails | Check `DATABASE_URL` (section 4) and the runtime logs. `/healthz` returns 503 when the database cannot be reached. |
 | "Bad Request (400)" in the browser | The address is not the one Railway generated. Use the domain from section 6; for a custom domain, add it to `DJANGO_ALLOWED_HOSTS` and `https://…` to `DJANGO_CSRF_TRUSTED_ORIGINS`. |

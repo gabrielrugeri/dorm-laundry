@@ -84,8 +84,10 @@ sudo chmod 640 /etc/dorm-laundry/env /etc/dorm-laundry/backup.env
 sudoedit /etc/dorm-laundry/env      # fill in every value
 ```
 
-Generate the secret key with
-`python3 -c "import secrets; print(secrets.token_urlsafe(50))"`.
+Generate the secret key, and separately `PIN_PEPPER`, with
+`python3 -c "import secrets; print(secrets.token_urlsafe(50))"`. **Store
+`PIN_PEPPER` in the password manager, apart from the database backups:**
+losing or changing it makes every resident PIN invalid (docs/SECURITY.md).
 Keep `DEMO_MODE=false` and **`PILOT_READY=false`** for now.
 
 ## 4. nginx and HTTPS
