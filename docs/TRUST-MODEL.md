@@ -24,10 +24,10 @@ approvals, and the checks below keep the risk small.
 
 When a resident sends a receipt, the app refuses it if:
 
-- the amount is more than the **largest amount per receipt** (2000 ₽ unless
+- the amount is more than the **largest amount per receipt** (600 ₽ unless
   changed under «Настройки»);
 - it would bring more than the **30-day limit** into the resident's balance
-  from receipts (5000 ₽);
+  from receipts (1500 ₽);
 - the resident already sent the **daily number of receipts** (3);
 - the file is too large, or is not a PDF or a picture;
 - **the same file was already sent**, by this resident or anyone else.

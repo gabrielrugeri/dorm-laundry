@@ -131,12 +131,17 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
 ## Money and upload rules (sensitive settings)
 
 - One `dorms.GlobalSettings` row (created by a migration) holds the credit
-  limit, the largest amount per receipt (2000 ₽), the most money credited to
-  one resident in 30 days (5000 ₽), receipts per resident per day (3) and the
-  largest receipt file (10 MB, never above `MAX_UPLOAD_BYTES_HARD`). The last
-  four are used from Stage 4 (receipts).
-- `/manage/settings/` («Настройки») shows them in plain words with their
-  history. Changing them (`apps/dorms/rules.change_settings`) needs the
+  limit, the largest amount per receipt (600 ₽), the most money credited to
+  one resident in 30 days (1500 ₽), receipts per resident per day (3) and the
+  largest receipt file (10 MB, never above `MAX_UPLOAD_BYTES_HARD`).
+  Migration `dorms.0006` lowered the receipt amounts from 2000/5000 only where
+  those old defaults were still in place, and recorded it in the history.
+- The largest receipt file is a technical limit: only superusers change it,
+  in Django admin, with a reason, through the same `change_settings` (checked
+  and recorded the same way). `rules.max_upload_bytes()` caps it at
+  `MAX_UPLOAD_BYTES_HARD` even if the server limit is lowered later.
+- `/manage/settings/` («Настройки») shows the other four in plain words with
+  their history. Changing them (`apps/dorms/rules.change_settings`) needs the
   admin's own password and a reason, refuses values outside sensible bounds
   (`rules.bounds()`), and asks for an extra tick when a value changes more
   than 10 times either way, goes to or from zero, or becomes "no limit". The

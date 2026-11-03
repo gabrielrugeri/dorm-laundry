@@ -177,10 +177,10 @@ class GlobalSettings(models.Model):
         help_text=_("0: no debt allowed. Empty: no limit."),
     )
     max_receipt_amount = models.PositiveIntegerField(
-        _("largest amount on one receipt (RUB)"), default=2000
+        _("largest amount on one receipt (RUB)"), default=600
     )
     max_credit_per_30_days = models.PositiveIntegerField(
-        _("most money credited to one resident in 30 days (RUB)"), default=5000
+        _("most money credited to one resident in 30 days (RUB)"), default=1500
     )
     max_uploads_per_day = models.PositiveSmallIntegerField(
         _("receipts one resident may send per day"), default=3
