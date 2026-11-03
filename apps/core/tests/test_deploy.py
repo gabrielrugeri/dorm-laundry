@@ -113,10 +113,11 @@ def load_prod_settings(**env_vars):
         DJANGO_READ_DOT_ENV="false",  # a developer's local .env must not change the result
         DJANGO_SETTINGS_MODULE="config.settings.prod",
         DJANGO_SECRET_KEY="x" * 60,
+        PIN_PEPPER="test-only-pin-pepper-" + "p" * 30,
         DJANGO_ALLOWED_HOSTS="demo.example.org",
         DATABASE_URL="sqlite:///:memory:",
-        **env_vars,
     )
+    env.update(env_vars)
     code = (
         "import django; django.setup(); from django.conf import settings; "
         "print(settings.CACHES['default']['BACKEND'], settings.SECURE_REDIRECT_EXEMPT)"
@@ -147,3 +148,14 @@ def test_production_refuses_to_start_without_demo_mode_or_pilot_ready(pilot_read
 def test_production_starts_without_demo_mode_once_pilot_ready():
     code, output = load_prod_settings(DEMO_MODE="false", PILOT_READY="true")
     assert code == 0, output
+
+
+@pytest.mark.parametrize(
+    "pepper",
+    ["", "development-only-pin-pepper-never-use-on-a-server", "too-short"],
+    ids=["missing", "development-value", "too-short"],
+)
+def test_production_refuses_to_start_without_a_real_pin_pepper(pepper):
+    code, output = load_prod_settings(DEMO_MODE="true", PIN_PEPPER=pepper)
+    assert code != 0
+    assert "PIN_PEPPER" in output

@@ -3,7 +3,7 @@
 from django.core.exceptions import ImproperlyConfigured
 
 from .base import *  # noqa: F403
-from .base import DEMO_MODE, env
+from .base import DEMO_MODE, DEV_PIN_PEPPER, PIN_PEPPER, env
 
 # The pilot gate (docs/plans/admin-and-payments.md): a production instance
 # without the demo banner may hold real resident data, so it only starts when
@@ -26,8 +26,20 @@ if not env("DATABASE_URL", default=""):
         "e.g. postgres://user:password@host:5432/name (on Railway: ${{Postgres.DATABASE_URL}})."
     )
 
+# Residents' PINs are hashed with this secret (apps/accounts/hashers.py).
+if PIN_PEPPER == DEV_PIN_PEPPER or len(PIN_PEPPER) < 32:
+    raise ImproperlyConfigured(
+        "Refusing to start: set PIN_PEPPER to a random secret of at least 32 characters, "
+        'e.g. python -c "import secrets; print(secrets.token_urlsafe(48))". '
+        "Back it up safely: losing or changing it makes every resident PIN invalid."
+    )
+
 DEBUG = False
 IS_PRODUCTION = True
+
+# The client's address for login limits: the X-Real-IP header, which our nginx
+# and Railway's edge set and overwrite on every request (apps/core/client_ip.py).
+CLIENT_IP_HEADER = env("CLIENT_IP_HEADER", default="X-Real-IP")
 
 # We run behind a reverse proxy (e.g. nginx) that terminates HTTPS.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

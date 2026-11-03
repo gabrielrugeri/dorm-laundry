@@ -2435,6 +2435,114 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: apps/dorms/admin.py:39
-msgid "Between %(low)s and %(high)s MB (the server's own limit)."
+#: apps/accounts/forms.py:44
+msgid "Too many attempts from your network. Wait %(seconds)s s and try again."
+msgstr ""
+
+#: apps/accounts/forms.py:150
+msgid "Current PIN"
+msgstr ""
+
+#: apps/accounts/forms.py:171
+msgid "This is not your current PIN."
+msgstr ""
+
+#: apps/accounts/forms.py:178
+msgid "The new PIN must be different from the current one."
+msgstr ""
+
+#: apps/accounts/views.py:150
+msgid "Your PIN was changed. Other devices were logged out."
+msgstr ""
+
+#: apps/accounts/views.py:172
+msgid "Your password was changed. Other devices were logged out."
+msgstr ""
+
+#: apps/audit/actions.py:35
+msgid "PIN changed by the resident"
+msgstr ""
+
+#: apps/dorms/admin.py:40
+msgid "Between %(low)s and %(high)s."
+msgstr ""
+
+#: apps/dorms/admin.py:47
+msgid "The longest lock cannot be shorter than the first."
+msgstr ""
+
+#: apps/dorms/models.py:190
+msgid "failed logins before an account is locked"
+msgstr ""
+
+#: apps/dorms/models.py:193
+msgid "first account lock (seconds)"
+msgstr ""
+
+#: apps/dorms/models.py:195
+msgid "Each further lock lasts twice as long, up to the longest lock."
+msgstr ""
+
+#: apps/dorms/models.py:198
+msgid "longest account lock (seconds)"
+msgstr ""
+
+#: apps/dorms/models.py:201
+msgid "failed logins from one address in 15 minutes before waits start"
+msgstr ""
+
+#: apps/dorms/models.py:203
+msgid "A whole dormitory can share one address: keep this generous."
+msgstr ""
+
+#: apps/dorms/models.py:206
+msgid "longest wait between attempts from one address (seconds)"
+msgstr ""
+
+#: apps/dorms/models.py:209
+msgid "failed logins from one address in an hour before it is blocked"
+msgstr ""
+
+#: apps/dorms/rules.py:45
+msgid "Wrong PINs before an account is locked"
+msgstr ""
+
+#: apps/dorms/rules.py:46
+msgid "First account lock, seconds"
+msgstr ""
+
+#: apps/dorms/rules.py:47
+msgid "Longest account lock, seconds"
+msgstr ""
+
+#: apps/dorms/rules.py:48
+msgid "Wrong PINs from one address before waits start"
+msgstr ""
+
+#: apps/dorms/rules.py:49
+msgid "Longest wait for one address, seconds"
+msgstr ""
+
+#: apps/dorms/rules.py:50
+msgid "Wrong PINs from one address per hour before blocking"
+msgstr ""
+
+#: templates/base.html:46
+msgid "Change PIN"
+msgstr ""
+
+#: templates/base.html:48
+msgid "Change password"
+msgstr ""
+
+#: templates/accounts/change_pin.html:7
+msgid "After the change, your other phones and computers are logged out."
+msgstr ""
+
+#: templates/accounts/change_password.html:11
+msgid "Save the new password"
+msgstr ""
+
+#: templates/accounts/change_pin.html:11
+msgid "Save the new PIN"
 msgstr ""

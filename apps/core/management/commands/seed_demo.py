@@ -28,7 +28,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
-from apps.accounts import roles
+from apps.accounts import pins, roles
 from apps.accounts import services as resident_services
 from apps.accounts.models import Resident, StaffProfile, User
 from apps.audit.models import AuditEvent
@@ -123,7 +123,7 @@ class Command(BaseCommand):
             code = f"D{n:04d}"
             user, created = User.objects.get_or_create(username=f"{dorm.slug}-{code}")
             if created:
-                user.set_password(resident_pin)
+                pins.set_pin(user, resident_pin)
                 user.save()
                 user.groups.add(resident_group)
             resident, created = Resident.objects.get_or_create(

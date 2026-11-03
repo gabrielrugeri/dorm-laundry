@@ -1,13 +1,21 @@
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import views as auth_views
+from django.db import transaction
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext_lazy as _
 from django.views import i18n
 from django.views.decorators.http import require_POST
 
-from .forms import LoginForm, SetPinForm
+from apps.audit.services import record
+
+from . import ratelimit
+from .decorators import resident_required, staff_required
+from .forms import ChangePasswordForm, ChangePinForm, LoginForm, SetPinForm
 from .models import UserPreferences
 
 
@@ -110,3 +118,44 @@ class ActivateView(auth_views.PasswordResetConfirmView):
 
     def form_valid(self, form):
         return remember_language(super().form_valid(form), self.user)
+
+
+@resident_required
+def change_pin(request):
+    """The resident changes their own PIN. Every other device they are
+    logged in on is logged out; this one stays logged in."""
+    form = ChangePinForm(request.user, request.POST or None, request=request)
+    if request.method == "POST" and form.is_valid():
+        with transaction.atomic():
+            form.save()
+            record(actor=request.user, action="resident.pin_change", target=request.user.resident)
+        ratelimit.reset(request.user.resident.student_code, request)
+        update_session_auth_hash(request, request.user)
+        messages.success(request, _("Your PIN was changed. Other devices were logged out."))
+        return redirect("core:home")
+    return render(request, "accounts/change_pin.html", {"form": form})
+
+
+class ChangePasswordView(auth_views.PasswordChangeView):
+    """Staff change their own password (Django keeps this session logged in
+    and logs out the others)."""
+
+    form_class = ChangePasswordForm
+    template_name = "accounts/change_password.html"
+    success_url = reverse_lazy("core:home")
+
+    def get_form_kwargs(self):
+        return {**super().get_form_kwargs(), "request": self.request}
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            response = super().form_valid(form)
+            record(actor=self.request.user, action="user.password_change", target=self.request.user)
+        ratelimit.reset(self.request.user.get_username(), self.request)
+        messages.success(
+            self.request, _("Your password was changed. Other devices were logged out.")
+        )
+        return response
+
+
+change_password = staff_required(ChangePasswordView.as_view())

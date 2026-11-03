@@ -142,9 +142,14 @@ def test_upload_limit_never_above_the_server_limit(db, settings):
 ADMIN_URL = "/admin/dorms/globalsettings/1/change/"
 
 
+def _technical_limits():
+    current = rules.current()
+    return {name: getattr(current, name) for name in rules.SUPERUSER_FIELDS}
+
+
 def test_superuser_changes_the_file_size_in_django_admin_with_a_reason(client, admin_user):
     client.force_login(admin_user)
-    data = {"max_upload_mb": 5, "reason": "Phones send smaller pictures now"}
+    data = {**_technical_limits(), "max_upload_mb": 5, "reason": "Phones send smaller pictures now"}
     response = client.post(ADMIN_URL, data)
     assert response.status_code == 302, response.content.decode()[:2000]
     assert rules.current().max_upload_mb == 5
@@ -156,17 +161,36 @@ def test_superuser_changes_the_file_size_in_django_admin_with_a_reason(client, a
 
 @pytest.mark.parametrize(
     "data",
-    [{"max_upload_mb": 999, "reason": "x"}, {"max_upload_mb": 5, "reason": ""}],
-    ids=["above-server-limit", "no-reason"],
+    [
+        {"max_upload_mb": 999, "reason": "x"},
+        {"max_upload_mb": 5, "reason": ""},
+        {"login_account_failures": 1, "reason": "x"},
+        {"login_account_lock_seconds": 600, "login_account_max_lock_seconds": 300, "reason": "x"},
+    ],
+    ids=["above-server-limit", "no-reason", "too-few-failures", "longest-below-first"],
 )
-def test_django_admin_refuses_bad_file_sizes(client, admin_user, data):
+def test_django_admin_refuses_bad_technical_limits(client, admin_user, data):
     client.force_login(admin_user)
-    assert client.post(ADMIN_URL, data).status_code == 200  # the form again, with errors
+    assert (
+        client.post(ADMIN_URL, {**_technical_limits(), **data}).status_code == 200
+    )  # the form again, with errors
     assert rules.current().max_upload_mb == 10
     assert not AuditEvent.objects.exists()
 
 
 def test_django_admin_cannot_change_the_money_rules(client, admin_user):
     client.force_login(admin_user)
-    client.post(ADMIN_URL, {"max_upload_mb": 10, "max_receipt_amount": 99999, "reason": "sneaky"})
+    client.post(ADMIN_URL, {**_technical_limits(), "max_receipt_amount": 99999, "reason": "x"})
     assert rules.current().max_receipt_amount == 600
+
+
+def test_superuser_changes_the_login_limits_in_django_admin(client, admin_user):
+    client.force_login(admin_user)
+    data = {**_technical_limits(), "login_address_free_failures": 60, "reason": "Big dorm"}
+    assert client.post(ADMIN_URL, data).status_code == 302
+    assert rules.current().login_address_free_failures == 60
+    event = AuditEvent.objects.get(action="settings.change")
+    assert (
+        event.before["login_address_free_failures"],
+        event.after["login_address_free_failures"],
+    ) == (30, 60)

@@ -1,13 +1,15 @@
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 
-from .models import Resident, User
+from . import pins
+from .models import Resident
 
 
 class ResidentBackend(ModelBackend):
     """Log a resident in with their student code and PIN.
 
-    The PIN is the user's password (stored hashed). The dormitory comes from
+    The PIN is the user's password, hashed with the pepper (apps/accounts/
+    hashers.py, pins.py). The dormitory comes from
     the DEFAULT_DORMITORY_SLUG setting while the pilot has a single dormitory.
 
     Unknown codes cost the same time as wrong PINs (a dummy hash is computed),
@@ -24,9 +26,9 @@ class ResidentBackend(ModelBackend):
                 student_code=username.strip(),
             )
         except Resident.DoesNotExist:
-            User().set_password(password)
+            pins.dummy_check(password)
             return None
         user = resident.user
-        if user.check_password(password) and self.user_can_authenticate(user):
+        if pins.check_pin(user, password) and self.user_can_authenticate(user):
             return user
         return None

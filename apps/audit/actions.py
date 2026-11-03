@@ -32,6 +32,7 @@ LABELS = {
     "resident.login_link": _("PIN reset / login link created"),
     "resident.activation_link": _("Login link created"),  # before the two were merged
     "resident.pin_reset": _("PIN reset"),  # before the two were merged
+    "resident.pin_change": _("PIN changed by the resident"),
     "user.password_change": _("Password changed"),
     # Changes made by developers in the technical admin (/admin/).
     "admin.add": _("Added by a developer"),

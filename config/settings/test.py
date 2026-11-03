@@ -14,7 +14,13 @@ from .base import *  # noqa: E402, F403
 SEED_DEMO_HISTORY_WEEKS = 1
 
 # Hashing passwords properly is slow; tests don't need it.
-PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.MD5PasswordHasher",
+    "apps.accounts.hashers.PinHasher",
+    # PINs set before the pepper existed (apps/accounts/pins.py upgrades them).
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+]
+PIN_HASH_ITERATIONS = 1
 
 # Serve static files from the app directories without needing collectstatic.
 WHITENOISE_AUTOREFRESH = True

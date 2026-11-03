@@ -27,8 +27,16 @@ FIELDS = (
     "max_credit_per_30_days",
     "max_uploads_per_day",
 )
-# Superusers only, in Django admin.
-SUPERUSER_FIELDS = ("max_upload_mb",)
+# Superusers only, in Django admin: technical limits.
+SUPERUSER_FIELDS = (
+    "max_upload_mb",
+    "login_account_failures",
+    "login_account_lock_seconds",
+    "login_account_max_lock_seconds",
+    "login_address_free_failures",
+    "login_address_max_delay_seconds",
+    "login_address_hourly_limit",
+)
 ALL_FIELDS = FIELDS + SUPERUSER_FIELDS
 
 # Plain words for the admin screens and the history (docs/GLOSSARY.md).
@@ -38,6 +46,12 @@ LABELS = {
     "max_credit_per_30_days": _("Most money for one resident in 30 days"),
     "max_uploads_per_day": _("Receipts one resident may send per day"),
     "max_upload_mb": _("Largest receipt file, MB"),
+    "login_account_failures": _("Wrong PINs before an account is locked"),
+    "login_account_lock_seconds": _("First account lock, seconds"),
+    "login_account_max_lock_seconds": _("Longest account lock, seconds"),
+    "login_address_free_failures": _("Wrong PINs from one address before waits start"),
+    "login_address_max_delay_seconds": _("Longest wait for one address, seconds"),
+    "login_address_hourly_limit": _("Wrong PINs from one address per hour before blocking"),
 }
 MONEY_FIELDS = {"credit_limit", "max_receipt_amount", "max_credit_per_30_days"}
 
@@ -55,6 +69,12 @@ def bounds():
         "max_credit_per_30_days": (100, 1_000_000),
         "max_uploads_per_day": (1, 20),
         "max_upload_mb": (1, hard_mb),
+        "login_account_failures": (3, 20),
+        "login_account_lock_seconds": (10, 60 * 60),
+        "login_account_max_lock_seconds": (60, 24 * 60 * 60),
+        "login_address_free_failures": (10, 10_000),
+        "login_address_max_delay_seconds": (1, 60),
+        "login_address_hourly_limit": (100, 100_000),
     }
 
 
@@ -107,6 +127,12 @@ def validate(values):
             raise InvalidRules(f"{name} must be between {low} and {high}.")
     if values["max_credit_per_30_days"] < values["max_receipt_amount"]:
         raise InvalidRules("The 30-day maximum cannot be below the maximum per receipt.")
+    first, longest = (
+        values.get("login_account_lock_seconds"),
+        values.get("login_account_max_lock_seconds"),
+    )
+    if first is not None and longest is not None and longest < first:
+        raise InvalidRules("The longest account lock cannot be shorter than the first.")
 
 
 def change_settings(*, actor, values, reason):
@@ -125,7 +151,12 @@ def change_settings(*, actor, values, reason):
         rules = GlobalSettings.objects.select_for_update().get(pk=1)
         amounts = {
             name: values.get(name, getattr(rules, name))
-            for name in ("max_receipt_amount", "max_credit_per_30_days")
+            for name in (
+                "max_receipt_amount",
+                "max_credit_per_30_days",
+                "login_account_lock_seconds",
+                "login_account_max_lock_seconds",
+            )
         }
         validate({**values, **amounts})
         before = snapshot(rules)

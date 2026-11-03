@@ -128,6 +128,7 @@ def test_production_check_is_clean_so_deploy_can_stop_on_warnings():
             "DJANGO_SETTINGS_MODULE": "config.settings.prod",
             "DJANGO_READ_DOT_ENV": "false",
             "DJANGO_SECRET_KEY": "a" * 20 + "test-only-not-a-real-secret-" + "b" * 30,
+            "PIN_PEPPER": "test-only-pin-pepper-" + "p" * 30,
             "DEMO_MODE": "false",
             "PILOT_READY": "true",
             "DJANGO_ALLOWED_HOSTS": "laundry.example.ru",

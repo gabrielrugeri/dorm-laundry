@@ -93,6 +93,7 @@ jobs:
         -e RAILWAY_PUBLIC_DOMAIN=ci.example.org
         -e SEED_DEMO_STAFF_PASSWORD=ci-only-staff-password
         -e SEED_DEMO_RESIDENT_PIN=482913
+        -e PIN_PEPPER=ci-only-pin-pepper-not-a-real-secret-0123456789
         -e SEED_DEMO_HISTORY_WEEKS=1
     steps:
       - uses: actions/checkout@v5

@@ -28,9 +28,11 @@ COPY . .
 # Build-only values: the build has no database and no real secret. Nothing
 # here is kept in the image's runtime environment.
 RUN python scripts/tailwind.py build \
-    && DJANGO_SECRET_KEY=build-only DEMO_MODE=true DATABASE_URL=sqlite:////tmp/build.sqlite3 \
+    && DJANGO_SECRET_KEY=build-only PIN_PEPPER=build-only-no-pin-is-hashed-during-the-build \
+       DEMO_MODE=true DATABASE_URL=sqlite:////tmp/build.sqlite3 \
        python manage.py compilemessages \
-    && DJANGO_SECRET_KEY=build-only DEMO_MODE=true DATABASE_URL=sqlite:////tmp/build.sqlite3 \
+    && DJANGO_SECRET_KEY=build-only PIN_PEPPER=build-only-no-pin-is-hashed-during-the-build \
+       DEMO_MODE=true DATABASE_URL=sqlite:////tmp/build.sqlite3 \
        python manage.py collectstatic --noinput \
     && rm -rf bin /tmp/build.sqlite3
 

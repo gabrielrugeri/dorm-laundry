@@ -2588,6 +2588,118 @@ msgstr "Как на устройстве"
 msgid "Close"
 msgstr "Закрыть"
 
-#: apps/dorms/admin.py:39
-msgid "Between %(low)s and %(high)s MB (the server's own limit)."
-msgstr "От %(low)s до %(high)s МБ (ограничение сервера)."
+#: apps/accounts/forms.py:44
+msgid "Too many attempts from your network. Wait %(seconds)s s and try again."
+msgstr ""
+"Слишком много попыток из вашей сети. Подождите %(seconds)s с и попробуйте "
+"снова."
+
+#: apps/accounts/forms.py:150
+msgid "Current PIN"
+msgstr "Текущий PIN-код"
+
+#: apps/accounts/forms.py:171
+msgid "This is not your current PIN."
+msgstr "Это не ваш текущий PIN-код."
+
+#: apps/accounts/forms.py:178
+msgid "The new PIN must be different from the current one."
+msgstr "Новый PIN-код должен отличаться от текущего."
+
+#: apps/accounts/views.py:150
+msgid "Your PIN was changed. Other devices were logged out."
+msgstr "PIN-код изменён. На других устройствах выполнен выход."
+
+#: apps/accounts/views.py:172
+msgid "Your password was changed. Other devices were logged out."
+msgstr "Пароль изменён. На других устройствах выполнен выход."
+
+#: apps/audit/actions.py:35
+msgid "PIN changed by the resident"
+msgstr "Жилец сменил PIN-код"
+
+#: apps/dorms/admin.py:40
+msgid "Between %(low)s and %(high)s."
+msgstr "От %(low)s до %(high)s."
+
+#: apps/dorms/admin.py:47
+msgid "The longest lock cannot be shorter than the first."
+msgstr "Самая долгая блокировка не может быть короче первой."
+
+#: apps/dorms/models.py:190
+msgid "failed logins before an account is locked"
+msgstr "неудачных входов до блокировки учётной записи"
+
+#: apps/dorms/models.py:193
+msgid "first account lock (seconds)"
+msgstr "первая блокировка учётной записи (секунды)"
+
+#: apps/dorms/models.py:195
+msgid "Each further lock lasts twice as long, up to the longest lock."
+msgstr "Каждая следующая блокировка вдвое дольше, но не дольше самой долгой."
+
+#: apps/dorms/models.py:198
+msgid "longest account lock (seconds)"
+msgstr "самая долгая блокировка учётной записи (секунды)"
+
+#: apps/dorms/models.py:201
+msgid "failed logins from one address in 15 minutes before waits start"
+msgstr "неудачных входов с одного адреса за 15 минут до начала ожидания"
+
+#: apps/dorms/models.py:203
+msgid "A whole dormitory can share one address: keep this generous."
+msgstr ""
+"Всё общежитие может выходить в интернет с одного адреса: не делайте значение "
+"маленьким."
+
+#: apps/dorms/models.py:206
+msgid "longest wait between attempts from one address (seconds)"
+msgstr "самое долгое ожидание между попытками с одного адреса (секунды)"
+
+#: apps/dorms/models.py:209
+msgid "failed logins from one address in an hour before it is blocked"
+msgstr "неудачных входов с одного адреса за час до его блокировки"
+
+#: apps/dorms/rules.py:45
+msgid "Wrong PINs before an account is locked"
+msgstr "Неверных PIN-кодов до блокировки учётной записи"
+
+#: apps/dorms/rules.py:46
+msgid "First account lock, seconds"
+msgstr "Первая блокировка учётной записи, секунды"
+
+#: apps/dorms/rules.py:47
+msgid "Longest account lock, seconds"
+msgstr "Самая долгая блокировка учётной записи, секунды"
+
+#: apps/dorms/rules.py:48
+msgid "Wrong PINs from one address before waits start"
+msgstr "Неверных PIN-кодов с одного адреса до начала ожидания"
+
+#: apps/dorms/rules.py:49
+msgid "Longest wait for one address, seconds"
+msgstr "Самое долгое ожидание для одного адреса, секунды"
+
+#: apps/dorms/rules.py:50
+msgid "Wrong PINs from one address per hour before blocking"
+msgstr "Неверных PIN-кодов с одного адреса в час до блокировки"
+
+#: templates/base.html:46
+msgid "Change PIN"
+msgstr "Сменить PIN-код"
+
+#: templates/base.html:48
+msgid "Change password"
+msgstr "Сменить пароль"
+
+#: templates/accounts/change_pin.html:7
+msgid "After the change, your other phones and computers are logged out."
+msgstr "После смены на других телефонах и компьютерах будет выполнен выход."
+
+#: templates/accounts/change_password.html:11
+msgid "Save the new password"
+msgstr "Сохранить новый пароль"
+
+#: templates/accounts/change_pin.html:11
+msgid "Save the new PIN"
+msgstr "Сохранить новый PIN-код"

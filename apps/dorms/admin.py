@@ -25,9 +25,10 @@ class DormitoryAdmin(AuditedAdmin, admin.ModelAdmin):
     inlines = [TimeSlotInline, MachineInline]
 
 
-class UploadLimitForm(forms.ModelForm):
-    """Django admin changes only the largest receipt file; a reason is
-    required, as on /manage/settings/, and saved in the history."""
+class TechnicalLimitsForm(forms.ModelForm):
+    """Django admin changes only the technical limits (largest receipt file,
+    login limits); a reason is required, as on /manage/settings/, and saved
+    in the history."""
 
     reason = forms.CharField(
         label=_("Why are you changing this?"), max_length=500, widget=forms.Textarea
@@ -37,25 +38,34 @@ class UploadLimitForm(forms.ModelForm):
         model = GlobalSettings
         fields = rules.SUPERUSER_FIELDS
 
-    def clean_max_upload_mb(self):
-        value = self.cleaned_data["max_upload_mb"]
-        low, high = rules.bounds()["max_upload_mb"]
-        if not low <= value <= high:
-            raise forms.ValidationError(
-                _("Between %(low)s and %(high)s MB (the server's own limit).")
-                % {"low": low, "high": high}
+    def clean(self):
+        cleaned_data = super().clean()
+        for name in rules.SUPERUSER_FIELDS:
+            value = cleaned_data.get(name)
+            low, high = rules.bounds()[name]
+            if value is not None and not low <= value <= high:
+                self.add_error(
+                    name, _("Between %(low)s and %(high)s.") % {"low": low, "high": high}
+                )
+        first = cleaned_data.get("login_account_lock_seconds")
+        longest = cleaned_data.get("login_account_max_lock_seconds")
+        if first and longest and longest < first:
+            self.add_error(
+                "login_account_max_lock_seconds",
+                _("The longest lock cannot be shorter than the first."),
             )
-        return value
+        return cleaned_data
 
 
 @admin.register(GlobalSettings)
 class GlobalSettingsAdmin(admin.ModelAdmin):
     """The money rules are read-only here: dormitory admins change them on
     /manage/settings/ (password, reason, history). The largest receipt file
-    is a technical limit that only superusers change, here, through the same
-    service, so it is checked and recorded in the history too."""
+    and the login limits are technical limits that only superusers change,
+    here, through the same service, so they are checked and recorded in the
+    history too."""
 
-    form = UploadLimitForm
+    form = TechnicalLimitsForm
     fields = (*rules.FIELDS, *rules.SUPERUSER_FIELDS, "reason", "updated_at")
     readonly_fields = (*rules.FIELDS, "updated_at")
 
