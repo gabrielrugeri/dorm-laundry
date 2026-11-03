@@ -12,6 +12,7 @@ Works in Russian and English, and loads nothing from third-party servers.
 - How it works: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - Security (PINs, login limits): [docs/SECURITY.md](docs/SECURITY.md)
 - Moving a dormitory to the app: [docs/ROLLOUT.md](docs/ROLLOUT.md); ideas for later: [docs/BACKLOG.md](docs/BACKLOG.md)
+- For superusers (staff accounts, technical limits, secrets): [docs/SUPERUSER.md](docs/SUPERUSER.md)
 - Contributor and AI-assistant guide: [docs/CLAUDE.md](docs/CLAUDE.md)
 
 > Status: early development. Residents can log in, see free machines, book,
