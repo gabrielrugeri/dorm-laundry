@@ -14,8 +14,14 @@ from django.views.decorators.http import require_POST
 from apps.audit.services import record
 
 from . import ratelimit
-from .decorators import resident_required, staff_required
-from .forms import ChangePasswordForm, ChangePinForm, LoginForm, SetPinForm
+from .decorators import is_staff_member, resident_required, staff_required
+from .forms import (
+    ChangePasswordForm,
+    ChangePinForm,
+    LoginForm,
+    SetPinForm,
+    StaffSetPasswordForm,
+)
 from .models import UserPreferences
 
 
@@ -91,6 +97,37 @@ class LoginView(auth_views.LoginView):
         if resident is not None and resident.must_change_pin:
             record(actor=user, action="resident.initial_pin_login", target=resident)
         return remember_language(super().form_valid(form), user)
+
+
+class StaffSetPasswordView(auth_views.PasswordResetConfirmView):
+    """The page behind a staff password link (`manage.py dormitory_admin`):
+    a dormitory admin or manager chooses their password, then logs in.
+    Links for residents or switched-off accounts do not work here."""
+
+    form_class = StaffSetPasswordForm
+    template_name = "accounts/set_password.html"
+    title = _("Choose your password")
+    reset_url_token = "set-password"
+    success_url = reverse_lazy("accounts:login")
+
+    def get_user(self, uidb64):
+        user = super().get_user(uidb64)
+        if user is not None and (not user.is_active or not is_staff_member(user)):
+            return None
+        return user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not context["validlink"]:
+            context["title"] = _("Link not valid")
+        return context
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            response = super().form_valid(form)
+            record(actor=self.user, action="user.password_set_by_link", target=self.user)
+        messages.success(self.request, _("Password saved. Log in with your username and it."))
+        return response
 
 
 class ActivateView(auth_views.PasswordResetConfirmView):

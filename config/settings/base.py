@@ -184,6 +184,11 @@ MAX_UPLOAD_BYTES_HARD = env.int("MAX_UPLOAD_BYTES_HARD", default=20 * 1024 * 102
 # before sending them (apps/core/storage.py). Back this folder up in production.
 PRIVATE_MEDIA_ROOT = Path(env("PRIVATE_MEDIA_ROOT", default=str(BASE_DIR / "private_media")))
 
+# The app's public address, e.g. https://laundry.example.ru. Used where there
+# is no web request to take it from: the links `manage.py dormitory_admin`
+# prints. On Railway it defaults to the generated domain (railway.py).
+PUBLIC_BASE_URL = env("PUBLIC_BASE_URL", default="")
+
 # Weeks of fake past use seed_demo creates, so the admin dashboard's charts
 # make sense. The tests use fewer to stay fast.
 SEED_DEMO_HISTORY_WEEKS = env.int("SEED_DEMO_HISTORY_WEEKS", default=8)

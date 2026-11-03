@@ -14,4 +14,9 @@ urlpatterns = [
     path("pin/", views.change_pin, name="change_pin"),
     path("password/", views.change_password, name="change_password"),
     path("activate/<uidb64>/<token>/", views.ActivateView.as_view(), name="activate"),
+    path(
+        "set-password/<uidb64>/<token>/",
+        views.StaffSetPasswordView.as_view(),
+        name="set_password",
+    ),
 ]

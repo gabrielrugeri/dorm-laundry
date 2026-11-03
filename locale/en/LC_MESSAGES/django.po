@@ -2832,3 +2832,41 @@ msgstr ""
 #: templates/manage/poster.html:62
 msgid "Ask the dormitory administration."
 msgstr ""
+
+#: apps/accounts/views.py:109
+msgid "Choose your password"
+msgstr ""
+
+#: apps/accounts/views.py:128
+msgid "Password saved. Log in with your username and it."
+msgstr ""
+
+#: apps/audit/actions.py:44
+msgid "Password chosen with a link"
+msgstr ""
+
+#: apps/audit/actions.py:45
+msgid "Staff account created"
+msgstr ""
+
+#: apps/audit/actions.py:46
+msgid "Staff account switched off"
+msgstr ""
+
+#: apps/audit/actions.py:47
+msgid "Password link created for staff"
+msgstr ""
+
+#: templates/accounts/set_password.html:9
+msgid "You will log in with your username and this password. Do not share it."
+msgstr ""
+
+#: templates/accounts/set_password.html:15
+msgid "Save the password"
+msgstr ""
+
+#: templates/accounts/set_password.html:21
+msgid ""
+"This link is invalid, expired or already used. Ask the person who manages the"
+" app for a new one."
+msgstr ""

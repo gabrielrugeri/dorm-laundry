@@ -3026,3 +3026,43 @@ msgstr "Нужна помощь?"
 #: templates/manage/poster.html:62
 msgid "Ask the dormitory administration."
 msgstr "Обратитесь в администрацию общежития."
+
+#: apps/accounts/views.py:109
+msgid "Choose your password"
+msgstr "Выберите пароль"
+
+#: apps/accounts/views.py:128
+msgid "Password saved. Log in with your username and it."
+msgstr "Пароль сохранён. Войдите с вашим логином и этим паролем."
+
+#: apps/audit/actions.py:44
+msgid "Password chosen with a link"
+msgstr "Пароль выбран по ссылке"
+
+#: apps/audit/actions.py:45
+msgid "Staff account created"
+msgstr "Создана учётная запись сотрудника"
+
+#: apps/audit/actions.py:46
+msgid "Staff account switched off"
+msgstr "Учётная запись сотрудника отключена"
+
+#: apps/audit/actions.py:47
+msgid "Password link created for staff"
+msgstr "Создана ссылка для выбора пароля сотрудника"
+
+#: templates/accounts/set_password.html:9
+msgid "You will log in with your username and this password. Do not share it."
+msgstr "Вы будете входить по логину и этому паролю. Никому его не сообщайте."
+
+#: templates/accounts/set_password.html:15
+msgid "Save the password"
+msgstr "Сохранить пароль"
+
+#: templates/accounts/set_password.html:21
+msgid ""
+"This link is invalid, expired or already used. Ask the person who manages the"
+" app for a new one."
+msgstr ""
+"Ссылка недействительна, устарела или уже использована. Попросите новую у "
+"того, кто обслуживает приложение."
