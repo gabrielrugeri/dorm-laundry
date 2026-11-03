@@ -13,7 +13,11 @@
       </button>
     </form>
     <p class="mt-4 text-sm text-muted">
-      {% translate "First time here? Ask the dormitory administration for your activation link." %}
+      {% translate "First time? Use your student code and your date of birth as DDMMYY." %}
+      <span class="block">{% translate "Example: born 5 March 2004 → 050304." %}</span>
+    </p>
+    <p class="mt-2 text-sm text-muted">
+      {% translate "Does it not work? Ask the dormitory administration for a login link." %}
     </p>
   </div>
 {% endblock %}

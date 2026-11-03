@@ -2546,3 +2546,187 @@ msgstr ""
 #: templates/accounts/change_pin.html:11
 msgid "Save the new PIN"
 msgstr ""
+
+msgid "The PIN you logged in with (date of birth)"
+msgstr ""
+
+msgid "the opening balance must be whole rubles, e.g. 150 or -80"
+msgstr ""
+
+msgid "the opening balance is too large"
+msgstr ""
+
+msgid ""
+"More than %(n)s dates of birth in one file: split it into smaller files."
+msgstr ""
+
+msgid "must choose a new PIN"
+msgstr ""
+
+msgid ""
+"Logged in with the first-time PIN: must choose their own before anything "
+"else."
+msgstr ""
+
+msgid "first-time PIN valid until"
+msgstr ""
+
+msgid "activated"
+msgstr ""
+
+msgid "first-time PIN not used yet"
+msgstr ""
+
+msgid "first-time PIN expired"
+msgstr ""
+
+msgid "no PIN yet"
+msgstr ""
+
+msgid "Opening balance entered"
+msgstr ""
+
+msgid "First-time PIN from the date of birth set"
+msgstr ""
+
+msgid "Logged in with the first-time PIN"
+msgstr ""
+
+msgid "Own PIN chosen after the first login"
+msgstr ""
+
+msgid "days a first-time PIN from the date of birth stays valid"
+msgstr ""
+
+msgid "Days a first-time PIN stays valid"
+msgstr ""
+
+msgid "opening balance"
+msgstr ""
+
+msgid "Opening balances"
+msgstr ""
+
+msgid "Import cancelled. Nothing was changed."
+msgstr ""
+
+msgid "Date of birth"
+msgstr ""
+
+msgid "Opening balance"
+msgstr ""
+
+msgid "Choose your own PIN"
+msgstr ""
+
+msgid ""
+"You logged in with your date of birth. Before you continue, choose your own "
+"PIN: people who know your birthday could guess the first one."
+msgstr ""
+
+msgid "First time? Use your student code and your date of birth as DDMMYY."
+msgstr ""
+
+msgid "Example: born 5 March 2004 → 050304."
+msgstr ""
+
+msgid "Does it not work? Ask the dormitory administration for a login link."
+msgstr ""
+
+msgid "until %(day)s"
+msgstr ""
+
+msgid ""
+"New residents without a date of birth log in with a personal link and choose "
+"their PIN. Download the links and give each resident their own. Each link "
+"works once and expires after 7 days."
+msgstr ""
+
+msgid ""
+"Residents with a date of birth log in with their student code and the date as"
+" DDMMYY, within %(days)s days. Then they choose their own PIN."
+msgstr ""
+
+msgid "Residents who already chose their own PIN are never changed."
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Cancel the import"
+msgstr ""
+
+msgid "logs in with the date of birth"
+msgstr ""
+
+msgid "login link"
+msgstr ""
+
+msgid "Two more columns are optional:"
+msgstr ""
+
+msgid ""
+"Date of birth, as 05.03.2004: the resident's first PIN is then the date as "
+"DDMMYY (050304). The date itself is not saved anywhere. Without a date, the "
+"resident gets a login link."
+msgstr ""
+
+msgid ""
+"Opening balance in whole rubles: money the resident already had, or an old "
+"debt with a minus (-150). It is entered only once per resident."
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "everyone"
+msgstr ""
+
+msgid "the date of birth looks like an Excel number: format the column as text"
+msgstr ""
+
+msgid "the date of birth looks like month/day: use DD.MM.YYYY"
+msgstr ""
+
+msgid "the date of birth does not exist"
+msgstr ""
+
+msgid "the date of birth is not plausible for a resident"
+msgstr ""
+
+msgid "the date of birth must look like 05.03.2004 or 2004-03-05"
+msgstr ""
+
+msgid "%(n)s first-time PIN from the date of birth"
+msgid_plural "%(n)s first-time PINs from the date of birth"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%(n)s opening balance entered"
+msgid_plural "%(n)s opening balances entered"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%(n)s new resident logs in with their date of birth"
+msgid_plural "%(n)s new residents log in with their date of birth"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%(n)s gets a login link (no date)"
+msgid_plural "%(n)s get a login link (no date)"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Opening balance for %(n)s resident, %(total)s in total."
+msgid_plural "Opening balances for %(n)s residents, %(total)s in total."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Give a new first-time PIN (date of birth) to %(n)s resident who has not "
+"chosen their own PIN yet"
+msgid_plural ""
+"Give a new first-time PIN (date of birth) to %(n)s residents who have not "
+"chosen their own PIN yet"
+msgstr[0] ""
+msgstr[1] ""

@@ -3,8 +3,13 @@
 {% block title %}{% translate "Change PIN" %} · {{ block.super }}{% endblock %}
 {% block content %}
   <div class="mx-auto max-w-sm rounded-lg bg-surface p-6 shadow-sm">
-    <h1 class="mb-2 text-xl font-semibold">{% translate "Change PIN" %}</h1>
-    <p class="mb-4 text-sm text-muted">{% translate "After the change, your other phones and computers are logged out." %}</p>
+    {% if forced %}
+      <h1 class="mb-2 text-xl font-semibold">{% translate "Choose your own PIN" %}</h1>
+      <p class="mb-4 text-sm text-muted">{% translate "You logged in with your date of birth. Before you continue, choose your own PIN: people who know your birthday could guess the first one." %}</p>
+    {% else %}
+      <h1 class="mb-2 text-xl font-semibold">{% translate "Change PIN" %}</h1>
+      <p class="mb-4 text-sm text-muted">{% translate "After the change, your other phones and computers are logged out." %}</p>
+    {% endif %}
     <form method="post" novalidate>
       {% csrf_token %}
       {% include "accounts/_form_fields.html" %}

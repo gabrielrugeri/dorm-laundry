@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 
-from . import pins
+from . import initial_pins, pins
 from .models import Resident
 
 
@@ -29,6 +29,11 @@ class ResidentBackend(ModelBackend):
             pins.dummy_check(password)
             return None
         user = resident.user
-        if pins.check_pin(user, password) and self.user_can_authenticate(user):
-            return user
-        return None
+        if not pins.check_pin(user, password) or not self.user_can_authenticate(user):
+            return None
+        # An expired first-time PIN fails like a wrong one (checked here, so
+        # it holds even if the clean-up never ran). The message stays generic:
+        # it must not confirm that a guessed date of birth was right.
+        if initial_pins.is_expired(resident):
+            return None
+        return user

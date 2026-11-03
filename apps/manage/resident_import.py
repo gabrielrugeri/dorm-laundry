@@ -1,12 +1,13 @@
 """Importing residents from a file, in the admin area.
 
 Upload → preview (nothing written) → confirm (one transaction) → result with
-the login links of the new residents. Between preview and confirm the file
-is kept in the admin's session, tied to their dormitory, so the import uses
-exactly the file that was previewed.
+the login links of the new residents who have no first-time PIN. Between
+preview and confirm the admin's session keeps only what the preview showed
+(`importing.stored`: codes, names, rooms, opening balances, hashed first-time
+PINs), tied to their dormitory: never the uploaded file, never a date of
+birth. It is removed on confirm and on cancel.
 """
 
-import base64
 import csv
 import uuid
 
@@ -24,15 +25,15 @@ from apps.audit.services import record
 from .residents import SORTS, _safe
 from .views import admin_required
 
-SESSION_FILE = "resident_import_file"
+SESSION_ROWS = "resident_import_rows"
 SESSION_CREATED = "resident_import_created"
 
 
-def _stored_file(request, token):
-    stored = request.session.get(SESSION_FILE)
+def _stored_rows(request, token):
+    stored = request.session.get(SESSION_ROWS)
     if not stored or stored["token"] != token or stored["dormitory"] != request.dormitory.pk:
         return None
-    return base64.b64decode(stored["data"])
+    return stored["rows"]
 
 
 @admin_required
@@ -53,10 +54,10 @@ def upload(request):
                 error = str(exc)
             else:
                 token = uuid.uuid4().hex
-                request.session[SESSION_FILE] = {
+                request.session[SESSION_ROWS] = {
                     "token": token,
                     "dormitory": request.dormitory.pk,
-                    "data": base64.b64encode(data).decode(),
+                    "rows": importing.stored(result),
                 }
                 return render(
                     request,
@@ -69,20 +70,37 @@ def upload(request):
 @admin_required
 @require_POST
 def confirm(request):
-    data = _stored_file(request, request.POST.get("token", ""))
-    if data is None:
+    rows = _stored_rows(request, request.POST.get("token", ""))
+    if rows is None:
         messages.error(request, _("The file is no longer available. Please choose it again."))
         return redirect("manage:resident_import")
-    result, created = importing.apply(request.user, request.dormitory, data)
-    del request.session[SESSION_FILE]
+    result, created = importing.apply(
+        request.user,
+        request.dormitory,
+        rows=rows,
+        renew_initial_pins=request.POST.get("renew_initial_pins") == "on",
+    )
+    del request.session[SESSION_ROWS]
     request.session[SESSION_CREATED] = [r.pk for r in created]
     changed = sum(1 for row in result.rows if row.status == importing.CHANGED)
     request.session["resident_import_summary"] = {
         "created": len(created),
         "changed": changed,
         "skipped": result.count(importing.ERROR),
+        "initial_pins": len(result.new_with_pin)
+        + (len(result.renewable_rows) if request.POST.get("renew_initial_pins") == "on" else 0),
+        "openings": len(result.opening_rows),
     }
     return redirect("manage:resident_import_done")
+
+
+@admin_required
+@require_POST
+def cancel(request):
+    """Forget the previewed rows (and their hashed first-time PINs)."""
+    request.session.pop(SESSION_ROWS, None)
+    messages.success(request, _("Import cancelled. Nothing was changed."))
+    return redirect("manage:residents")
 
 
 def _new_residents(request):
@@ -102,10 +120,18 @@ def done(request):
     summary = request.session.get("resident_import_summary")
     if summary is None:
         raise Http404
+    from apps.dorms import rules
+
+    # Only the new residents without a first-time PIN need a login link.
+    needing_links = [r for r in _new_residents(request) if not r.user.has_usable_password()]
     return render(
         request,
         "manage/residents/import_done.html",
-        {"summary": summary, "new_residents": _new_residents(request)},
+        {
+            "summary": summary,
+            "new_residents": needing_links,
+            "initial_pin_days": rules.current().initial_pin_days,
+        },
     )
 
 
@@ -141,7 +167,9 @@ def sample_csv(request):
     response["Content-Disposition"] = 'attachment; filename="residents-sample.csv"'
     response.write("﻿")
     writer = csv.writer(response, delimiter=";")
-    writer.writerow([_("Student code"), _("Full name"), _("Room")])
-    writer.writerow(["S12345", "Ivanova Maria", "214"])
-    writer.writerow(["S12346", "Petrov Sergei", "305"])
+    writer.writerow(
+        [_("Student code"), _("Full name"), _("Room"), _("Date of birth"), _("Opening balance")]
+    )
+    writer.writerow(["S12345", "Ivanova Maria", "214", "05.03.2004", "150"])
+    writer.writerow(["S12346", "Petrov Sergei", "305", "", "-80"])
     return response

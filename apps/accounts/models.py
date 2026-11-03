@@ -55,6 +55,19 @@ class Resident(models.Model):
         blank=True,
         help_text=_("Set when the resident's name, room and code were erased."),
     )
+    # First-time PIN from the date of birth (apps/accounts/initial_pins.py).
+    # The date itself is never stored anywhere; only the PIN's hash, in
+    # user.password, until the resident chooses their own PIN.
+    must_change_pin = models.BooleanField(
+        _("must choose a new PIN"),
+        default=False,
+        help_text=_(
+            "Logged in with the first-time PIN: must choose their own before anything else."
+        ),
+    )
+    initial_pin_expires_at = models.DateTimeField(
+        _("first-time PIN valid until"), null=True, blank=True
+    )
 
     class Meta:
         verbose_name = _("resident")
@@ -74,6 +87,27 @@ class Resident(models.Model):
     @property
     def is_anonymized(self):
         return self.anonymized_at is not None
+
+    class Activation(models.TextChoices):
+        """Whether the resident can log in yet (the residents list filter)."""
+
+        ACTIVATED = "activated", _("activated")
+        PENDING = "pending", _("first-time PIN not used yet")
+        EXPIRED = "expired", _("first-time PIN expired")
+        NONE = "none", _("no PIN yet")
+
+    def activation(self, now=None):
+        from django.utils import timezone
+
+        now = now or timezone.now()
+        if self.must_change_pin:
+            usable = self.user.has_usable_password()
+            if usable and self.initial_pin_expires_at and self.initial_pin_expires_at > now:
+                return self.Activation.PENDING
+            return self.Activation.EXPIRED
+        if self.user.has_usable_password():
+            return self.Activation.ACTIVATED
+        return self.Activation.NONE
 
 
 class StaffProfile(models.Model):

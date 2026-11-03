@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n money %}
 {% block title %}{% translate "Check before importing" %} · {{ block.super }}{% endblock %}
 {% block content %}
   <p class="mb-2"><a href="{% url 'manage:resident_import' %}" class="text-sm text-link underline">← {% translate "Choose another file" %}</a></p>
@@ -14,19 +14,46 @@
     <li class="rounded bg-danger-soft p-2 text-danger"><strong class="block text-lg">{{ result.error_rows|length }}</strong>{% translate "with errors" %}</li>
   </ul>
 
+  {# How the new residents will log in, and the money from before the app. #}
+  {% if result.new_rows %}
+    <p class="mb-2 text-sm">
+      {% blocktranslate count n=result.new_with_pin|length %}{{ n }} new resident logs in with their date of birth{% plural %}{{ n }} new residents log in with their date of birth{% endblocktranslate %}{% if result.new_with_link %};
+      {% blocktranslate count n=result.new_with_link|length %}{{ n }} gets a login link (no date){% plural %}{{ n }} get a login link (no date){% endblocktranslate %}{% endif %}.
+    </p>
+  {% endif %}
+  {% if result.opening_rows %}
+    <p class="mb-2 text-sm">
+      {% blocktranslate count n=result.opening_rows|length with total=result.opening_total|rub_signed %}Opening balance for {{ n }} resident, {{ total }} in total.{% plural %}Opening balances for {{ n }} residents, {{ total }} in total.{% endblocktranslate %}
+    </p>
+  {% endif %}
+
   {# The one action #}
-  {% if result.to_apply %}
+  {% if result.has_work or result.renewable_rows %}
     <form method="post" action="{% url 'manage:resident_import_confirm' %}" class="mb-4">
       {% csrf_token %}
       <input type="hidden" name="token" value="{{ token }}">
+      {% if result.renewable_rows %}
+        {# Off by default: only an explicit tick gives these residents a new first-time PIN. #}
+        <label class="mb-3 flex items-start gap-2 rounded border border-line-strong p-3 text-sm">
+          <input type="checkbox" name="renew_initial_pins" class="mt-1">
+          <span>
+            {% blocktranslate count n=result.renewable_rows|length %}Give a new first-time PIN (date of birth) to {{ n }} resident who has not chosen their own PIN yet{% plural %}Give a new first-time PIN (date of birth) to {{ n }} residents who have not chosen their own PIN yet{% endblocktranslate %}
+            <span class="block text-muted">{% translate "Residents who already chose their own PIN are never changed." %}</span>
+          </span>
+        </label>
+      {% endif %}
       <button type="submit" class="w-full rounded bg-accent px-4 py-2 font-medium text-on-accent hover:bg-accent-strong">
-        {% blocktranslate count n=result.to_apply|length %}Import {{ n }} row{% plural %}Import {{ n }} rows{% endblocktranslate %}
+        {% if result.to_apply %}{% blocktranslate count n=result.to_apply|length %}Import {{ n }} row{% plural %}Import {{ n }} rows{% endblocktranslate %}{% else %}{% translate "Import" %}{% endif %}
       </button>
       {% if result.error_rows %}<p class="mt-1 text-sm text-muted">{% translate "Rows with errors are skipped. Fix them in the file and import it again later." %}</p>{% endif %}
     </form>
   {% else %}
     <p class="mb-4 rounded border border-line-strong bg-subtle p-3">{% translate "There is nothing to import: everyone in the file is already here with the same details." %}</p>
   {% endif %}
+  <form method="post" action="{% url 'manage:resident_import_cancel' %}" class="mb-4">
+    {% csrf_token %}
+    <button type="submit" class="text-sm text-muted underline">{% translate "Cancel the import" %}</button>
+  </form>
 
   {% if result.error_rows %}
     <section class="mb-4 rounded-lg border border-danger-line bg-surface shadow-sm">
@@ -67,7 +94,11 @@
       <h2 class="border-b border-success-line px-4 py-3 font-medium text-success">{% translate "New residents" %}</h2>
       <ul class="divide-y divide-line">
         {% for row in result.new_rows %}
-          <li class="px-4 py-2 text-sm">{{ row.values.full_name }} · {% blocktranslate with room=row.values.room %}room {{ room }}{% endblocktranslate %} · {{ row.values.student_code }}</li>
+          <li class="px-4 py-2 text-sm">
+            {{ row.values.full_name }} · {% blocktranslate with room=row.values.room %}room {{ room }}{% endblocktranslate %} · {{ row.values.student_code }}
+            {# The date of birth is never shown: only whether one was given. #}
+            <span class="block text-muted">{% if row.has_date %}{% translate "logs in with the date of birth" %}{% else %}{% translate "login link" %}{% endif %}{% if row.gets_opening %} · {% translate "opening balance" %} {{ row.opening|rub_signed }}{% endif %}</span>
+          </li>
         {% endfor %}
       </ul>
     </section>

@@ -7,11 +7,16 @@
     <ul class="mb-4 space-y-1">
       <li>{% blocktranslate count n=summary.created %}{{ n }} resident added{% plural %}{{ n }} residents added{% endblocktranslate %}</li>
       <li>{% blocktranslate count n=summary.changed %}{{ n }} resident updated{% plural %}{{ n }} residents updated{% endblocktranslate %}</li>
+      {% if summary.initial_pins %}<li>{% blocktranslate count n=summary.initial_pins %}{{ n }} first-time PIN from the date of birth{% plural %}{{ n }} first-time PINs from the date of birth{% endblocktranslate %}</li>{% endif %}
+      {% if summary.openings %}<li>{% blocktranslate count n=summary.openings %}{{ n }} opening balance entered{% plural %}{{ n }} opening balances entered{% endblocktranslate %}</li>{% endif %}
       {% if summary.skipped %}<li class="text-danger">{% blocktranslate count n=summary.skipped %}{{ n }} row skipped because of errors{% plural %}{{ n }} rows skipped because of errors{% endblocktranslate %}</li>{% endif %}
     </ul>
 
+    {% if summary.initial_pins %}
+      <p class="mb-3 text-muted">{% blocktranslate with days=initial_pin_days %}Residents with a date of birth log in with their student code and the date as DDMMYY, within {{ days }} days. Then they choose their own PIN.{% endblocktranslate %}</p>
+    {% endif %}
     {% if new_residents %}
-      <p class="mb-3 text-muted">{% translate "New residents log in with a personal link and choose their PIN. Download the links and give each resident their own. Each link works once and expires after 7 days." %}</p>
+      <p class="mb-3 text-muted">{% translate "New residents without a date of birth log in with a personal link and choose their PIN. Download the links and give each resident their own. Each link works once and expires after 7 days." %}</p>
       <a href="{% url 'manage:resident_import_links' %}" class="block w-full rounded bg-accent px-4 py-2 text-center font-medium text-on-accent hover:bg-accent-strong">
         {% blocktranslate count n=new_residents|length %}Download {{ n }} login link{% plural %}Download {{ n }} login links{% endblocktranslate %}
       </a>

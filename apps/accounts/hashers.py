@@ -36,3 +36,8 @@ class PinHasher(PBKDF2PasswordHasher):
 
     def encode(self, password, salt, iterations=None):
         return super().encode(pepper(password), salt, iterations)
+
+    def encode_peppered(self, peppered, salt, iterations=None):
+        """Finish a hash from `pepper(pin)` computed earlier (the residents
+        import keeps only that between preview and confirm, never the PIN)."""
+        return super().encode(peppered, salt, iterations)

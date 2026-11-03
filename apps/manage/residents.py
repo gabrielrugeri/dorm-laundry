@@ -99,6 +99,17 @@ def resident_list(request):
             | Q(room__icontains=query)
             | Q(student_code__iexact=query, anonymized_at__isnull=True)
         )
+    # Who can log in yet (first-time PIN, link, own PIN): worked out per
+    # resident, a few hundred at most.
+    now = timezone.now()
+    login = request.GET.get("login", "")
+    login = login if login in Resident.Activation.values else ""
+    residents = list(residents)
+    for resident in residents:
+        resident.login_status = resident.activation(now)
+        resident.get_login_status_display = Resident.Activation(resident.login_status).label
+    if login:
+        residents = [r for r in residents if r.login_status == login]
     # "Owe money" is the debts report: the biggest debt first.
     sort = request.GET.get("sort", "balance" if show == "debt" else "room")
     field = sort.removeprefix("-")
@@ -126,6 +137,8 @@ def resident_list(request):
         "descending": sort.startswith("-"),
         "columns": columns,
         "debts": debts,
+        "login": login,
+        "login_choices": Resident.Activation.choices,
     }
     return render(request, "manage/residents/list.html", context)
 
@@ -158,8 +171,11 @@ def resident_detail(request, pk):
     )
     upcoming = [g for g in groups if any(b.ends_at > now for b in g.active_bookings())]
     history = _payment_history(resident)
+    login_status = resident.activation()
     context = {
         "resident": resident,
+        "login_status": login_status,
+        "login_status_label": Resident.Activation(login_status).label,
         "balance": balance,
         "debt_since": LedgerEntry.objects.debt_since(resident) if balance < 0 else None,
         "upcoming": upcoming,

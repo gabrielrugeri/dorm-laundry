@@ -44,6 +44,8 @@ class LedgerEntry(models.Model):
       refund      > 0  booking price returned on a valid cancellation
       adjustment != 0  manual correction, with a note
       reversal    < 0  a voided receipt: takes back exactly what it credited
+      opening    != 0  the balance a resident had before the app (old credit
+                       or debt), at most once per resident, from the import
     """
 
     class Kind(models.TextChoices):
@@ -53,6 +55,7 @@ class LedgerEntry(models.Model):
         REFUND = "refund", _("refund")
         ADJUSTMENT = "adjustment", _("balance correction")
         REVERSAL = "reversal", _("receipt voided")
+        OPENING = "opening", _("opening balance")
 
     resident = models.ForeignKey(
         Resident,
@@ -104,14 +107,17 @@ class LedgerEntry(models.Model):
                     # (or cash handed back); it stays in the payments column.
                     Q(kind="refund", amount__gt=0)
                     | Q(kind__in=["booking", "reversal"], amount__lt=0)
-                    | (Q(kind__in=["credit", "adjustment"]) & ~Q(amount=0))
+                    | (Q(kind__in=["credit", "adjustment", "opening"]) & ~Q(amount=0))
                 ),
                 name="ledger_amount_sign_matches_kind",
             ),
             models.CheckConstraint(
                 condition=(
                     Q(kind__in=["booking", "refund"], booking__isnull=False)
-                    | Q(kind__in=["credit", "adjustment", "reversal"], booking__isnull=True)
+                    | Q(
+                        kind__in=["credit", "adjustment", "reversal", "opening"],
+                        booking__isnull=True,
+                    )
                 ),
                 name="ledger_booking_only_for_booking_and_refund",
             ),
@@ -119,7 +125,10 @@ class LedgerEntry(models.Model):
             # reversal always does. A receipt pays once and is voided once.
             models.CheckConstraint(
                 condition=(
-                    Q(receipt__isnull=True, kind__in=["credit", "booking", "refund", "adjustment"])
+                    Q(
+                        receipt__isnull=True,
+                        kind__in=["credit", "booking", "refund", "adjustment", "opening"],
+                    )
                     | Q(receipt__isnull=False, kind__in=["credit", "reversal"])
                 ),
                 name="ledger_receipt_only_for_credit_and_reversal",
@@ -128,6 +137,12 @@ class LedgerEntry(models.Model):
                 fields=["receipt", "kind"],
                 condition=Q(receipt__isnull=False),
                 name="unique_credit_per_receipt",
+            ),
+            # The balance from before the app is entered once per resident.
+            models.UniqueConstraint(
+                fields=["resident"],
+                condition=Q(kind="opening"),
+                name="unique_opening_balance_per_resident",
             ),
             # A booking is charged at most once and refunded at most once.
             models.UniqueConstraint(

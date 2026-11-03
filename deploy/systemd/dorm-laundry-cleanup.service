@@ -1,0 +1,21 @@
+# Daily clean-up: deletes the hashes of expired first-time PINs
+# (manage.py expire_initial_pins). Login refuses them anyway; this only
+# removes what is no longer needed. Started by dorm-laundry-cleanup.timer.
+# Install as /etc/systemd/system/dorm-laundry-cleanup.service.
+
+[Unit]
+Description=Dorm Laundry daily clean-up (expired first-time PINs)
+After=network-online.target postgresql.service
+OnFailure=dorm-laundry-alert@%n.service
+
+[Service]
+Type=oneshot
+User=dorm-laundry
+Group=dorm-laundry
+EnvironmentFile=/etc/dorm-laundry/env
+WorkingDirectory=/srv/dorm-laundry/app
+ExecStart=/srv/dorm-laundry/venv/bin/python manage.py expire_initial_pins
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
