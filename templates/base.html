@@ -36,10 +36,11 @@
   <header class="{% if not demo_mode %}safe-top{% endif %} safe-x flex items-center justify-between gap-4 bg-surface px-4 py-3 shadow-sm">
     <a href="{% url 'core:home' %}" class="font-semibold">{% translate "Dorm Laundry" %}</a>
     {% if user.is_authenticated %}
-      {# Who is logged in, with their own menu. Residents only ever see their own name and room. #}
-      <details class="relative min-w-0">
-        <summary class="flex max-w-[60vw] cursor-pointer list-none items-center gap-1 rounded px-2 py-1 text-sm hover:bg-subtle [&::-webkit-details-marker]:hidden">
-          <span class="truncate">{% if user.resident %}{{ user.resident.full_name }} · {{ user.resident.room }}{% else %}{{ user.get_username }}{% endif %}</span>
+      {# Who is logged in ("Name · room", staff: "Name · Dormitory"), with their own menu. #}
+      {# Long names are cut off with an ellipsis; the tooltip shows them in full. #}
+      <details class="relative min-w-0" data-menu>
+        <summary class="flex max-w-[60vw] cursor-pointer list-none items-center gap-1 rounded px-2 py-1 text-sm hover:bg-subtle [&::-webkit-details-marker]:hidden" title="{{ identity }}">
+          <span class="truncate" data-identity>{{ identity }}</span>
           <span aria-hidden="true">▾</span>
         </summary>
         <div class="absolute right-0 z-30 mt-1 w-64 space-y-3 rounded-lg border border-line bg-surface p-3 shadow-lg">

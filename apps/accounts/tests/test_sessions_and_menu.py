@@ -90,6 +90,27 @@ def test_names_are_shown_as_stored_in_every_language(client, resident):
     assert "Иван Тестов · 101" in client.get(reverse("ledger:balance")).content.decode()
 
 
-def test_staff_header_shows_username(client, dormitory):
-    client.force_login(make_staff(dormitory, "boss", role=roles.ADMIN))
-    assert ">boss<" in client.get(reverse("manage:residents")).content.decode()
+def test_staff_header_shows_name_and_dormitory(client, dormitory, other_dormitory):
+    boss = make_staff(dormitory, "boss", role=roles.ADMIN)
+    client.force_login(boss)
+    assert ">boss · Test Dormitory<" in client.get(reverse("manage:residents")).content.decode()
+    boss.first_name, boss.last_name = "Ольга", "Комендантова"
+    boss.save()
+    html = client.get(reverse("manage:residents")).content.decode()
+    assert ">Ольга Комендантова · Test Dormitory<" in html
+    assert "Other Dormitory" not in html
+
+
+def test_long_names_are_cut_off_with_the_full_name_in_a_tooltip(client, resident):
+    """The name exactly as stored: never split or shortened on the server."""
+    long_name = "Мария-Александра Константиновна Преображенская-Тестова"
+    resident.full_name = long_name
+    resident.save()
+    client.force_login(resident.user)
+    for url in (reverse("bookings:mine"), reverse("ledger:balance")):
+        html = client.get(url).content.decode()
+        assert f'title="{long_name} · 101"' in html or f'title="{long_name}"' in html
+        assert 'class="truncate' in html
+    balance = client.get(reverse("ledger:balance")).content.decode()
+    assert f'title="{long_name}">{long_name}</p>' in balance
+    assert "Test Dormitory" in balance  # with room and dormitory

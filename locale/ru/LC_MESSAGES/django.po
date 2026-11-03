@@ -1449,10 +1449,6 @@ msgstr "Прачечная"
 msgid "Colours"
 msgstr "Оформление"
 
-#: templates/core/_theme_switch.html:8
-msgid "Like the phone"
-msgstr "Как на телефоне"
-
 #: templates/core/_theme_switch.html:9
 msgid "Light"
 msgstr "Светлое"
@@ -2583,3 +2579,15 @@ msgstr "Обновить страницу"
 #: templates/receipts/view.html:25
 msgid "Download"
 msgstr "Скачать"
+
+#: templates/core/_theme_switch.html:10
+msgid "Match device"
+msgstr "Как на устройстве"
+
+#: templates/bookings/_add_to_calendar.html:15
+msgid "Close"
+msgstr "Закрыть"
+
+#: apps/dorms/admin.py:39
+msgid "Between %(low)s and %(high)s MB (the server's own limit)."
+msgstr "От %(low)s до %(high)s МБ (ограничение сервера)."
