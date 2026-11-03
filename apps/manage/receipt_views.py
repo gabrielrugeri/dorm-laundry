@@ -111,6 +111,7 @@ def receipt_detail(request, pk):
         .select_related("booking__machine")
         .order_by("-created_at", "-id")[:10],
         "is_image": receipt.content_type.startswith("image/"),
+        "stored": bool(receipt.file) and receipt.file.storage.exists(receipt.file.name),
     }
     return render(request, "manage/receipts/detail.html", context)
 

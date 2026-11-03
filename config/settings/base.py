@@ -170,7 +170,7 @@ PRIVATE_MEDIA_ROOT = Path(env("PRIVATE_MEDIA_ROOT", default=str(BASE_DIR / "priv
 
 # Weeks of fake past use seed_demo creates, so the admin dashboard's charts
 # make sense. The tests use fewer to stay fast.
-SEED_DEMO_HISTORY_WEEKS = 8
+SEED_DEMO_HISTORY_WEEKS = env.int("SEED_DEMO_HISTORY_WEEKS", default=8)
 
 # True only in config/settings/prod.py (and modules built on it). Guards
 # commands that must behave differently on a real server, e.g. seed_demo.

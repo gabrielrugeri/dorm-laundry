@@ -76,20 +76,39 @@ jobs:
   docker:
     name: Demo image (Railway)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: demo
+          POSTGRES_PASSWORD: demo
+          POSTGRES_DB: demo
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U demo" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      APP_ENV: >-
+        -e PORT=8080 -e DEMO_MODE=true
+        -e DATABASE_URL=postgres://demo:demo@localhost:5432/demo
+        -e RAILWAY_PUBLIC_DOMAIN=ci.example.org
+        -e SEED_DEMO_STAFF_PASSWORD=ci-only-staff-password
+        -e SEED_DEMO_RESIDENT_PIN=482913
+        -e SEED_DEMO_HISTORY_WEEKS=1
     steps:
       - uses: actions/checkout@v5
       - name: Build the image
         run: docker build -t dorm-laundry-demo .
-      - name: Start it like Railway does (pre-deploy, then gunicorn on $PORT)
+      - name: Pre-deploy in its own throwaway container, like Railway
         run: |
-          docker run -d --name app -p 8080:8080 \
-            -e PORT=8080 -e DEMO_MODE=true \
+          docker run --rm --network host $APP_ENV \
             -e DJANGO_SECRET_KEY="ci-only-$(openssl rand -hex 32)" \
-            -e DATABASE_URL=sqlite:////tmp/ci.sqlite3 \
-            -e RAILWAY_PUBLIC_DOMAIN=ci.example.org \
-            -e SEED_DEMO_STAFF_PASSWORD=ci-only-staff-password \
-            -e SEED_DEMO_RESIDENT_PIN=482913 \
-            dorm-laundry-demo sh -c "python manage.py predeploy && gunicorn config.wsgi"
+            dorm-laundry-demo python manage.py predeploy
+      - name: Start the image as Railway does, with a root-owned volume for uploads
+        run: |
+          docker volume create media
+          docker run -d --name app --network host $APP_ENV \
+            -e DJANGO_SECRET_KEY="ci-only-$(openssl rand -hex 32)" \
+            -v media:/app/private_media dorm-laundry-demo
       - name: Health check answers (as Railway's checker)
         run: |
           for i in $(seq 1 30); do
@@ -105,6 +124,15 @@ jobs:
           test -n "$css"
           curl -fsS -o /dev/null -H "Host: ci.example.org" -H "X-Forwarded-Proto: https" "http://localhost:8080$css"
           docker exec app python manage.py check --deploy --fail-level ERROR
+      - name: Demo files are in the volume, owned by the app user (not root)
+        run: |
+          docker exec app sh -c 'test "$(stat -c %U /app/private_media)" = app'
+          docker exec app sh -c 'test -n "$(find /app/private_media/receipts -name "*.pdf" | head -1)"'
+          # docker top needs the pid column; the user is the 2nd column.
+          docker top app -o pid,user,args | grep gunicorn
+          if docker top app -o pid,user,args | grep gunicorn | awk '{print $2}' | grep -qx root; then
+            echo "gunicorn must not run as root"; exit 1
+          fi
       - name: Container logs
         if: always()
         run: docker logs app || true

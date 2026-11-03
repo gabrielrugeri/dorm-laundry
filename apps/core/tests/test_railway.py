@@ -84,7 +84,16 @@ def test_dockerfile_builds_everything_without_a_database():
     for step in ("tailwind.py build", "compilemessages", "collectstatic", "gettext"):
         assert step in dockerfile, step
     assert "config.settings.railway" in dockerfile
-    assert 'CMD ["gunicorn", "config.wsgi"]' in dockerfile
+    assert 'CMD ["/app/deploy/scripts/railway-start.sh"]' in dockerfile
+
+
+def test_start_script_gives_the_volume_to_the_app_user_then_drops_root():
+    script = (ROOT / "deploy/scripts/railway-start.sh").read_text(encoding="utf-8")
+    drop = script.index("exec setpriv --reuid=app --regid=app")
+    assert script.index('chown app:app "$media"') < drop
+    # Everything after dropping root: demo files, then gunicorn.
+    assert drop < script.index("python manage.py seed_demo_files")
+    assert script.rstrip().endswith("exec gunicorn config.wsgi")
     ignored = (ROOT / ".dockerignore").read_text(encoding="utf-8").splitlines()
     assert ".env" in ignored and "db.sqlite3*" in ignored
 

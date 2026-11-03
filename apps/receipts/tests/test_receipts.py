@@ -178,7 +178,7 @@ def test_upload_screen_tops_up_and_shows_the_receipt(client, resident):
     response = client.post(NEW, {"amount": 250, "file": upload(picture())}, follow=True)
     assert "Your balance was topped up by 250 RUB." in response.content.decode()
     receipt = Receipt.objects.get()
-    assert reverse("receipts:file", kwargs={"pk": receipt.pk}) in response.content.decode()
+    assert reverse("receipts:view", kwargs={"pk": receipt.pk}) in response.content.decode()
 
 
 def test_upload_screen_shows_refusal(client, resident):
@@ -224,3 +224,42 @@ def test_missing_file_is_not_found_not_an_error(client, resident):
     receipt.file.storage.delete(receipt.file.name)
     client.force_login(resident.user)
     assert client.get(reverse("receipts:file", kwargs={"pk": receipt.pk})).status_code == 404
+
+
+# --- Viewer (sandboxed inline display) ------------------------------------------------
+
+
+def test_viewer_shows_own_receipt_inline_and_sandboxed(client, resident, other_resident, dormitory):
+    receipt = submit(resident)
+    view = reverse("receipts:view", kwargs={"pk": receipt.pk})
+    inline = reverse("receipts:inline", kwargs={"pk": receipt.pk})
+    client.force_login(resident.user)
+    page = client.get(view).content.decode()
+    assert inline in page and reverse("receipts:file", kwargs={"pk": receipt.pk}) in page
+    response = client.get(inline)
+    assert response.status_code == 200
+    assert response["Content-Disposition"].startswith("inline;")
+    csp = response["Content-Security-Policy"]
+    assert csp.startswith("sandbox;") and "default-src 'none'" in csp
+    assert "script-src" not in csp  # nothing may run
+    assert response["X-Frame-Options"] == "SAMEORIGIN"
+    assert response["X-Content-Type-Options"] == "nosniff"
+    for target in (view, inline):
+        client.force_login(other_resident.user)
+        assert client.get(target).status_code == 404
+        client.force_login(make_staff(dormitory, f"keys-{target[-3:]}", role=roles.MANAGER))
+        assert client.get(target).status_code == 404
+
+
+def test_admin_receipt_page_embeds_the_sandboxed_file(client, resident, dormitory):
+    receipt = submit(resident)
+    client.force_login(make_staff(dormitory, "boss", role=roles.ADMIN))
+    html = client.get(reverse("manage:receipt", kwargs={"pk": receipt.pk})).content.decode()
+    assert f'<iframe src="{reverse("receipts:inline", kwargs={"pk": receipt.pk})}"' in html
+
+
+def test_balance_links_to_the_viewer_not_a_silent_download(client, resident):
+    receipt = submit(resident)
+    client.force_login(resident.user)
+    html = client.get(reverse("ledger:balance")).content.decode()
+    assert reverse("receipts:view", kwargs={"pk": receipt.pk}) in html

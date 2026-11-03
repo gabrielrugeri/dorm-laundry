@@ -34,11 +34,13 @@ RUN python scripts/tailwind.py build \
        python manage.py collectstatic --noinput \
     && rm -rf bin /tmp/build.sqlite3
 
-# Run as an unprivileged user. private_media holds uploaded receipts; on
-# Railway it is lost on every redeploy unless a volume is mounted there
-# (fine for the demo, which has fake data only).
+# The app runs as the unprivileged "app" user. private_media holds uploaded
+# receipts: mount a Railway volume there (docs/DEPLOY-RAILWAY.md), or files
+# are lost on every redeploy. The image starts as root only so the start
+# script can give the volume (mounted owned by root) to "app"; it then drops
+# to "app" before running anything else (deploy/scripts/railway-start.sh).
 RUN mkdir -p /app/private_media && useradd --create-home app && chown -R app /app
-USER app
 
-# Port and worker count come from gunicorn.conf.py ($PORT, $WEB_CONCURRENCY).
-CMD ["gunicorn", "config.wsgi"]
+# Demo files for the volume, then gunicorn ($PORT, $WEB_CONCURRENCY from
+# gunicorn.conf.py) as "app".
+CMD ["/app/deploy/scripts/railway-start.sh"]

@@ -159,7 +159,10 @@ instead (`User.is_active`, `Machine.active`, `TimeSlot.active`).
   saved again with Pillow, turned upright, without EXIF (location, camera).
   Files live in `PRIVATE_MEDIA_ROOT` under random names, never at a public
   URL; `/receipts/<id>/file/` sends them as an attachment with `nosniff` to
-  the resident who sent them or an admin of their dormitory. Everyone else,
+  the resident who sent them or an admin of their dormitory, and are shown
+  in a viewer page (`/receipts/<id>/`) from a sandboxed address
+  (`/receipts/<id>/inline/`: `sandbox`, `default-src 'none'`, embeddable only
+  by our pages, `nosniff`, no caching). Everyone else,
   managers included, gets 404. A receipt refers to the resident by id only;
   its fingerprint stays even if the file is deleted later, so duplicates
   stay blocked. Nothing is deleted automatically yet (retention is a pending
@@ -462,7 +465,13 @@ yet" page. The tests in `apps/keylog/tests/` switch it on.
 - `/sw.js` (served from the root so it covers every page) caches only the
   offline page, its CSS and the icon, fetched without the login cookie.
   Every page, booking and balance comes from the network; nothing personal is
-  stored on the phone. When there is no connection, pages fall back to
+  stored on the phone. The worker handles **only GET requests**: form
+  submissions (a receipt upload) go straight from the browser to the server,
+  because some mobile browsers send an empty body when a worker re-sends a
+  request carrying a picked file (the server then refuses it as a CSRF
+  failure). Raise `SW_REVISION` in `apps/core/views.py` whenever `sw.js`
+  changes, so installed copies update. A refused form is logged with its
+  reason and shape by `apps.core.views.csrf_failure`. When there is no connection, pages fall back to
   `/offline/` (Russian and English, no personal data, does not use
   `base.html`). The CSP allows `manifest-src 'self'` and `worker-src 'self'`.
 - **Phones:** `viewport-fit=cover` with safe-area padding (`safe-top`,

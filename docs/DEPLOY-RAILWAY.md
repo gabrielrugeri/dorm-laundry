@@ -114,6 +114,27 @@ App service → **Settings** → **Networking** → **Public Networking** →
 
 **Check:** a domain like `something.up.railway.app` appears. Copy it.
 
+## 6b. A volume for uploaded receipts
+
+Receipts and the payment QR code are files. Railway wipes the app's disk on
+every redeploy, so they need a **volume** (Railway's permanent disk):
+
+1. On the project canvas, right-click the **app** service → **Attach volume**
+   (or **Create** → **Volume** and choose the app service).
+2. **Mount path:** `/app/private_media` (exactly this).
+3. Redeploy.
+
+The image starts as root only long enough to give this volume to its
+unprivileged user, then runs as that user
+(`deploy/scripts/railway-start.sh`). Railway runs the pre-deploy command in a
+separate container **without** the volume, so the demo's own receipt files
+are written when the app starts instead (`manage.py seed_demo_files`, demo
+only, safe to repeat).
+
+**Check (after section 7):** open a demo receipt as `admin` (**Receipts** → a
+receipt): the PDF shows. Send a receipt as a resident, redeploy, and open it
+again: it is still there.
+
 ## 7. Deploy
 
 1. Deploy the latest version: in the app service, open **Deployments** and
@@ -159,10 +180,10 @@ App service → **Settings** → **Networking** → **Public Networking** →
 
 - The first pre-deploy also creates eight weeks of fake history for the
   dashboard; on Railway's database that can take a minute or two.
-- **Uploaded receipts** are stored on the app's disk, which Railway wipes on
-  every redeploy unless you attach a volume at `/app/private_media`. For the
-  demo that is fine: the receipts and their balances stay, only the files
-  disappear ("not found" when opened).
+- **Uploaded receipts** live on the volume from section 6b. Without it they
+  disappear on every redeploy (the receipts and balances stay; the file shows
+  "no longer kept"). The demo's own receipt files are put back at every start
+  by `seed_demo_files`.
 - **New demo data** (Cyrillic names, demo receipts and payment details) only
   appears in a fresh database: start over as described above. In an existing
   demo, an admin can fill in the payment details under **Settings**.
@@ -206,6 +227,8 @@ opens.
 | Build fails | Read the build log. A failing step names the cause (e.g. a typo in a template). The same build runs in GitHub CI ("Demo image" job). |
 | Pre-deploy fails with "Set SEED_DEMO_STAFF_PASSWORD …" | Section 4: set both demo passwords to your own values. |
 | Logs say "Refusing to start: the Railway demo must run with DEMO_MODE=true" | Section 4: set `DEMO_MODE` to `true`. |
+| Receipt pictures do not show | Section 6b: the volume must be attached at `/app/private_media`. Redeploy after attaching it. |
+| Upload says "The form could not be sent" | Look for `CSRF failure:` in the runtime logs: it says why. Reload the page first; on an iPhone, update the app (it refreshes by itself after a redeploy). |
 | Health check fails | Check `DATABASE_URL` (section 4) and the runtime logs. `/healthz` returns 503 when the database cannot be reached. |
 | "Bad Request (400)" in the browser | The address is not the one Railway generated. Use the domain from section 6; for a custom domain, add it to `DJANGO_ALLOWED_HOSTS` and `https://…` to `DJANGO_CSRF_TRUSTED_ORIGINS`. |
 | Login says the password is wrong | The demo passwords are the values the variables had when the demo was first created (section 8). |

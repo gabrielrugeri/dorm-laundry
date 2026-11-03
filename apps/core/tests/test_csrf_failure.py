@@ -23,3 +23,23 @@ def test_refused_upload_logs_the_reason_and_shape(resident, caplog):
     assert "reason='CSRF cookie not set.'" in message
     assert "file_fields=1" in message and "token_field=False" in message
     assert resident.full_name not in message and resident.student_code not in message
+
+
+def test_lost_body_is_visible_in_the_log(resident, caplog):
+    """What a browser dropping the upload looks like: a large Content-Length
+    but no fields at all arrived."""
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(resident.user)
+    client.get(reverse("receipts:new"))  # sets the CSRF cookie
+    with caplog.at_level(logging.WARNING, logger="dorm_laundry.csrf"):
+        response = client.generic(
+            "POST",
+            reverse("receipts:new"),
+            data=b"",
+            content_type="multipart/form-data; boundary=x",
+            HTTP_CONTENT_LENGTH="482113",
+        )
+    assert response.status_code == 403
+    message = next(r for r in caplog.records if r.name == "dorm_laundry.csrf").getMessage()
+    assert "post_fields=0" in message and "file_fields=0" in message
+    assert "CSRF token missing" in message

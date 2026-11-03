@@ -30,10 +30,15 @@
       </div>
     {% endif %}
 
-    {% if receipt.file %}
-      {% url 'receipts:file' pk=receipt.pk as file_url %}
-      {% if is_image %}<img src="{{ file_url }}" alt="{% translate 'Receipt picture' %}" class="mb-3 max-h-[70vh] w-auto rounded border border-line">{% endif %}
-      <p class="mb-3"><a href="{{ file_url }}" class="text-link underline">{% translate "Download the receipt file" %}</a></p>
+    {% if stored %}
+      {% url 'receipts:inline' pk=receipt.pk as inline_url %}
+      {# Sandboxed: the file cannot run scripts or load anything. #}
+      {% if is_image %}
+        <img src="{{ inline_url }}" alt="{% translate 'Receipt picture' %}" class="mb-3 max-h-[70vh] w-auto rounded border border-line">
+      {% else %}
+        <iframe src="{{ inline_url }}" title="{% translate 'Receipt' %}" class="mb-3 h-[70vh] w-full rounded border border-line bg-on-accent"></iframe>
+      {% endif %}
+      <p class="mb-3"><a href="{% url 'receipts:file' pk=receipt.pk %}" class="text-link underline">{% translate "Download the receipt file" %}</a></p>
     {% else %}
       <p class="mb-3 text-muted">{% translate "The file is no longer kept." %}</p>
     {% endif %}

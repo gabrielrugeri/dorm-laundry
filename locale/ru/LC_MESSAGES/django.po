@@ -2579,3 +2579,7 @@ msgstr ""
 #: templates/core/csrf_failure.html:8
 msgid "Reload the page"
 msgstr "Обновить страницу"
+
+#: templates/receipts/view.html:25
+msgid "Download"
+msgstr "Скачать"
