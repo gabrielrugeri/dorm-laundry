@@ -159,7 +159,9 @@ again: it is still there.
 
 - The demo data is created **automatically** by the first pre-deploy. Every
   later deploy runs it again and **changes nothing** once the demo exists, so
-  what testers did stays.
+  what testers did stays: switched-off slots, changed passwords, erased
+  residents, settings. The only thing it adds back is a missing `admin` or
+  `manager` account.
 - To run it by hand (also safe to repeat), use Railway's command-line tool:
 
   ```bash
@@ -189,6 +191,26 @@ again: it is still there.
   demo, an admin can fill in the payment details under **Settings**.
 
 **Check:** the resident list shows about 21 residents, two of them in debt.
+
+### Is the demo on PostgreSQL?
+
+The data must live in the Postgres service, never in a file inside the app
+container (a redeploy throws that file away). The app protects this in two
+ways: it **refuses to start** when `DATABASE_URL` is missing, and
+`manage.py check --deploy` reports `dorm_laundry.E001` if a server ever uses
+SQLite. To check by hand:
+
+1. App service → **Variables**: `DATABASE_URL` shows the reference
+   `${{Postgres.DATABASE_URL}}`, not a typed address and not `sqlite:…`.
+2. Ask the running app which database it uses:
+
+   ```bash
+   railway ssh -- python manage.py shell -c "from django.db import connection; print(connection.vendor)"
+   ```
+
+   It must print `postgresql`.
+3. Book a slot in the demo, **Redeploy**, then open the grid again: the
+   booking is still there.
 
 ## 9. Everyday tasks
 
@@ -229,6 +251,7 @@ opens.
 | Logs say "Refusing to start: the Railway demo must run with DEMO_MODE=true" | Section 4: set `DEMO_MODE` to `true`. |
 | Receipt pictures do not show | Section 6b: the volume must be attached at `/app/private_media`. Redeploy after attaching it. |
 | Upload says "The form could not be sent" | Look for `CSRF failure:` in the runtime logs: it says why. Reload the page first; on an iPhone, update the app (it refreshes by itself after a redeploy). |
+| Logs say "Refusing to start: DATABASE_URL is not set" | Section 4: add `DATABASE_URL` = `${{Postgres.DATABASE_URL}}`. |
 | Health check fails | Check `DATABASE_URL` (section 4) and the runtime logs. `/healthz` returns 503 when the database cannot be reached. |
 | "Bad Request (400)" in the browser | The address is not the one Railway generated. Use the domain from section 6; for a custom domain, add it to `DJANGO_ALLOWED_HOSTS` and `https://…` to `DJANGO_CSRF_TRUSTED_ORIGINS`. |
 | Login says the password is wrong | The demo passwords are the values the variables had when the demo was first created (section 8). |

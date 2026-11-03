@@ -16,6 +16,16 @@ if not DEMO_MODE and not PILOT_READY:
         "(docs/plans/admin-and-payments.md). For a demo with fake data, set DEMO_MODE=true."
     )
 
+# No silent fallback to a local SQLite file outside development: on a server
+# that file would live on a disk the platform may wipe (Railway does on every
+# deploy), and all data would be lost. A deploy check also refuses SQLite
+# itself (apps/core/checks.py).
+if not env("DATABASE_URL", default=""):
+    raise ImproperlyConfigured(
+        "Refusing to start: DATABASE_URL is not set. Production needs PostgreSQL, "
+        "e.g. postgres://user:password@host:5432/name (on Railway: ${{Postgres.DATABASE_URL}})."
+    )
+
 DEBUG = False
 IS_PRODUCTION = True
 

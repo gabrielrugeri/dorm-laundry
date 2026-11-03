@@ -2,7 +2,8 @@
 
     python manage.py seed_demo
 
-Safe to run more than once: existing demo objects are reused, not duplicated.
+Safe to run more than once (every deploy runs it): when the demo dormitory
+exists, nothing is changed; only missing staff accounts are added.
 All names, rooms and codes are invented. Never put real personal data here.
 
 On a production server (Railway demo) it refuses to run unless DEMO_MODE is
@@ -99,27 +100,22 @@ class Command(BaseCommand):
         dorm, dorm_created = Dormitory.objects.get_or_create(
             slug="demo", defaults={"name": "Общежитие № 1", "code": "DEM"}
         )
-        slots = [
-            TimeSlot.objects.update_or_create(
-                dormitory=dorm, start_time=time(hour, 0), defaults={"active": True}
-            )[0]
-            for hour in SLOT_HOURS
-        ]
-        # Slots from older demo data stay (bookings point to them) but are switched off.
-        dorm.time_slots.exclude(pk__in=[slot.pk for slot in slots]).update(active=False)
-        machines = [
-            Machine.objects.get_or_create(dormitory=dorm, number=n)[0]
-            for n in range(1, MACHINE_COUNT + 1)
-        ]
-
         self._staff_user("admin", roles.ADMIN, dorm, staff_password)
         self._staff_user("manager", roles.MANAGER, dorm, staff_password)
 
         if not dorm_created:
-            # Demo residents exist already. Some were erased or changed on purpose,
-            # so looking them up again by code would create duplicates.
+            # The demo exists already (this runs on every deploy). Whatever people
+            # changed on purpose (slots switched off, residents erased, settings)
+            # stays as it is: only missing staff accounts are added above.
             self.stdout.write(self.style.SUCCESS(f"Demo data ready for “{dorm.name}”."))
             return
+
+        slots = [
+            TimeSlot.objects.create(dormitory=dorm, start_time=time(hour, 0)) for hour in SLOT_HOURS
+        ]
+        machines = [
+            Machine.objects.create(dormitory=dorm, number=n) for n in range(1, MACHINE_COUNT + 1)
+        ]
 
         resident_group = Group.objects.get(name=roles.RESIDENT)
         residents = []
@@ -319,14 +315,15 @@ class Command(BaseCommand):
 
     def _staff_user(self, username, role, dorm, password):
         """A dormitory staff account. Not a superuser: Django admin is for
-        developers only (create one with `manage.py createsuperuser`)."""
-        user, created = User.objects.get_or_create(username=username)
-        if created:
-            user.set_password(password)
-            user.groups.add(Group.objects.get(name=role))
-        user.is_staff = user.is_superuser = False
+        developers only (create one with `manage.py createsuperuser`).
+        An existing account is left exactly as it is."""
+        if User.objects.filter(username=username).exists():
+            return
+        user = User(username=username)
+        user.set_password(password)
         user.save()
-        StaffProfile.objects.get_or_create(user=user, defaults={"dormitory": dorm})
+        user.groups.add(Group.objects.get(name=role))
+        StaffProfile.objects.create(user=user, dormitory=dorm)
 
     def _demo_bookings(self, dorm, slots, machines, residents, rng):
         """A few bookings today and tomorrow, charged through the ledger."""
