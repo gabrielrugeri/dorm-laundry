@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, SetPasswordForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -182,3 +182,12 @@ class ChangePasswordForm(PasswordChangeForm):
         except ValidationError:
             ratelimit.register_failure(self.user.get_username(), self.request)
             raise
+
+
+class StaffSetPasswordForm(SetPasswordForm):
+    """A dormitory admin or manager chooses their password with a link."""
+
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(user, *args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = INPUT_CLASS

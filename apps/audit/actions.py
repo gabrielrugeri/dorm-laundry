@@ -39,6 +39,10 @@ LABELS = {
     "resident.initial_pin_login": _("Logged in with the first-time PIN"),
     "resident.initial_pin_changed": _("Own PIN chosen after the first login"),
     "user.password_change": _("Password changed"),
+    "user.password_set_by_link": _("Password chosen with a link"),
+    "staff.create": _("Staff account created"),
+    "staff.deactivate": _("Staff account switched off"),
+    "staff.password_link": _("Password link created for staff"),
     # Changes made by developers in the technical admin (/admin/).
     "admin.add": _("Added by a developer"),
     "admin.change": _("Changed by a developer"),

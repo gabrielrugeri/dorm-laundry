@@ -11,12 +11,22 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 
 
-def activation_url(request, user):
-    path = reverse(
-        "accounts:activate",
+def _path(name, user):
+    return reverse(
+        name,
         kwargs={
             "uidb64": urlsafe_base64_encode(force_bytes(user.pk)),
             "token": default_token_generator.make_token(user),
         },
     )
-    return request.build_absolute_uri(path)
+
+
+def activation_url(request, user):
+    return request.build_absolute_uri(_path("accounts:activate", user))
+
+
+def staff_password_url(base_url, user):
+    """A one-time link where a dormitory admin or manager sets their password
+    (made by `manage.py dormitory_admin`, which has no request). Valid for
+    PASSWORD_RESET_TIMEOUT and only until the password is set."""
+    return base_url.rstrip("/") + _path("accounts:set_password", user)

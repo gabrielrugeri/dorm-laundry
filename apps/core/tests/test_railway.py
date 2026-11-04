@@ -42,7 +42,7 @@ def load_settings(**overrides):
         "print(json.dumps({'hosts': s.ALLOWED_HOSTS, 'csrf': s.CSRF_TRUSTED_ORIGINS, "
         "'db_engine': s.DATABASES['default']['ENGINE'], 'db_host': s.DATABASES['default']['HOST'], "
         "'cache': s.CACHES['default']['BACKEND'], 'proxy': list(s.SECURE_PROXY_SSL_HEADER), "
-        "'demo': s.DEMO_MODE, 'debug': s.DEBUG}))"
+        "'demo': s.DEMO_MODE, 'debug': s.DEBUG, 'base': s.PUBLIC_BASE_URL}))"
     )
     result = subprocess.run(
         [sys.executable, "-c", code], cwd=ROOT, env=env, capture_output=True, text=True
@@ -65,6 +65,8 @@ def test_railway_settings_from_railway_variables():
         "https",
     ]  # Railway's proxy terminates HTTPS
     assert values["demo"] is True and values["debug"] is False
+    # Links printed by manage.py dormitory_admin use the generated domain.
+    assert values["base"] == "https://dorm-laundry-demo.up.railway.app"
 
 
 @pytest.mark.parametrize("pilot_ready", ["false", "true"])
